@@ -197,7 +197,6 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7.5vw,40px);
 .stone.crack1 em{color:var(--dim)}
 .stone.crack2 em{color:var(--fire)}
 
-.logwrap{margin-top:30px;border-top:1px solid var(--line);padding-top:18px}
 .logtitle{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--faint);margin:0 0 14px}
 .log{margin:0;padding:0;list-style:none;display:grid;gap:10px}
 .log li{display:flex;gap:12px;align-items:baseline;font-size:12.5px;line-height:1.7;
@@ -221,7 +220,47 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7.5vw,40px);
 .log li.catch{color:var(--ink);font-family:var(--serif);font-size:14px}
 .log li.catch .no{color:var(--grass)}
 .log .empty{color:var(--faint)}
+.log li .tx{min-width:0}
 @keyframes rise{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+
+/* ── 하단 기록 독 — 방금 일어난 두 줄만 ── */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:6;display:none;
+  padding:11px 20px calc(11px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top,var(--deep) 64%,rgba(11,22,20,.82));
+  border-top:1px solid var(--line);backdrop-filter:blur(9px)}
+.dock[data-on="1"]{display:block}
+.dockin{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:13px}
+.dlog{flex:1;min-width:0;margin:0;padding:0;list-style:none;display:grid;gap:5px}
+.dlog li{display:flex;gap:9px;align-items:baseline;font-size:12px;line-height:1.5;color:var(--dim)}
+.dlog li:first-child{animation:rise .3s ease both}
+.dlog li .no{font-family:var(--mono);font-size:9.5px;color:var(--faint);flex:0 0 18px}
+.dlog li .tx{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dlog li.up,.dlog li.evo,.dlog li.catch{color:var(--ink)}
+.dlog li.up .no{color:var(--volt)}
+.dlog li.hid,.dlog li.deny{color:var(--volt)}
+.dlog li.mut,.dlog li.trace{color:var(--wrong)}
+.dlog li.brk{color:var(--fire)}
+.dlog li.empty{color:var(--faint)}
+.dockbtn{flex:0 0 auto;font-family:var(--mono);font-size:10px;letter-spacing:.11em;
+  padding:10px 12px;border-radius:2px;cursor:pointer;color:var(--dim);
+  background:rgba(0,0,0,.24);border:1px solid var(--line);
+  transition:border-color .2s,color .2s}
+.dockbtn:active{transform:scale(.97)}
+
+/* ── 전체 기록 ── */
+.sheet{position:fixed;inset:0;z-index:25;display:none;
+  background:rgba(4,9,8,.82);backdrop-filter:blur(7px);
+  padding:calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom))}
+.sheet[data-on="1"]{display:block;animation:fadein .22s ease both}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.sheetin{max-width:760px;height:100%;margin:0 auto;display:flex;flex-direction:column;
+  border:1px solid var(--line);border-radius:3px;background:rgba(9,19,17,.97);
+  box-shadow:0 20px 60px -20px #000;padding:16px 16px 0}
+.sheethead{display:flex;align-items:center;gap:12px;flex:0 0 auto;
+  padding-bottom:13px;border-bottom:1px solid var(--line)}
+.sheethead .logtitle{flex:1;margin:0}
+.sheetbody{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:16px 2px calc(18px + env(safe-area-inset-bottom))}
 
 .found{display:none;margin-top:24px;padding:15px 16px;border:1px solid var(--line);
   border-left:2px solid var(--volt);border-radius:3px;background:rgba(232,197,71,.045)}
@@ -249,8 +288,20 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7.5vw,40px);
 .dcell.unseen b{color:var(--faint)}
 .dcell.own{border-color:color-mix(in srgb,var(--c) 45%,transparent);
   background:color-mix(in srgb,var(--c) 7%,rgba(0,0,0,.2))}
-.dgroup{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;color:var(--faint);
-  margin:16px 0 8px}
+/* 도감 — 접어두고 필요할 때만 편다 */
+.dtoggle{display:flex;align-items:center;gap:10px;width:100%;margin:0;padding:13px 2px 12px;
+  text-align:left;cursor:pointer;background:none;border:none;border-top:1px solid var(--line);
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;color:var(--dim)}
+.dtoggle i{font-style:normal;color:var(--faint);display:inline-block;
+  transition:transform .2s;transform-origin:50% 50%}
+.dtoggle b{flex:1;min-width:0;font-weight:400;color:var(--dim)}
+.dtoggle u{text-decoration:none;color:var(--faint);white-space:nowrap}
+.dtoggle[data-open="1"] i{transform:rotate(90deg)}
+.dtoggle[data-open="1"] b{color:var(--ink)}
+.dbody{display:none}
+.dbody[data-open="1"]{display:block;padding-bottom:6px}
+.dexhead{display:flex;align-items:flex-end;gap:10px;margin-bottom:2px}
+.dexhead .pnote{flex:1;margin:0}
 .dhint{margin:14px 0 0;padding:12px 13px;border-left:2px solid var(--volt);
   background:rgba(232,197,71,.05);font-size:12px;line-height:1.75;color:var(--dim)}
 .dhint b{color:var(--volt);font-weight:600}
@@ -394,11 +445,6 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7.5vw,40px);
     <p class="hint" id="iomsg"></p>
   </div>
 
-  <div class="logwrap">
-    <p class="logtitle">행동 기록</p>
-    <ul class="log" id="log"><li class="empty"><span class="no">—</span><span>아직 아무 일도 일어나지 않았다.</span></li></ul>
-  </div>
-
   <div class="found" id="found">
     <h3>찾아낸 것</h3>
     <ul id="foundlist"></ul>
@@ -413,6 +459,25 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7.5vw,40px);
 <div id="toasts"></div>
 
 <div id="flash"><div class="bg"></div><svg viewBox="0 0 30 30" id="flashsvg"></svg></div>
+
+<div class="sheet" id="sheet" onclick="if(event.target===this)closeLog()">
+  <div class="sheetin">
+    <div class="sheethead">
+      <p class="logtitle">행동 기록 <span id="logcount"></span></p>
+      <button class="mini" onclick="closeLog()">닫기</button>
+    </div>
+    <div class="sheetbody">
+      <ul class="log" id="log"></ul>
+    </div>
+  </div>
+</div>
+
+<div class="dock" id="dock">
+  <div class="dockin">
+    <ul class="dlog" id="docklog"></ul>
+    <button class="dockbtn" id="dockbtn" onclick="openLog()">전체 기록</button>
+  </div>
+</div>
 
 <div class="bar" id="bar">
   <div class="barin">
@@ -937,6 +1002,8 @@ const LINE = {
 
 let pets={}, party=[], box=[], seq=0;
 let sel=[], bag={}, logNo=0, found=[], bornOrb=null;
+let logs=[], legacyLog="", dexOpen={};
+const LOGKEEP=300;              // 전체 기록으로 남겨두는 줄 수
 let here="pallet", wild=null, balls=0;
 let caught=0, evolved=0, seen=[], opened=["pallet","route1"];
 let startPhase=true, hints=[], saveState="unknown";
@@ -970,10 +1037,10 @@ const STORE={
 };
 
 function payload(){
-  return {v:2,pets:pets,party:party,box:box,seq:seq,bag:bag,here:here,
+  return {v:3,pets:pets,party:party,box:box,seq:seq,bag:bag,here:here,
     balls:balls,wild:wild,found:found,logNo:logNo,
     caught:caught,evolved:evolved,seen:seen,opened:opened,hints:hints,
-    log:document.getElementById("log").innerHTML,
+    logs:logs,log:legacyLog,
     rival:document.getElementById("rivalline").innerHTML};
 }
 
@@ -998,13 +1065,15 @@ function applySave(s){
     if(m.low===undefined) m.low=false;
     if(!m.own) m.own=["bulba","char","squirt","pika"].includes(m.base)?"starter":"wild";
   });
-  document.getElementById("log").innerHTML=s.log||"";
+  /* v2까지는 기록이 통짜 HTML로 저장됐다. 그건 그대로 아래에 이어 붙인다. */
+  logs=s.logs||[]; legacyLog=s.log||"";
   document.getElementById("rivalline").innerHTML=s.rival||"";
   document.getElementById("pick").style.display="none";
   document.getElementById("bar").style.display="none";
   document.getElementById("status").style.display="block";
+  document.getElementById("dock").dataset.on="1";
   saveOn=true;
-  paintFound(); renderAll();
+  paintLog(); paintFound(); renderAll();
 }
 
 async function boot(){
@@ -1107,10 +1176,8 @@ function confirmPick(){
   sel.forEach(f=>{ party.push(newPet(f)); see(f); });
   startPhase=false;
 
-  logNo=0;
-  document.getElementById("log").innerHTML=
-    '<li class="empty"><span class="no">—</span><span>아직 아무 일도 일어나지 않았다.</span></li>';
-  paintFound();
+  logNo=0; logs=[]; legacyLog="";
+  paintLog(); paintFound();
 
   const left=["bulba","char","squirt"].filter(k=>!sel.includes(k)).map(k=>DATA[k].name);
   document.getElementById("rivalline").innerHTML=
@@ -1120,6 +1187,7 @@ function confirmPick(){
   document.getElementById("pick").style.display="none";
   document.getElementById("bar").style.display="none";
   document.getElementById("status").style.display="block";
+  document.getElementById("dock").dataset.on="1";
   saveOn=true;
   renderAll(); scrollTo(0,0);
 }
@@ -1150,11 +1218,10 @@ function renderZones(){
   checkGates();
   const O=ORDERKEYS();
   document.getElementById("where").textContent="동행 기록 · "+REGION[here].name;
-  document.getElementById("zones").innerHTML=O.map(r=>{
-    const open=opened.includes(r);
-    return `<button class="zone" data-on="${r===here?1:0}" ${open?"":"disabled"}
-      onclick="moveTo('${r}')">${REGION[r].name}${open?"":" · 잠김"}</button>`;
-  }).join("");
+  /* 열린 곳만 보인다. 아직 열리지 않은 길은 이름조차 나오지 않는다. */
+  document.getElementById("zones").innerHTML=O.filter(r=>opened.includes(r)).map(r=>
+    `<button class="zone" data-on="${r===here?1:0}"
+      onclick="moveTo('${r}')">${REGION[r].name}</button>`).join("");
 
   const R=REGION[here];
   const next=O.find(r=>!opened.includes(r));
@@ -1184,7 +1251,7 @@ function refill(){
 function moveTo(r){
   if(r===here) return;
   if(!opened.includes(r)){
-    say(REGION[r].name+"으로 가는 길은 아직 막혀 있다. "+GATE[r].text,"deny");
+    say(REGION[r].name+"으로 가는 길은 아직 막혀 있다."+(GATE[r]?" "+GATE[r].text:""),"deny");
     return;
   }
   if(wild){ say("자리를 뜨자 "+sp2(wild.form).name+"가 풀숲으로 사라졌다.","deny"); wild=null; }
@@ -1612,11 +1679,19 @@ function remember(title,memo,isMut){
 function renderDex(){
   const ownForms=Object.keys(pets).map(id=>pets[id].form);
   const total=DEXGROUP.reduce((n,g)=>n+g.keys.length,0);
-  let html='<p class="pnote">기록 <b>'+seen.length+' / '+total+'</b>종'
-    +' · 잡거나 만나면 남는다. 놓쳐도 만난 것은 지워지지 않는다.</p>';
+  const anyOpen=DEXGROUP.some((g,i)=>dexOpen[i]);
+  let html='<div class="dexhead"><p class="pnote">기록 <b>'+seen.length+' / '+total+'</b>종'
+    +' · 잡거나 만나면 남는다. 놓쳐도 만난 것은 지워지지 않는다.</p>'
+    +'<button class="mini" onclick="allDex('+(anyOpen?"false":"true")+')">'
+    +(anyOpen?"전부 접기":"전부 펼치기")+'</button></div>';
 
-  DEXGROUP.forEach(g=>{
-    html+='<p class="dgroup">'+g.t+' · '+g.keys.filter(k=>seen.includes(k)).length+'/'+g.keys.length+'</p><div class="dex">';
+  /* 칸은 접혀 있다. 보고 싶은 줄만 편다. */
+  DEXGROUP.forEach((g,i)=>{
+    const on=dexOpen[i]?"1":"0";
+    html+='<button class="dtoggle" data-open="'+on+'" onclick="toggleDex('+i+')">'
+      +'<i>▸</i><b>'+g.t+'</b>'
+      +'<u>'+g.keys.filter(k=>seen.includes(k)).length+'/'+g.keys.length+'</u></button>'
+      +'<div class="dbody" data-open="'+on+'"><div class="dex">';
     g.keys.forEach(k=>{
       const d=DATA[k], has=seen.includes(k), own=ownForms.includes(k);
       html+='<div class="dcell '+(has?(own?"own":""):"unseen")+'" style="--c:'+d.c+'">'
@@ -1624,7 +1699,7 @@ function renderDex(){
         +'<b>'+(has?d.name:"???")+'</b>'
         +'<u>'+(has?(own?"보유 중":d.type):"미기록")+'</u></div>';
     });
-    html+='</div>';
+    html+='</div></div>';
   });
 
   const got=DEXHINT.filter(h=>seen.length>=h.n);
@@ -1639,6 +1714,8 @@ function renderDex(){
   if(nx) html+='<p class="hint" style="color:var(--volt)">'+nx.n+'종을 채우면 다음 힌트가 열린다</p>';
   document.getElementById("dex").innerHTML=html;
 }
+function toggleDex(i){ dexOpen[i]=!dexOpen[i]; renderDex(); }
+function allDex(on){ DEXGROUP.forEach((g,i)=>{ dexOpen[i]=on; }); renderDex(); }
 
 function paintFound(){
   const box2=document.getElementById("found");
@@ -1647,27 +1724,57 @@ function paintFound(){
     found.map(f=>`<li class="${f.x?"m":""}">${f.t}<em>${f.m}</em></li>`).join("");
 }
 
+/* ═════════════════════════════════════════════
+   기록 — 화면 아래에는 방금 일어난 두 줄만 남는다.
+   전체는 「전체 기록」에서 언제든 펼쳐 본다.
+   ═════════════════════════════════════════════ */
 function say(text,kind,delta){
-  const ul=document.getElementById("log");
-  const e=ul.querySelector(".empty"); if(e) e.remove();
   logNo++;
-  const li=document.createElement("li");
-  if(kind) li.className=kind;
-  li.innerHTML='<span class="no">'+String(logNo).padStart(2,"0")+'</span>'
-             +'<span>'+text+(delta?'<span class="dl">'+delta+'</span>':'')+'</span>';
-  ul.prepend(li);
-  while(ul.children.length>18) ul.lastElementChild.remove();
+  logs.unshift({no:logNo,k:kind||"",t:text,d:delta||""});
+  while(logs.length>LOGKEEP) logs.pop();
+  paintLog();
 }
+
+function logLI(e,full){
+  return '<li class="'+(e.k||"")+'"><span class="no">'+String(e.no).padStart(2,"0")+'</span>'
+    +'<span class="tx">'+e.t+(full&&e.d?'<span class="dl">'+e.d+'</span>':'')+'</span></li>';
+}
+const LOGEMPTY='<li class="empty"><span class="no">—</span>'
+  +'<span class="tx">아직 아무 일도 일어나지 않았다.</span></li>';
+
+function paintLog(){
+  const dl=document.getElementById("docklog");
+  if(dl) dl.innerHTML = logs.length ? logs.slice(0,2).map(e=>logLI(e,false)).join("")
+    : legacyLog ? '<li class="empty"><span class="no">—</span>'
+                 +'<span class="tx">지난 기록은 「전체 기록」에 그대로 있다.</span></li>'
+    : LOGEMPTY;
+  const btn=document.getElementById("dockbtn");
+  if(btn) btn.textContent=logs.length?"전체 기록 "+logs.length:"전체 기록";
+  if(document.getElementById("sheet").dataset.on==="1") paintFullLog();
+}
+
+function paintFullLog(){
+  const body=(logs.length?logs.map(e=>logLI(e,true)).join(""):(legacyLog?"":LOGEMPTY))+legacyLog;
+  document.getElementById("log").innerHTML=body;
+  document.getElementById("logcount").textContent=logs.length?"· "+logs.length+"줄":"";
+}
+function openLog(){
+  document.getElementById("sheet").dataset.on="1";
+  paintFullLog();
+  document.querySelector(".sheetbody").scrollTop=0;
+}
+function closeLog(){ document.getElementById("sheet").dataset.on="0"; }
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeLog(); });
 
 function reset(){
   if(!confirm("정말 처음부터 다시 시작할까?\n지금까지의 기록과 찾아낸 것이 모두 사라진다.")) return;
   saveOn=false; STORE.del(); hints=[]; saveState="unknown";
   sel=[]; pets={}; party=[]; box=[]; wild=null; logNo=0; found=[];
+  logs=[]; legacyLog=""; dexOpen={};
   caught=0; evolved=0; seen=[]; opened=["pallet","route1"]; here="pallet";
-  document.getElementById("log").innerHTML=
-    '<li class="empty"><span class="no">—</span><span>아직 아무 일도 일어나지 않았다.</span></li>';
-  paintFound();
+  closeLog(); paintLog(); paintFound();
   document.getElementById("status").style.display="none";
+  document.getElementById("dock").dataset.on="0";
   document.getElementById("pick").style.display="block";
   document.getElementById("bar").style.display="block";
   draw(); scrollTo(0,0);
