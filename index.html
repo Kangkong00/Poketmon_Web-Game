@@ -1060,10 +1060,19 @@ function applySave(s){
   found=s.found||[]; logNo=s.logNo||0; hints=s.hints||[];
   caught=s.caught||0; evolved=s.evolved||0;
   seen=s.seen||[]; opened=s.opened||["pallet","route1"];
+  /* 처음 고르는 순간은 이미 끝났다. 여기서 내려두지 않으면
+     이어하기 뒤에 잡는 야생이 전부 「최초 파트너」로 기록된다. */
+  startPhase=false;
   Object.keys(pets).forEach(id=>{ const m=pets[id];
     if(m.crisis===undefined) m.crisis=0;
     if(m.low===undefined) m.low=false;
     if(!m.own) m.own=["bulba","char","squirt","pika"].includes(m.base)?"starter":"wild";
+    /* 표본실에서 데려온 아이는 언제나 p1·p2다. 그 뒤 번호인데 최초 파트너로
+       적혀 있다면 위 버그로 잘못 남은 기록이니 야생으로 되돌린다. */
+    if(m.own==="starter" && Number(id.slice(1))>2){
+      m.own="wild";
+      m.qDone=qualified(m)||undefined;
+    }
   });
   /* v2까지는 기록이 통짜 HTML로 저장됐다. 그건 그대로 아래에 이어 붙인다. */
   logs=s.logs||[]; legacyLog=s.log||"";
