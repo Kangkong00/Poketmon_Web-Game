@@ -145,6 +145,39 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7.5vw,40px);
 .wildcard .desc,.wildcard .acts,.wildcard .hint{position:relative;z-index:1}
 .wildcard .orb{box-shadow:0 0 30px -8px var(--c)}
 
+/* ── 전투 ── */
+.fightcard{border:1px solid color-mix(in srgb,var(--c) 55%,transparent);
+  border-left:4px solid var(--c);padding-top:14px;margin-bottom:22px;
+  background:linear-gradient(155deg,color-mix(in srgb,var(--c) 13%,transparent),rgba(5,11,10,.82) 55%);
+  box-shadow:0 0 0 1px rgba(0,0,0,.4),0 18px 50px -22px #000,0 0 46px -22px var(--c);
+  animation:wildin .4s cubic-bezier(.2,.8,.2,1) both}
+.fightcard .track{margin-top:9px;height:5px}
+.fightcard .namebox{margin-bottom:4px}
+.vs{position:relative;z-index:1;display:flex;align-items:center;gap:11px;
+  margin:4px 0 13px;font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--faint)}
+.vs::before,.vs::after{content:"";flex:1;height:1px;background:var(--line)}
+.mvs{position:relative;z-index:1;display:grid;gap:8px;margin-top:15px;
+  padding-top:14px;border-top:1px solid var(--line)}
+@media(min-width:520px){.mvs{grid-template-columns:1fr 1fr}}
+.mv{text-align:left;padding:12px 13px;border-radius:2px;cursor:pointer;
+  background:color-mix(in srgb,var(--c) 9%,rgba(0,0,0,.26));
+  border:1px solid color-mix(in srgb,var(--c) 34%,transparent);
+  color:var(--ink);font-family:var(--sans);font-size:13px;font-weight:600;
+  transition:border-color .2s,transform .1s}
+.mv:active{transform:scale(.98)}
+.mv span{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.09em;
+  color:var(--dim);margin-top:5px;font-weight:400}
+.fightcard .acts{border-top:none;padding-top:0;margin-top:10px}
+
+/* 배지 */
+.badges{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.badge{display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:2px;
+  border:1px solid color-mix(in srgb,var(--volt) 38%,transparent);
+  background:color-mix(in srgb,var(--volt) 8%,transparent);
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--volt)}
+.badge i{width:7px;height:7px;border-radius:50%;background:var(--volt);
+  box-shadow:0 0 8px var(--volt)}
+
 /* 내 몬스터 쪽 머리말 */
 .mine{display:flex;align-items:center;gap:11px;margin:0 0 12px;
   font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:var(--faint)}
@@ -445,6 +478,7 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7.5vw,40px);
   <p class="hint" id="savemark" style="margin:0 0 12px"></p>
   <div class="panel" id="zonepanel"></div>
   <div id="wildwrap"></div>
+  <div id="fightwrap"></div>
 
   <div id="cards"></div>
 
@@ -824,14 +858,21 @@ const GATE = {
   route2 :{ok:()=>caught>=4&&seen.length>=6,      text:"야생 4마리 포획 · 도감 6종"},
   forest :{ok:()=>seen.length>=9&&maxLv()>=7,     text:"도감 9종 · 레벨 7 이상 한 마리"},
   route3 :{ok:()=>caught>=8&&seen.length>=13,     text:"야생 8마리 포획 · 도감 13종"},
-  moon   :{ok:()=>seen.length>=16&&maxLv()>=10,   text:"도감 16종 · 레벨 10 이상"},
+  moon   :{ok:()=>seen.length>=16&&maxLv()>=10,   text:"도감 16종 · 레벨 10 이상", gym:"brock"},
   route4 :{ok:()=>evolved>=1&&seen.length>=20,    text:"진화 1회 · 도감 20종"},
-  route24:{ok:()=>caught>=15&&maxLv()>=13,        text:"야생 15마리 포획 · 레벨 13 이상"},
-  shore  :{ok:()=>seen.length>=26&&evolved>=2,    text:"도감 26종 · 진화 2회"},
-  power  :{ok:()=>seen.length>=32&&maxLv()>=18,   text:"도감 32종 · 레벨 18 이상"},
-  seafoam:{ok:()=>seen.length>=38&&evolved>=4,    text:"도감 38종 · 진화 4회"},
-  mansion:{ok:()=>seen.length>=44&&maxLv()>=25,   text:"도감 44종 · 레벨 25 이상"}
+  route24:{ok:()=>caught>=15&&maxLv()>=13,        text:"야생 15마리 포획 · 레벨 13 이상", gym:"misty"},
+  shore  :{ok:()=>seen.length>=26&&evolved>=2,    text:"도감 26종 · 진화 2회", gym:"erika"},
+  power  :{ok:()=>seen.length>=32&&maxLv()>=18,   text:"도감 32종 · 레벨 18 이상", gym:"surge"},
+  seafoam:{ok:()=>seen.length>=38&&evolved>=4,    text:"도감 38종 · 진화 4회", gym:"koga"},
+  mansion:{ok:()=>seen.length>=44&&maxLv()>=25,   text:"도감 44종 · 레벨 25 이상", gym:"blaine"}
 };
+
+/* 수치를 채웠는지 · 배지까지 받았는지 — 둘은 다른 문이다 */
+function gateNum(r){ const g=GATE[r]; return !g||g.ok(); }
+function gateOk(r){ const g=GATE[r];
+  return gateNum(r) && (!g||!g.gym||badges.includes(g.gym)); }
+function gateText(r){ const g=GATE[r]; if(!g) return "";
+  return g.text+(g.gym?" · "+GYM[g.gym].town+" 체육관 통과":""); }
 function maxLv(){
   const all=Object.keys(pets); if(!all.length) return 0;
   return Math.max.apply(null,all.map(id=>pets[id].lv));
@@ -1033,11 +1074,121 @@ const LINE = {
   caught:["볼이 세 번 흔들리고 조용해졌다. {n}가 동료가 됐다."]
 };
 
+/* ═════════════════════════════════════════════
+   기술 — [이름, 위력, 타입, 효과]
+   효과 · drain 준 만큼 절반을 빨아들인다
+        · drop  상대의 다음 공격이 무뎌진다
+        · guard 다음에 받는 피해가 절반이 된다
+        · again 두 번 친다
+        · wild  자주 빗나가지만 세다
+        · back  반동으로 제 몸도 상한다
+   ═════════════════════════════════════════════ */
+const HIT = {
+  basic:["몸통박치기",32,"노말"],
+  풀:["잎날가르기",38,"풀"],      불:["불꽃세례",38,"불"],
+  물:["물대포",38,"물"],          전기:["전기충격",38,"전기"],
+  노말:["할퀴기",36,"노말"],      비행:["바람일으키기",38,"비행"],
+  벌레:["벌레먹기",36,"벌레"],    독:["독찌르기",38,"독"],
+  땅:["모래뿌리기",34,"땅","drop"], 바위:["돌떨구기",40,"바위"],
+  에스퍼:["염동력",38,"에스퍼"],  요정:["달빛가르기",38,"요정"],
+  격투:["후려치기",40,"격투"],    얼음:["싸라기눈",38,"얼음"]
+};
+
+/* 종마다 하나씩 — 그 몸이 할 수 있는 단 하나 */
+const OWNMOVE = {
+  bulba:["덩굴채찍",46,"풀"], ivy:["씨앗폭탄",56,"풀"], venu:["꽃보라",70,"풀","drop"],
+  char:["불꽃엄니",46,"불"], charme:["화염송곳니",56,"불"], chariz:["화염방사",74,"불"],
+  squirt:["거품",46,"물"], wart:["거품광선",56,"물"], blast:["하이드로펌프",80,"물","wild"],
+  pika:["볼전기",46,"전기"], raichu:["십만볼트",72,"전기"],
+  pidgey:["날개치기",42,"비행"], pidgeotto:["쪼아대기",56,"비행"], pidgeot:["폭풍",72,"비행","wild"],
+  rattata:["물어뜯기",42,"노말"], raticate:["앞니베기",58,"노말"],
+  spearow:["쪼기",42,"비행"], fearow:["회전부리",64,"비행"],
+  caterpie:["실뿜기",24,"벌레","drop"], metapod:["단단해지기",0,"벌레","guard"],
+  butterfree:["은빛바람",60,"벌레"],
+  weedle:["독침",30,"독"], kakuna:["껍질굳히기",0,"벌레","guard"],
+  beedrill:["더블니들",44,"독","again"],
+  oddish:["흡수",34,"풀","drain"], gloom:["악취",42,"독","drop"], vileplume:["꽃가루폭풍",66,"풀"],
+  bellsprout:["줄기휘두르기",42,"풀"], weepinbell:["잎날베기",56,"풀"],
+  victreebel:["통째로삼키기",70,"풀","drain"],
+  meowth:["앞발할퀴기",42,"노말"], persian:["발톱연타",58,"노말","again"],
+  ekans:["휘감기",42,"독"], arbok:["무늬노려보기",60,"독","drop"],
+  sandshrew:["몸말아굴리기",44,"땅"], sandslash:["가시말기",62,"땅"],
+  mankey:["연속주먹",46,"격투","again"], primeape:["분노의주먹",68,"격투","wild"],
+  zubat:["흡혈",40,"독","drain"], golbat:["큰흡혈",60,"독","drain"],
+  geodude:["돌굴리기",46,"바위"], graveler:["비탈구르기",62,"바위"], golem:["바위깨기",76,"바위"],
+  paras:["포자뿌리기",32,"벌레","drop"], parasect:["버섯포자",56,"벌레","drain"],
+  clefairy:["달빛받기",36,"요정","drain"], clefable:["달의힘",66,"요정"],
+  jigglypuff:["노래하기",30,"요정","drop"], wigglytuff:["부풀리기",60,"요정"],
+  abra:["기척지우기",34,"에스퍼","guard"], kadabra:["사이코키네시스",60,"에스퍼"],
+  alakazam:["기억읽기",76,"에스퍼"],
+  poliwag:["물총",42,"물"], poliwhirl:["소용돌이",58,"물"],
+  magikarp:["튀어오르기",6,"노말"], gyarados:["용의분노",84,"물","wild"],
+  goldeen:["뿔찌르기",46,"물"], seaking:["대폭포",64,"물"],
+  magnemite:["자석쇼크",42,"전기"], magneton:["삼중스파크",62,"전기","again"],
+  voltorb:["방전",46,"전기"], electrode:["대폭발",92,"전기","back"],
+  vulpix:["도깨비불",42,"불","drop"], ninetales:["아홉꼬리",66,"불"],
+  growlithe:["화염엄니",46,"불"], arcanine:["신속",74,"불","again"],
+  zapdos:["번개",92,"전기"], articuno:["냉동빔",92,"얼음"],
+  moltres:["불새",92,"불"], mewtwo:["사이코버스터",104,"에스퍼"],
+
+  /* 변이 특수기 — 세상에 없는 몸이 세상에 없는 방식으로 싸운다 */
+  bulba_fire:["재의포자",62,"불","drop"],
+  bulba_water:["늪수렁",56,"물","drop"],
+  bulba_thunder:["웃자란줄기",68,"전기","wild"],
+  char_leaf:["타는덩굴",62,"풀"],
+  char_water:["증기분출",58,"물"],
+  char_thunder:["지지직불꽃",64,"전기","again"],
+  squirt_leaf:["이끼포자",52,"풀","drain"],
+  squirt_fire:["가마숨결",68,"불","back"],
+  squirt_thunder:["전하방출",62,"전기"],
+  pika_leaf:["싹의전류",56,"풀","drain"],
+  pika_fire:["그을린볼",68,"불","back"],
+  pika_water:["잠긴울림",60,"물","guard"]
+};
+
+/* 상성 — 이 타입은 이 타입들에게 강하다.
+   반대로 상대가 나에게 강한 타입이면 내 공격이 무뎌진다. */
+const STRONG = {
+  불:["풀","벌레","얼음"], 물:["불","바위","땅"], 풀:["물","바위","땅"],
+  전기:["물","비행"], 얼음:["풀","비행","땅"], 격투:["노말","바위","얼음"],
+  독:["풀","요정"], 땅:["불","전기","독","바위"], 비행:["풀","격투","벌레"],
+  에스퍼:["격투","독"], 벌레:["풀","에스퍼"], 바위:["불","얼음","비행","벌레"],
+  요정:["격투"], 노말:[]
+};
+
+/* ═════════════════════════════════════════════
+   체육관 — 마을 대표. 이겨야 다음 길이 열린다.
+   ═════════════════════════════════════════════ */
+const GYM = {
+  brock:{name:"웅",town:"회색시티",type:"바위",badge:"회색 배지",
+    line:"돌은 버티는 것이다. 버티지 못하면 지나갈 수 없다.",
+    team:[["geodude",12],["sandshrew",13],["graveler",14]]},
+  misty:{name:"이슬",town:"블루시티",type:"물",badge:"파랑 배지",
+    line:"물은 밀어내지 않는다. 감싸서 가라앉힌다.",
+    team:[["poliwag",17],["goldeen",18],["poliwhirl",19]]},
+  erika:{name:"민화",town:"무지개시티",type:"풀",badge:"무지개 배지",
+    line:"자라는 것은 서두르지 않아요. 그래서 이깁니다.",
+    team:[["gloom",21],["weepinbell",22],["vileplume",24]]},
+  surge:{name:"마티스",town:"갈색시티",type:"전기",badge:"주황 배지",
+    line:"전기는 망설이지 않는다. 한 번에 끝낸다.",
+    team:[["voltorb",24],["magnemite",25],["raichu",27]]},
+  koga:{name:"독수",town:"노랑시티",type:"독",badge:"쪽빛 배지",
+    line:"독은 소리가 없다. 알았을 땐 이미 늦었지.",
+    team:[["ekans",28],["golbat",29],["arbok",31],["beedrill",32]]},
+  blaine:{name:"강연",town:"홍련마을",type:"불",badge:"주홍 배지",
+    line:"저 저택을 태운 것이 무엇인지, 자네는 알고 왔나.",
+    team:[["growlithe",33],["ninetales",35],["arcanine",37]]}
+};
+
+/* 오다가다 마주치는 사람들 — 팀은 그 지역에서 만들어진다 */
+const FOENAME = ["짧은바지 아이","벌레잡이 소년","낚시꾼","등산가","캠프 소년",
+  "피크닉 소녀","슈퍼너드","길 잃은 여행자","연구소 조수","떠돌이 훈련가"];
+
 let pets={}, party=[], box=[], seq=0;
 let sel=[], bag={}, logNo=0, found=[], bornOrb=null;
 let logs=[], legacyLog="", dexOpen={};
 const LOGKEEP=300;              // 전체 기록으로 남겨두는 줄 수
-let here="pallet", wild=null, balls=0;
+let here="pallet", wild=null, balls=0, fight=null, badges=[];
 let caught=0, evolved=0, seen=[], opened=["pallet","route1"];
 let startPhase=true, hints=[], saveState="unknown";
 const RARE=["pika","clefairy","abra","magneton","ninetales","arcanine","gyarados"];
@@ -1071,7 +1222,7 @@ const STORE={
 
 function payload(){
   return {v:3,pets:pets,party:party,box:box,seq:seq,bag:bag,here:here,
-    balls:balls,wild:wild,found:found,logNo:logNo,
+    balls:balls,wild:wild,fight:fight,badges:badges,found:found,logNo:logNo,
     caught:caught,evolved:evolved,seen:seen,opened:opened,hints:hints,
     logs:logs,log:legacyLog,
     rival:document.getElementById("rivalline").innerHTML};
@@ -1090,6 +1241,7 @@ function save(){
 function applySave(s){
   pets=s.pets; party=s.party; box=s.box||[]; seq=s.seq||party.length;
   bag=s.bag; here=s.here||"pallet"; balls=s.balls||0; wild=s.wild||null;
+  fight=s.fight||null; badges=s.badges||[];
   found=s.found||[]; logNo=s.logNo||0; hints=s.hints||[];
   caught=s.caught||0; evolved=s.evolved||0;
   seen=s.seen||[]; opened=s.opened||["pallet","route1"];
@@ -1228,7 +1380,7 @@ function sync(){
 
 function confirmPick(){
   const pika=sel.includes("pika");
-  pets={}; party=[]; box=[]; seq=0; wild=null; here="pallet";
+  pets={}; party=[]; box=[]; seq=0; wild=null; fight=null; badges=[]; here="pallet";
   balls=TUNE.balls;
   bag={}; Object.keys(STONE).forEach(s=>bag[s]=TUNE.stoneLife);
   caught=0; evolved=0; seen=[]; opened=["pallet","route1"];
@@ -1253,7 +1405,8 @@ function confirmPick(){
 }
 
 /* ═════════ 전체 그리기 ═════════ */
-function renderAll(){ renderZones(); renderWild(); renderCards(); renderSlots(); renderDex(); save(); }
+function renderAll(){ renderZones(); renderWild(); renderFight();
+  renderCards(); renderSlots(); renderDex(); save(); }
 
 function ORDERKEYS(){ return ["pallet","route1","route22","route2","forest","route3","moon","route4","route24","shore","power","seafoam","mansion"]; }
 
@@ -1264,8 +1417,7 @@ function checkGates(){
     const r=O[n];
     if(opened.includes(r)) continue;
     if(n>0 && !opened.includes(O[n-1])) break;
-    const g=GATE[r];
-    if(!g || g.ok()){
+    if(gateOk(r)){
       opened.push(r);
       say("◆ 새로운 길이 열렸다 — <b>"+REGION[r].name+"</b>","hid");
       notify("unlock","길이 열렸다",REGION[r].name+" · 이제 갈 수 있다","var(--volt)",
@@ -1290,7 +1442,9 @@ function renderZones(){
      <p class="pnote">${R.note}<br><b>${R.quirk}</b></p>
      <div class="acts" style="margin:0;padding:0;border:none">
        <button class="act" style="--c:var(--ink)" onclick="search()"
-         ${R.wild.length?"":"disabled"}>풀숲을 살핀다</button>
+         ${(R.wild.length&&!wild&&!fight)?"":"disabled"}>풀숲을 살핀다</button>
+       <button class="act" style="--c:var(--ink)" onclick="meetFoe()"
+         ${(R.wild.length&&!wild&&!fight)?"":"disabled"}>누군가와 마주친다</button>
        ${here==="pallet"
          ? `<button class="act" style="--c:var(--ink)" onclick="refill()"
               ${(balls>0||box.length)?"disabled":""}>연구소에 손을 벌린다</button>` : ""}
@@ -1300,8 +1454,11 @@ function renderZones(){
        ? `<p class="hint" style="color:var(--grass)">보관함의 표본 ${box.length}마리를 넘기면 볼로 바꿔준다 · 아래 「파티와 보관함」에서</p>`
        : ""}
      <p class="hint">만난 종류 ${seen.length}종 · 잡은 야생 ${caught}마리 · 진화 ${evolved}회</p>
-     ${next?`<p class="hint" style="color:var(--volt)">다음 길 — ${REGION[next].name} · ${GATE[next].text}</p>`
-           :`<p class="hint" style="color:var(--volt)">모든 길이 열렸다</p>`}`;
+     ${next?`<p class="hint" style="color:var(--volt)">다음 길 — ${REGION[next].name} · ${gateText(next)}</p>`
+           :`<p class="hint" style="color:var(--volt)">모든 길이 열렸다</p>`}
+     ${nextGym(next)}
+     ${badges.length?`<div class="badges">${badges.map(k=>
+        `<span class="badge"><i></i>${GYM[k].badge}</span>`).join("")}</div>`:""}`;
 }
 
 /* ═════════════════════════════════════════════
@@ -1329,6 +1486,22 @@ function giveAway(id){
 }
 
 /* 넘길 표본도 볼도 없을 때만 손을 벌릴 수 있다 */
+/* 수치를 다 채웠는데 배지가 없다면, 남은 것은 체육관뿐이다 */
+function nextGym(next){
+  if(!next) return "";
+  const g=GATE[next];
+  if(!g||!g.gym||badges.includes(g.gym)) return "";
+  const G=GYM[g.gym];
+  if(!gateNum(next))
+    return `<p class="hint">${G.town} 체육관 · 관장 ${G.name}(${G.type}) — 위 조건을 먼저 채워야 문을 연다</p>`;
+  return `<div class="acts" style="margin:12px 0 0;padding:0;border:none">
+      <button class="act" style="--c:var(--volt)" onclick="enterGym('${g.gym}')"
+        ${(wild||fight)?"disabled":""}>${G.town} 체육관에 들어선다 · 관장 ${G.name}</button>
+    </div>
+    <p class="hint" style="color:var(--volt)">${G.type} 타입 ${G.team.length}마리 · 최고 LV.${
+      Math.max.apply(null,G.team.map(t=>t[1]))} · 이겨야 길이 열린다</p>`;
+}
+
 function refill(){
   if(balls>0){ say("아직 볼이 남았다. 다 쓰고 오라고 한다.","deny"); return; }
   if(box.length){ say("보관함에 표본이 남아 있다. 그것부터 넘기라고 한다.","deny"); return; }
@@ -1340,9 +1513,10 @@ function refill(){
 function moveTo(r){
   if(r===here) return;
   if(!opened.includes(r)){
-    say(REGION[r].name+"으로 가는 길은 아직 막혀 있다."+(GATE[r]?" "+GATE[r].text:""),"deny");
+    say(REGION[r].name+"으로 가는 길은 아직 막혀 있다."+(GATE[r]?" "+gateText(r):""),"deny");
     return;
   }
+  if(fight){ say("지금은 여기서 물러설 수 없다.","deny"); return; }
   if(wild){ say("자리를 뜨자 "+sp2(wild.form).name+"가 풀숲으로 사라졌다.","deny"); wild=null; }
   here=r;
   say("<b>"+REGION[r].name+"</b>에 도착했다. "+REGION[r].note,null);
@@ -1356,7 +1530,7 @@ function see(f){ if(!seen.includes(f)) seen.push(f); }
 /* ── 야생 조우 ── */
 function search(){
   const R=REGION[here];
-  if(!R.wild.length||wild) return;
+  if(!R.wild.length||wild||fight) return;
   if(Math.random()<0.25){ say(pick(LINE.nowild),null); return; }
   let t=R.wild.reduce((s,x)=>s+x[1],0), r=Math.random()*t, f=R.wild[0][0];
   for(const x of R.wild){ r-=x[1]; if(r<=0){ f=x[0]; break; } }
@@ -1438,6 +1612,273 @@ function leave(){
   if(!wild) return;
   say(DATA[wild.form].name+"를 그대로 두고 물러났다.",null);
   wild=null; renderAll();
+}
+
+/* ═════════════════════════════════════════════
+   전투 — 훈련이 몸을 만든다면, 전투는 몸을 쓴다.
+   쓰는 것은 같은 체력이다. 지면 쓰러지기 직전까지 간다.
+   ═════════════════════════════════════════════ */
+function mv(a){ return a?{n:a[0],p:a[1],t:a[2],e:a[3]||""}:null; }
+function moveset(form){
+  const d=DATA[form], out=[mv(HIT.basic)];
+  const base=(d.type||"").split(" · ")[0];
+  if(HIT[base]) out.push(mv(HIT[base]));
+  if(OWNMOVE[form]) out.push(mv(OWNMOVE[form]));
+  return out;
+}
+function mainType(form){ return (DATA[form].type||"노말").split(" · ")[0]; }
+
+/* 2배 · 0.5배 · 1배 */
+function effOf(atk,def){
+  if((STRONG[atk]||[]).includes(def)) return 2;
+  if((STRONG[def]||[]).includes(atk)) return .5;
+  return 1;
+}
+function foeMax(lv){ return Math.round(55+lv*2.2); }
+
+function hitFor(move,lv,defType,guarded){
+  if(!move.p) return {d:0,eff:1,miss:false};
+  const miss = move.e==="wild" && Math.random()<0.3;
+  if(miss) return {d:0,eff:1,miss:true};
+  const eff=effOf(move.t,defType);
+  let d=move.p*(0.75+lv*0.035)*eff*(0.85+Math.random()*0.15)*0.34;
+  if(guarded) d*=0.5;
+  return {d:Math.max(1,Math.round(d)),eff:eff,miss:false};
+}
+
+/* 상대 한 마리를 세운다 */
+function foeUnit(form,lv){
+  return {form:form,lv:lv,hp:foeMax(lv),max:foeMax(lv),guard:false,weak:false};
+}
+
+/* 지역에서 사람을 하나 만들어낸다 — 그 지역에 사는 것들로 팀을 꾸린다 */
+function makeFoe(){
+  const R=REGION[here];
+  if(!R.wild.length) return null;
+  const pool=R.wild.filter(x=>!DATA[x[0]].legend);
+  if(!pool.length) return null;
+  const n=1+Math.floor(Math.random()*2);
+  const r=R.lv||[5,7], team=[];
+  for(let i=0;i<n;i++){
+    const f=pick(pool)[0];
+    const lv=clamp(r[0]+Math.floor(Math.random()*(r[1]-r[0]+1))+(i?1:0),2,80);
+    team.push(foeUnit(f,lv));
+  }
+  return {who:pick(FOENAME),kind:"trainer",team:team};
+}
+
+/* 파티에서 나설 수 있는 아이 — 쓰러져 있으면 못 나선다 */
+function ready(){ return party.filter(id=>pets[id].hp>3); }
+
+function startFight(setup){
+  const able=ready();
+  if(!able.length){ say("나설 수 있는 아이가 없다. 먼저 먹여야 한다.","deny"); return; }
+  fight={kind:setup.kind,who:setup.who,gym:setup.gym||null,
+    team:setup.team,idx:0,mine:able[0],mineGuard:false,foeWeak:false,mineWeak:false,turn:0};
+  const f=fight.team[0];
+  say(setup.kind==="gym"
+      ? "<b>"+setup.who+"</b>가 앞을 막았다. "+GYM[setup.gym].line
+      : "<b>"+setup.who+"</b>가 이쪽을 알아보고 다가왔다.",
+    setup.kind==="gym"?"hid":null,DATA[f.form].name+" LV."+f.lv);
+  renderAll();
+  const el=document.getElementById("fightwrap");
+  if(el&&el.firstElementChild) el.scrollIntoView({behavior:"smooth",block:"center"});
+}
+
+function meetFoe(){
+  if(fight||wild) return;
+  const s=makeFoe();
+  if(!s){ say("이 근처에는 마주칠 사람이 없다.","deny"); return; }
+  startFight(s);
+}
+
+function enterGym(key){
+  if(fight||wild) return;
+  const g=GYM[key];
+  if(badges.includes(key)){ say(g.town+" 체육관은 이미 지나왔다.","deny"); return; }
+  startFight({kind:"gym",who:g.name+" · "+g.town,gym:key,
+    team:g.team.map(t=>foeUnit(t[0],t[1]))});
+}
+
+/* 한 턴 — 내가 치고, 살아 있으면 상대가 친다 */
+function useMove(i){
+  if(!fight) return;
+  const m=pets[fight.mine], my=moveset(m.form)[i], foe=fight.team[fight.idx];
+  if(!my||!foe) return;
+  fight.turn++;
+  const myName=sp(fight.mine).name, foeName=DATA[foe.form].name;
+
+  /* 내 차례 */
+  if(!my.p){
+    fight.mineGuard=true;
+    say(myName+"가 "+my.n+". 다음 한 방을 견딜 준비를 했다.",null,"방어");
+  }else{
+    const times=my.e==="again"?2:1;
+    let total=0,eff=1,miss=false;
+    for(let t=0;t<times;t++){
+      const r=hitFor(my,m.lv,mainType(foe.form),foe.guard);
+      if(r.miss){ miss=true; break; }
+      total+=Math.round(r.d*(fight.mineWeak?0.8:1)); eff=r.eff;
+    }
+    foe.guard=false; fight.mineWeak=false;
+    if(miss){ say(myName+"의 "+my.n+"이 빗나갔다.","deny"); }
+    else{
+      foe.hp=clamp(foe.hp-total,0,foe.max);
+      const tail=eff>1?" 급소에 들어갔다.":eff<1?" 잘 통하지 않았다.":"";
+      say(myName+"의 <b>"+my.n+"</b>."+tail,eff>1?"up":null,"-"+total);
+      if(my.e==="drain"){ const h=Math.round(total/2);
+        m.hp=clamp(m.hp+h,0,m.hpCap); say(myName+"가 빨아들인 만큼 몸을 세웠다.",null,"체력 +"+h); }
+      if(my.e==="back"){ const h=Math.round(total/4);
+        m.hp=clamp(m.hp-h,0,m.hpCap); say("반동이 "+myName+"의 몸에도 왔다.","trace","체력 -"+h); }
+      if(my.e==="drop"){ fight.foeWeak=true; }
+      if(my.e==="guard"){ fight.mineGuard=true; }
+    }
+  }
+
+  if(foe.hp<=0){ foeDown(); return; }
+
+  /* 상대 차례 */
+  const fm=pick(moveset(foe.form).filter(x=>x.p||Math.random()<.3))||mv(HIT.basic);
+  if(!fm.p){ foe.guard=true; say(foeName+"가 몸을 웅크렸다.",null,"방어"); }
+  else{
+    const times=fm.e==="again"?2:1;
+    let total=0,eff=1,miss=false;
+    for(let t=0;t<times;t++){
+      const r=hitFor(fm,foe.lv,mainType(m.form),fight.mineGuard);
+      if(r.miss){ miss=true; break; }
+      total+=Math.round(r.d*(fight.foeWeak?0.8:1)); eff=r.eff;
+    }
+    fight.mineGuard=false; fight.foeWeak=false;
+    if(miss) say(foeName+"의 "+fm.n+"이 빗나갔다.",null);
+    else{
+      m.hp=clamp(m.hp-total,0,m.hpCap);
+      const tail=eff>1?" 깊이 파고들었다.":eff<1?" 견뎌냈다.":"";
+      say(foeName+"의 "+fm.n+"."+tail,eff>1?"brk":null,"-"+total);
+      if(fm.e==="drain") foe.hp=clamp(foe.hp+Math.round(total/2),0,foe.max);
+      if(fm.e==="drop") fight.mineWeak=true;
+    }
+  }
+  if(m.hp<=3){ mineDown(); return; }
+  renderFight(); paint(fight.mine); save();
+}
+
+function foeDown(){
+  const foe=fight.team[fight.idx], m=pets[fight.mine];
+  say("<b>"+DATA[foe.form].name+"</b>가 주저앉았다.","catch");
+  const gain=Math.round(16+foe.lv*2.6);
+  gainExp(fight.mine,gain,"전투");
+  m.bond=clamp(m.bond+2,0,TUNE.bondMax);
+  m.acts++;
+  fight.idx++;
+  if(fight.idx>=fight.team.length){ winFight(); return; }
+  const nx=fight.team[fight.idx];
+  say((fight.kind==="gym"?fight.who:fight.who)+"가 다음을 내보냈다 — <b>"+DATA[nx.form].name+"</b>",null,"LV."+nx.lv);
+  renderFight(); paint(fight.mine); save();
+}
+
+function winFight(){
+  const f=fight;
+  if(f.kind==="gym"){
+    const g=GYM[f.gym];
+    if(!badges.includes(f.gym)) badges.push(f.gym);
+    say("◆ <b>"+g.name+"</b>를 이겼다. "+g.badge+"를 받았다.","hid");
+    notify("legend","배지를 받았다",g.badge+" · "+g.town+" 체육관","var(--volt)",
+      '<path d="M15 3L18 12H27L20 17L23 27L15 21L7 27L10 17L3 12H12Z"/>');
+    remember(g.badge,g.town+" 체육관 · "+g.name+"("+g.type+")을 이기고 받았다.",false);
+  }else{
+    const n=2+Math.floor(Math.random()*3);
+    balls+=n;
+    say("<b>"+f.who+"</b>를 이겼다. 쓰던 볼을 몇 개 나눠 받았다.",null,"볼 +"+n);
+    notify("get","이겼다",f.who+" · 몬스터볼 +"+n,"var(--grass)",
+      '<circle cx="15" cy="15" r="10"/><path d="M4 15H26"/>');
+  }
+  fight=null; renderAll();
+}
+
+function mineDown(){
+  const m=pets[fight.mine];
+  m.hp=1; m.low=true;
+  say("<b>"+sp(fight.mine).name+"</b>가 더 못 버티고 주저앉았다.","brk");
+  const able=ready();
+  if(able.length){
+    fight.mine=able[0]; fight.mineGuard=false; fight.mineWeak=false;
+    say(sp(fight.mine).name+"를 대신 내보냈다.",null);
+    renderFight(); renderCards(); save(); return;
+  }
+  say("더 내보낼 아이가 없다. 물러났다.","deny");
+  loseFight();
+}
+
+function loseFight(){
+  const f=fight; fight=null;
+  say(f.kind==="gym"?"체육관을 나왔다. 배지는 없다.":"등을 보이고 물러났다.","deny");
+  notify("mut","물러났다","먹이고 다시 오면 된다","var(--wrong)",
+    '<path d="M6 6L24 24M24 6L6 24"/>');
+  renderAll();
+}
+
+function fleeFight(){
+  if(!fight) return;
+  if(fight.kind==="gym"){ say("체육관에서는 등을 보일 수 없다. 끝을 봐야 한다.","deny"); return; }
+  const f=fight; fight=null;
+  say(f.who+"에게서 물러났다.","deny");
+  renderAll();
+}
+
+function swapTo(id){
+  if(!fight||pets[id].hp<=3||id===fight.mine) return;
+  fight.mine=id; fight.mineGuard=false; fight.mineWeak=false;
+  say(sp(id).name+"로 바꿔 세웠다. 그 틈에 한 대 맞았다.",null);
+  const foe=fight.team[fight.idx], m=pets[id];
+  const r=hitFor(pick(moveset(foe.form).filter(x=>x.p))||mv(HIT.basic),foe.lv,mainType(m.form),false);
+  m.hp=clamp(m.hp-Math.round(r.d*0.6),0,m.hpCap);
+  if(m.hp<=3){ mineDown(); return; }
+  renderFight(); renderCards(); save();
+}
+
+function renderFight(){
+  const w=document.getElementById("fightwrap");
+  if(!fight){ w.innerHTML=""; return; }
+  const foe=fight.team[fight.idx], fd=DATA[foe.form];
+  const m=pets[fight.mine], md=sp(fight.mine);
+  const left=fight.team.length-fight.idx-1;
+  const bar=(v,max,c)=>`<div class="track"><div class="fill" style="width:${clamp(v/max*100,0,100)}%;background:${c}"></div></div>`;
+  const moves=moveset(m.form).map((x,i)=>{
+    const e=x.p?effOf(x.t,mainType(foe.form)):1;
+    const mark=!x.p?"방어":e>1?"잘 통한다":e<1?"잘 안 통한다":"";
+    return `<button class="mv" style="--c:${x.p?"var(--ink)":"var(--dim)"}" onclick="useMove(${i})">
+      ${x.n}<span>${x.t} · ${x.p?"위력 "+x.p:"공격 없음"}${mark?" · "+mark:""}</span></button>`;
+  }).join("");
+  const bench=ready().filter(id=>id!==fight.mine).map(id=>
+    `<button class="mini" onclick="swapTo('${id}')">${sp(id).name} 교체</button>`).join("");
+
+  w.innerHTML=`<div class="panel fightcard" style="--c:${fd.c}">
+    <p class="wildmark"><span class="blip"></span>${fight.kind==="gym"?"체육관 · 관장전":"마주친 사람"} · ${fight.who}</p>
+    <div class="wildhead">
+      <div class="orb"><svg viewBox="0 0 30 30">${fd.icon}</svg></div>
+      <div style="flex:1;min-width:0">
+        <p class="tag">상대 · LV.${foe.lv} · ${fd.type}${left?" · 남은 "+left+"마리":" · 마지막"}</p>
+        <div class="namebox"><p class="name">${fd.name}</p></div>
+        ${bar(foe.hp,foe.max,fd.c)}
+        <p class="hint" style="margin-top:6px">${foe.hp} / ${foe.max}</p>
+      </div>
+    </div>
+    <div class="vs">맞서는 쪽</div>
+    <div class="wildhead" style="--c:${md.c}">
+      <div class="orb sm" style="--c:${md.c}"><svg viewBox="0 0 30 30">${md.icon}</svg></div>
+      <div style="flex:1;min-width:0">
+        <p class="tag" style="color:${md.c}">${md.name} · LV.${m.lv} · ${md.type}</p>
+        ${bar(m.hp,m.hpCap,md.c)}
+        <p class="hint" style="margin-top:6px">${Math.round(m.hp)} / ${m.hpCap}${
+          fight.mineGuard?" · 막을 준비":""}${fight.mineWeak?" · 공격이 무뎌졌다":""}</p>
+      </div>
+    </div>
+    <div class="mvs">${moves}</div>
+    <div class="acts" style="margin-top:12px">
+      ${bench}
+      <button class="mini" onclick="fleeFight()" ${fight.kind==="gym"?"disabled":""}>물러난다</button>
+    </div>
+  </div>`;
 }
 
 /* ═════════ 파티 카드 ═════════ */
@@ -1627,6 +2068,13 @@ function train(id){
     say("◆ "+h.log,"hid");
     remember(h.title,h.memo,false);
   });
+  levelUp(id);
+  paint(id); renderSlots();
+}
+
+/* 경험치가 찼는지 본다 — 훈련도 전투도 같은 문을 쓴다 */
+function levelUp(id){
+  const m=pets[id];
   while(m.exp>=needExp(m.lv)){
     m.exp-=needExp(m.lv); m.lv+=1; m.hp=m.hpCap;
     say(fill(pick(LINE.levelup),{n:sp(id).name,lv:m.lv}),"up");
@@ -1640,7 +2088,11 @@ function train(id){
       setTimeout(()=>{ renderCards(); renderSlots(); renderDex(); },260);
     }
   }
-  paint(id); renderSlots();
+}
+function gainExp(id,n,why){
+  pets[id].exp+=n;
+  say(sp(id).name+"가 싸운 만큼 얻었다.",null,(why||"")+" · 경험치 +"+n);
+  levelUp(id);
 }
 
 function useStone(id,sid){
@@ -1876,7 +2328,7 @@ function reset(){
   if(!confirm("정말 처음부터 다시 시작할까?\n지금까지의 기록과 찾아낸 것이 모두 사라진다.")) return;
   saveOn=false; STORE.del(); hints=[]; saveState="unknown";
   sel=[]; pets={}; party=[]; box=[]; wild=null; logNo=0; found=[];
-  logs=[]; legacyLog=""; dexOpen={};
+  logs=[]; legacyLog=""; dexOpen={}; fight=null; badges=[];
   caught=0; evolved=0; seen=[]; opened=["pallet","route1"]; here="pallet";
   closeLog(); paintLog(); paintFound();
   document.getElementById("status").style.display="none";
