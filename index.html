@@ -240,9 +240,17 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7.5vw,40px);
 .ti:disabled{cursor:default}
 .tbar{height:2px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;margin-top:9px}
 .tbar div{height:100%;background:var(--dim);border-radius:2px;transition:width .35s ease}
-.tlock{margin-top:12px;padding:12px 14px;border-left:2px solid var(--wrong);
-  background:rgba(176,123,216,.06);font-size:11.5px;line-height:1.75;color:var(--dim)}
-.tlock b{color:var(--wrong);font-family:var(--mono);letter-spacing:.14em}
+.ti i{display:block;font-style:normal;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.06em;line-height:1.6;color:var(--faint);margin-top:7px}
+.ti.on i{color:var(--volt)} .ti.on.hd i{color:var(--wrong)}
+.dgroup2{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;color:var(--wrong);
+  margin:22px 0 10px;padding-top:15px;border-top:1px solid var(--line);line-height:1.9}
+.dgroup2 em{font-style:normal;color:var(--faint);letter-spacing:.06em}
+.boons{display:grid;gap:9px;margin-top:13px}
+.pickrow{display:flex;flex-wrap:wrap;gap:7px;padding:12px 13px;border-radius:2px;
+  background:rgba(0,0,0,.26);border:1px solid color-mix(in srgb,var(--wrong) 30%,transparent)}
+.pickrow .empty2{width:100%;margin:0 0 4px;color:var(--dim)}
+.pickrow .empty2 b{color:var(--wrong)}
 
 /* 배지 */
 .badges{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
@@ -1286,64 +1294,100 @@ const GRADE = [
    히든은 달성한 순간에야 제 정체를 드러낸다.
    ═════════════════════════════════════════════ */
 const TITLE = [
-  /* ── 일반 · 조건이 보인다 ── */
+  /* ── 일반 · 조건이 보이고, 달고 있는 동안 몸이 달라진다 ── */
   {id:"first", n:"첫 걸음", d:"야생을 한 마리 잡는다",
-   at:s=>caught, of:1},
+   at:s=>caught, of:1, eff:{cat:5}, e:"포획 확률 +5"},
   {id:"keeper", n:"표본 관리자", d:"도감 40종을 채운다",
-   at:s=>seen.length, of:40},
+   at:s=>seen.length, of:40, eff:{give:1.4}, e:"표본 값어치 1.4배"},
   {id:"archive", n:"도감의 주인", d:"도감 70종을 채운다",
-   at:s=>seen.length, of:70},
+   at:s=>seen.length, of:70, eff:{atkAll:1.10}, e:"모든 공격 +10%"},
   {id:"volt", n:"전기 마스터", d:"전기 기술을 1000번 쓴다",
-   at:s=>s.mv["전기"]||0, of:1000},
+   at:s=>s.mv["전기"]||0, of:1000, eff:{atk:{t:"전기",x:1.2}}, e:"전기 공격 +20%"},
   {id:"pyro", n:"불꽃 마스터", d:"불 기술을 1000번 쓴다",
-   at:s=>s.mv["불"]||0, of:1000},
+   at:s=>s.mv["불"]||0, of:1000, eff:{atk:{t:"불",x:1.2}}, e:"불 공격 +20%"},
   {id:"tide", n:"물결 마스터", d:"물 기술을 1000번 쓴다",
-   at:s=>s.mv["물"]||0, of:1000},
+   at:s=>s.mv["물"]||0, of:1000, eff:{atk:{t:"물",x:1.2}}, e:"물 공격 +20%"},
   {id:"bloom", n:"풀잎 마스터", d:"풀 기술을 1000번 쓴다",
-   at:s=>s.mv["풀"]||0, of:1000},
+   at:s=>s.mv["풀"]||0, of:1000, eff:{atk:{t:"풀",x:1.2}}, e:"풀 공격 +20%"},
   {id:"drill", n:"지옥 조교", d:"훈련을 5000번 시킨다",
-   at:s=>s.train, of:5000},
+   at:s=>s.train, of:5000, eff:{trainExp:1.35}, e:"훈련 경험치 +35%"},
   {id:"cook", n:"밥 주는 사람", d:"밥을 1000번 준다",
-   at:s=>s.feed, of:1000},
+   at:s=>s.feed, of:1000, eff:{heal:1.5,bond:2}, e:"밥 회복량 1.5배 · 친밀도 +2"},
   {id:"duel", n:"승부사", d:"전투에서 100번 이긴다",
-   at:s=>s.win, of:100},
+   at:s=>s.win, of:100, eff:{fightExp:1.3}, e:"전투 경험치 +30%"},
   {id:"badge", n:"관장 사냥꾼", d:"배지를 여섯 개 모은다",
-   at:s=>badges.length, of:6},
+   at:s=>badges.length, of:6, eff:{atkAll:1.15}, e:"모든 공격 +15%"},
   {id:"evo", n:"진화의 증인", d:"진화를 30번 본다",
-   at:s=>evolved, of:30},
+   at:s=>evolved, of:30, eff:{evo:12}, e:"진화 성공 확률 +12"},
   {id:"throw", n:"볼 낭비꾼", d:"몬스터볼을 500개 던진다",
-   at:s=>s.ball, of:500},
+   at:s=>s.ball, of:500, eff:{cat:12}, e:"포획 확률 +12"},
   {id:"rank", n:"격이 다른", d:"에픽 이상을 다섯 마리 데리고 있다",
-   at:s=>Object.keys(pets).filter(id=>(pets[id].g||0)>=2).length, of:5},
+   at:s=>Object.keys(pets).filter(id=>(pets[id].g||0)>=2).length, of:5,
+   eff:{def:0.88}, e:"받는 피해 −12%"},
   {id:"bond", n:"둘도 없는", d:"친밀도를 끝까지 채운다",
-   at:s=>Math.max(0,...Object.keys(pets).map(id=>Math.round(pets[id].bond))), of:TUNE.bondMax},
+   at:s=>Math.max(0,...Object.keys(pets).map(id=>Math.round(pets[id].bond))), of:TUNE.bondMax,
+   eff:{atkAll:1.08,def:0.92}, e:"모든 공격 +8% · 받는 피해 −8%"},
 
-  /* ── 히든 · 달성하기 전에는 정체가 보이지 않는다 ── */
-  {id:"chosen", n:"선택받은 자", d:"전설을 손에 넣었다", hide:1,
-   at:s=>Object.keys(pets).filter(id=>DATA[pets[id].form].legend).length, of:1},
-  {id:"allleg", n:"완성을 아는 자", d:"전설 넷을 모두 도감에 남겼다", hide:1,
-   at:s=>["zapdos","articuno","moltres","mewtwo"].filter(k=>seen.includes(k)).length, of:4},
-  {id:"nonesuch", n:"세상에 없는 것", d:"상극 변이 열둘을 모두 만들었다", hide:1,
-   at:s=>DEXGROUP[2].keys.filter(k=>seen.includes(k)).length, of:12},
-  {id:"brink", n:"문턱을 아는 자", d:"쓰러지기 직전에서 쉰 번 돌아왔다", hide:1,
-   at:s=>Object.keys(pets).reduce((n,id)=>n+(pets[id].crisis||0),0), of:50},
-  {id:"letgo", n:"놓아준 자", d:"표본을 백 마리 넘겼다", hide:1,
-   at:s=>s.give, of:100},
-  {id:"back", n:"등을 보인 자", d:"백 번 물러났다", hide:1,
-   at:s=>s.flee, of:100},
-  {id:"starve", n:"굶기는 자", d:"주린 몸을 백 번 더 굴렸다", hide:1,
-   at:s=>s.hungry, of:100},
-  {id:"alone", n:"혼자 선 자", d:"한 마리만 데리고 관장을 이겼다", hide:1,
-   at:s=>s.soloGym, of:1},
-  {id:"defy", n:"불복종의 끝", d:"거부하던 것을 끝내 돌려세웠다", hide:1,
-   at:s=>seen.includes("raichu")&&Object.keys(pets).some(id=>pets[id].base==="pika")?1:0, of:1},
-  {id:"ghost", n:"그림자", d:"잡지 않고 서른 종을 만났다", hide:1,
-   at:s=>caught===0?seen.length:0, of:30},
-  {id:"carp", n:"잉어의 왕", d:"가장 하찮은 것에서 가장 사나운 것을 얻었다", hide:1,
-   at:s=>Object.keys(pets).some(id=>pets[id].base==="magikarp"&&pets[id].form==="gyarados")?1:0, of:1},
-  {id:"walk", n:"길을 아는 자", d:"열세 곳을 모두 밟았다", hide:1,
-   at:s=>s.been.length, of:13}
+  /* ── 히든 · 있는 줄도 모른다. 열리는 순간 판이 바뀐다 ── */
+  {id:"chosen", n:"선택받은 자", d:"전설을 손에 넣었다", hide:1, boon:"teach",
+   at:s=>Object.keys(pets).filter(id=>DATA[pets[id].form].legend).length, of:1,
+   e:"전수 — 전설의 기술 하나를 내 것에게 영구히 새긴다"},
+  {id:"allleg", n:"완성을 아는 자", d:"전설 넷을 모두 도감에 남겼다", hide:1, boon:"gift",
+   at:s=>["zapdos","articuno","moltres","mewtwo"].filter(k=>seen.includes(k)).length, of:4,
+   e:"전설 하나가 제 발로 찾아온다"},
+  {id:"nonesuch", n:"세상에 없는 것", d:"상극 변이 열둘을 모두 만들었다", hide:1, boon:"fuse",
+   at:s=>DEXGROUP[2].keys.filter(k=>seen.includes(k)).length, of:12,
+   e:"융합 — 둘을 하나로 합친다"},
+  {id:"brink", n:"문턱을 아는 자", d:"쓰러지기 직전에서 쉰 번 돌아왔다", hide:1, boon:"revive",
+   at:s=>Object.keys(pets).reduce((n,id)=>n+(pets[id].crisis||0),0), of:50,
+   e:"전투마다 한 번, 쓰러져도 절반의 몸으로 일어난다"},
+  {id:"letgo", n:"놓아준 자", d:"표본을 백 마리 넘겼다", hide:1, boon:"lab",
+   at:s=>s.give, of:100,
+   e:"표본 값어치 2배 · 어디서든 연구소에 넘긴다"},
+  {id:"back", n:"등을 보인 자", d:"백 번 물러났다", hide:1, boon:"noflee",
+   at:s=>s.flee, of:100,
+   e:"이제 야생이 달아나지 않는다"},
+  {id:"starve", n:"굶기는 자", d:"주린 몸을 백 번 더 굴렸다", hide:1, boon:"starve",
+   at:s=>s.hungry, of:100,
+   e:"훈련 경험치 2배 · 훈련에 포만감을 쓰지 않는다"},
+  {id:"alone", n:"혼자 선 자", d:"한 마리만 데리고 관장을 이겼다", hide:1, boon:"solo",
+   at:s=>s.soloGym, of:1,
+   e:"혼자일 때 공격 1.5배 · 받는 피해 −30%"},
+  {id:"defy", n:"불복종의 끝", d:"거부하던 것을 끝내 돌려세웠다", hide:1, boon:"obey",
+   at:s=>seen.includes("raichu")&&Object.keys(pets).some(id=>pets[id].base==="pika")?1:0, of:1,
+   e:"불복종이 사라진다 · 전기 공격 +50%"},
+  {id:"ghost", n:"그림자", d:"잡지 않고 서른 종을 만났다", hide:1, boon:"grade",
+   at:s=>caught===0?seen.length:0, of:30,
+   e:"이후 만나는 야생의 격이 한 단계 오른다"},
+  {id:"carp", n:"잉어의 왕", d:"가장 하찮은 것에서 가장 사나운 것을 얻었다", hide:1, boon:"stone",
+   at:s=>Object.keys(pets).some(id=>pets[id].base==="magikarp"&&pets[id].form==="gyarados")?1:0, of:1,
+   e:"돌이 두 번 다시 부서지지 않는다"},
+  {id:"walk", n:"길을 아는 자", d:"열세 곳을 모두 밟았다", hide:1, boon:"party",
+   at:s=>s.been.length, of:13,
+   e:"파티가 여덟 자리가 된다"}
 ];
+
+/* 달고 있는 호칭의 효과 · 한 번 얻은 히든의 은혜 */
+function wornT(){ return TITLE.find(t=>t.id===wearing); }
+function wornEff(){ const t=wornT(); return (t&&t.eff)||{}; }
+function boon(k){ return titles.some(id=>{
+  const t=TITLE.find(x=>x.id===id); return t&&t.boon===k; }); }
+
+function atkBuff(type){
+  const e=wornEff(); let x=1;
+  if(e.atkAll) x*=e.atkAll;
+  if(e.atk&&e.atk.t===type) x*=e.atk.x;
+  if(boon("obey")&&type==="전기") x*=1.5;
+  if(boon("solo")&&party.length===1) x*=1.5;
+  return x;
+}
+function defBuff(){
+  let x=wornEff().def||1;
+  if(boon("solo")&&party.length===1) x*=0.7;
+  return x;
+}
+function partyMax(){ return TUNE.partyMax+(boon("party")?2:0); }
+function atLab(){ return here==="pallet"||boon("lab"); }
 
 /* 무엇을 얼마나 했는가 */
 function newStat(){
@@ -1495,6 +1539,7 @@ function chance(m,isMut){
   const lv=clamp((m.lv-E.lvFrom)*E.lvPer,0,E.lvCap);
   const bd=clamp(m.bond*E.bondPer,0,E.bondCap);
   let p=lv+bd; if(isMut) p*=E.mutScale;
+  p+=wornEff().evo||0;
   return clamp(Math.round(p),E.min,E.max);
 }
 
@@ -1521,7 +1566,8 @@ function catchRate(w){
   const d=DATA[w.form];
   if(d.legend) return clamp(Math.round(d.rate+(w.watched?TUNE.watchBonus:0)),3,95);
   const hard=Math.max(0,(w.lv||TUNE.startLv)-TUNE.wildLvFrom)*TUNE.wildLvPer;
-  return clamp(Math.round(d.rate-hard+gradeOf(w).cat+(w.watched?TUNE.watchBonus:0)),3,95);
+  return clamp(Math.round(d.rate-hard+gradeOf(w).cat+(wornEff().cat||0)
+    +(w.watched?TUNE.watchBonus:0)),3,95);
 }
 
 /* 몬스터 한 마리를 새로 만든다 */
@@ -1624,9 +1670,10 @@ function checkTitles(){
     if(t.hide){
       say("◆ 이름이 하나 붙었다 — <b>"+t.n+"</b>","mut","숨겨져 있던 것");
       say(t.d,"trace");
-      notify("mut","히든 호칭",t.n+" · "+t.d,"var(--wrong)",
+      if(t.e) say("◆ "+t.e,"mut","열렸다");
+      notify("mut","히든 호칭",t.n+" · "+(t.e||t.d),"var(--wrong)",
         '<path d="M15 3L18 12H27L20 17L23 27L15 21L7 27L10 17L3 12H12Z"/>');
-      remember(t.n,"히든 호칭 · "+t.d,true);
+      remember(t.n,"히든 호칭 · "+t.d+(t.e?" → "+t.e:""),true);
     }else{
       say("◆ 호칭을 얻었다 — <b>"+t.n+"</b>","hid",t.d);
       notify("unlock","호칭을 얻었다",t.n+" · "+t.d,"var(--volt)",
@@ -1635,6 +1682,67 @@ function checkTitles(){
     if(!wearing) wearing=t.id;
   });
 }
+
+/* ═════════════════════════════════════════════
+   은혜 — 히든이 열어주는 것들.
+   전수와 융합은 손으로 골라야 하고, 전설은 저 혼자 찾아온다.
+   ═════════════════════════════════════════════ */
+const LEGMOVE=["zapdos","articuno","moltres","mewtwo"];
+
+/* 전설 하나가 제 발로 찾아온다 — 한 번뿐 */
+function claimGift(){
+  if(!boon("gift")||stat.gift) return;
+  const f=pick(LEGMOVE.filter(k=>!Object.keys(pets).some(id=>pets[id].form===k)))||pick(LEGMOVE);
+  const id=newPet(f,DATA[f].lv||50);
+  if(party.length<partyMax()) party.push(id); else box.push(id);
+  stat.gift=1; see(f);
+  flash(DATA[f]);
+  say("◆ 부르지 않았는데 왔다. <b>"+DATA[f].name+"</b>가 곁에 섰다.","mut","전설");
+  notify("legend","전설이 찾아왔다",DATA[f].name+" · 이유는 말하지 않는다",DATA[f].c,DATA[f].icon);
+  remember(DATA[f].name+"이 찾아온 날","완성을 아는 자에게만 오는 것이 있다.",true);
+  renderAll();
+}
+
+/* 전수 — 전설의 기술 하나를 내 것에게 새긴다. 한 번뿐 */
+function teachTo(id){
+  if(!boon("teach")||stat.taught){ pickFor=""; renderTitles(); return; }
+  const m=pets[id]; if(!m) return;
+  const from=pick(LEGMOVE), mvName=OWNMOVE[from][0];
+  m.extra=(m.extra||[]).concat([from]);
+  stat.taught=1; pickFor="";
+  flash(DATA[from]);
+  say("◆ <b>"+DATA[from].name+"</b>의 <b>"+mvName+"</b>이 "+sp(id).name+"의 몸에 새겨졌다.","mut","전수");
+  notify("legend","전수했다",sp(id).name+" · "+mvName,DATA[from].c,DATA[from].icon);
+  remember("전수 — "+mvName,DATA[from].name+"의 기술이 "+sp(id).name+"에게 옮겨졌다.",true);
+  renderAll();
+}
+
+/* 융합 — 둘을 하나로. 뒤엣것은 사라지고 앞엣것에 남는다 */
+function fuseWith(id){
+  if(!boon("fuse")) return;
+  if(!fuseA){ fuseA=id; renderTitles(); return; }
+  if(fuseA===id){ fuseA=""; renderTitles(); return; }
+  const A=pets[fuseA], B=pets[id];
+  if(!A||!B){ fuseA=""; renderTitles(); return; }
+  const an=sp(fuseA).name, bn=sp(id).name;
+  if(!confirm(an+"에 "+bn+"를 합칠까?\n"+bn+"는 사라지고, 그 기술과 격이 "+an+"에게 남는다.\n되돌릴 수 없다.")) return;
+  A.extra=(A.extra||[]).concat([B.form]);
+  A.g=Math.min(3,Math.max(A.g||0,B.g||0)+1);
+  A.lv=Math.max(A.lv,B.lv);
+  A.hpCap=capOf(A.g); A.hp=A.hpCap;
+  A.fused=(A.fused||[]).concat([bn]);
+  party=party.filter(x=>x!==id); box=box.filter(x=>x!==id); delete pets[id];
+  fuseA="";
+  flash(sp(A.id));
+  say("◆ <b>"+bn+"</b>가 <b>"+an+"</b> 안으로 들어갔다. 둘은 이제 하나다.","mut",
+    GRADE[A.g].n+"급 · "+OWNMOVE[B.form][0]+" 획득");
+  notify("mut","융합했다",an+" ← "+bn+" · "+GRADE[A.g].n,GRADE[A.g].c,sp(A.id).icon);
+  remember("융합 — "+an+" ← "+bn,"둘을 합치면 하나가 남는다. 남은 쪽이 둘의 것을 가진다.",true);
+  renderAll();
+}
+let pickFor="", fuseA="";
+function startTeach(){ pickFor=pickFor==="teach"?"":"teach"; fuseA=""; renderTitles(); }
+function startFuse(){ pickFor=pickFor==="fuse"?"":"fuse"; fuseA=""; renderTitles(); }
 
 function wearTitle(id){
   wearing = wearing===id ? "" : id;
@@ -1651,7 +1759,6 @@ function renderTitles(){
   const el=document.getElementById("titles");
   if(!el||!stat) return;
   const open=TITLE.filter(t=>!t.hide||titles.includes(t.id));
-  const hidLeft=TITLE.filter(t=>t.hide&&!titles.includes(t.id)).length;
   const got=titles.length;
 
   const row=t=>{
@@ -1659,19 +1766,52 @@ function renderTitles(){
     return `<button class="ti${has?" on":""}${t.hide?" hd":""}${wearing===t.id?" wear":""}"
       onclick="wearTitle('${t.id}')" ${has?"":"disabled"}>
       <b>${t.n}</b><span>${t.d}</span>
-      ${has?`<u>${wearing===t.id?"달고 있다 · 눌러서 뗀다":"눌러서 단다"}</u>`
+      ${t.e?`<i>${t.e}</i>`:""}
+      ${has?`<u>${t.hide?"영원히 남는다"
+                   :wearing===t.id?"달고 있다 · 눌러서 뗀다":"눌러서 단다"}</u>`
            :`<div class="tbar"><div style="width:${clamp(at/t.of*100,0,100)}%"></div></div>
              <u>${at} / ${t.of}</u>`}</button>`;
   };
 
+  const normal=open.filter(t=>!t.hide), hid=open.filter(t=>t.hide);
+
   el.innerHTML =
-    `<p class="pnote">얻은 호칭 <b>${got} / ${TITLE.length}</b>
-       · 하나를 골라 이름 옆에 달 수 있다.</p>`
-    + `<div class="tis">${open.map(row).join("")}</div>`
-    + (hidLeft?`<div class="tlock"><b>???</b> ${hidLeft}개가 아직 이름조차 없다.<br>
-        조건은 어디에도 적혀 있지 않다. 하다 보면 열린다.</div>`
-              :`<div class="tlock" style="border-color:var(--volt)">
-        <b>숨겨진 것을 전부 찾아냈다.</b></div>`);
+    `<p class="pnote">얻은 호칭 <b>${got}</b>
+       · 달고 있는 하나만 몸에 힘을 준다. 바꿔 달면 효과도 바뀐다.</p>`
+    + `<div class="tis">${normal.map(row).join("")}</div>`
+    + (hid.length
+        ? `<p class="dgroup2">숨겨져 있던 이름 · ${hid.length}<br>
+             <em>여기서 얻은 것은 달지 않아도 영원히 남는다.</em></p>
+           <div class="tis">${hid.map(row).join("")}</div>${boonBar()}`
+        : "");
+}
+
+/* 손으로 써야 하는 은혜 — 전수 · 융합 · 찾아온 전설 */
+function boonBar(){
+  let h="";
+  if(boon("gift")&&!stat.gift)
+    h+=`<button class="pick key" style="--c:var(--volt)" onclick="claimGift()">
+      <b>부른 적 없는 것을 받는다</b><span>전설 하나가 제 발로 찾아온다. 한 번뿐이다.</span></button>`;
+  if(boon("teach")&&!stat.taught)
+    h+=`<button class="pick key" style="--c:var(--wrong)" onclick="startTeach()">
+      <b>전수한다</b><span>전설의 기술 하나를 내 것 하나에게 영원히 새긴다. 한 번뿐이다.</span>
+      <u>${pickFor==="teach"?"받을 아이를 고른다 · 다시 눌러 그만둔다":"누르면 대상을 고른다"}</u></button>`;
+  if(boon("fuse"))
+    h+=`<button class="pick" style="--c:var(--wrong)" onclick="startFuse()">
+      <b>융합한다</b><span>둘을 합쳐 하나로 만든다. 뒤엣것은 사라지고 그 기술과 격이 앞엣것에 남는다.</span>
+      <u>${pickFor==="fuse"?(fuseA?"합쳐서 사라질 쪽을 고른다":"남을 쪽을 먼저 고른다")
+                          :"누르면 둘을 고른다"}</u></button>`;
+
+  if(pickFor){
+    const all=party.concat(box).filter(id=>pets[id]);
+    const list=all.filter(id=>pickFor!=="fuse"||id!==fuseA).map(id=>{
+      const m=pets[id];
+      return `<button class="mini" onclick="${pickFor==='teach'?`teachTo('${id}')`:`fuseWith('${id}')`}">
+        ${sp(id).name} LV.${m.lv}${m.g?" "+GRADE[m.g].mark:""}</button>`;
+    }).join("");
+    h+=`<div class="pickrow">${fuseA?`<p class="empty2">남을 쪽 — <b>${sp(fuseA).name}</b></p>`:""}${list}</div>`;
+  }
+  return h?`<div class="boons">${h}</div>`:"";
 }
 
 function ORDERKEYS(){ return ["pallet","route1","route22","route2","forest","route3","moon","route4","route24","shore","power","seafoam","mansion"]; }
@@ -1707,7 +1847,7 @@ function renderZones(){
     `<p class="ptitle">지금 있는 곳</p>
      <p class="pnote">${R.note}<br><b>${R.quirk}</b></p>
      ${deck(R,next)}
-     <p class="hint">몬스터볼 ${balls}개 · 파티 ${party.length}/${TUNE.partyMax} · 보관함 ${box.length} · 자동 저장됨</p>
+     <p class="hint">몬스터볼 ${balls}개 · 파티 ${party.length}/${partyMax()} · 보관함 ${box.length} · 자동 저장됨</p>
      <p class="hint">만난 종류 ${seen.length}종 · 잡은 야생 ${caught}마리 · 진화 ${evolved}회${
         badges.length?" · 배지 "+badges.length:""}</p>
      ${badges.length?`<div class="badges">${badges.map(k=>
@@ -1780,13 +1920,14 @@ function deck(R,next){
 function giveValue(id){
   const m=pets[id], d=DATA[m.form], G=TUNE.give;
   const rare=clamp(Math.round(G.rare/Math.max(d.rate||30,6)),0,G.rareCap);
-  return clamp(G.base+rare+Math.floor(m.lv/G.lvPer)+gradeOf(m).give,2,G.max+18);
+  const v=G.base+rare+Math.floor(m.lv/G.lvPer)+gradeOf(m).give;
+  return clamp(Math.round(v*(wornEff().give||1)*(boon("lab")?2:1)),2,999);
 }
 
 function giveAway(id){
   const m=pets[id]; if(!m||!box.includes(id)) return;
   const d=DATA[m.form];
-  if(here!=="pallet"){ say("표본은 태초마을 연구소에서만 넘길 수 있다.","deny"); return; }
+  if(!atLab()){ say("표본은 태초마을 연구소에서만 넘길 수 있다.","deny"); return; }
   if(d.legend){ say(d.name+"는 넘기지 않는다. 연구소도 받기를 꺼렸다.","deny"); return; }
   const n=giveValue(id);
   if(!confirm(d.name+" (LV."+m.lv+")를 연구소에 넘길까?\n몬스터볼 "+n+"개를 받는다.\n한 번 넘기면 되돌릴 수 없다.")) return;
@@ -1831,7 +1972,9 @@ function search(){
   if(Math.random()<0.25){ say(pick(LINE.nowild),null); return; }
   let t=R.wild.reduce((s,x)=>s+x[1],0), r=Math.random()*t, f=R.wild[0][0];
   for(const x of R.wild){ r-=x[1]; if(r<=0){ f=x[0]; break; } }
-  const g=DATA[f].legend?3:rollGrade(deepOf(here));
+  /* 그림자의 눈에는 격이 한 단계 높은 것만 걸린다 */
+  let g=DATA[f].legend?3:rollGrade(deepOf(here));
+  if(!DATA[f].legend&&boon("grade")) g=Math.min(3,g+1);
   wild={form:f,watched:false,lv:wildLv(f,R),g:g};
   see(f);
   const d=DATA[f], G=GRADE[g];
@@ -1881,7 +2024,7 @@ function renderWild(){
 function watch(){
   if(!wild||wild.watched) return;
   const d=DATA[wild.form];
-  if(Math.random()*100<TUNE.watchFlee){
+  if(!boon("noflee")&&Math.random()*100<TUNE.watchFlee){
     say(fill(pick(LINE.fled),{n:d.name}),"deny"); wild=null; renderAll(); return;
   }
   wild.watched=true;
@@ -1897,7 +2040,7 @@ function throwBall(){
   if(Math.random()*100<p){
     const id=newPet(wild.form,wild.lv,wild.g);
     const G=gradeOf(wild);
-    const toBox=party.length>=TUNE.partyMax;
+    const toBox=party.length>=partyMax();
     if(toBox) box.push(id); else party.push(id);
     caught++; see(wild.form);
     notify(d.legend?"legend":(wild.g>=2?"mut":"get"),
@@ -1911,7 +2054,7 @@ function throwBall(){
     wild=null; renderAll(); return;
   }
   say(fill(pick(LINE.ballMiss),{n:d.name}),"deny","남은 볼 "+balls);
-  if(Math.random()*100<TUNE.failFlee){
+  if(!boon("noflee")&&Math.random()*100<TUNE.failFlee){
     say(fill(pick(LINE.fled),{n:d.name}),"deny"); wild=null;
   }
   renderAll();
@@ -1927,11 +2070,13 @@ function leave(){
    쓰는 것은 같은 체력이다. 지면 쓰러지기 직전까지 간다.
    ═════════════════════════════════════════════ */
 function mv(a){ return a?{n:a[0],p:a[1],t:a[2],e:a[3]||""}:null; }
-function moveset(form){
+function moveset(form,m){
   const d=DATA[form], out=[mv(HIT.basic)];
   const base=(d.type||"").split(" · ")[0];
   if(HIT[base]) out.push(mv(HIT[base]));
   if(OWNMOVE[form]) out.push(mv(OWNMOVE[form]));
+  /* 전수받았거나 융합으로 얻은 기술은 그 몸에 영원히 남는다 */
+  if(m&&m.extra) m.extra.forEach(k=>{ if(OWNMOVE[k]) out.push(mv(OWNMOVE[k])); });
   return out;
 }
 function mainType(form){ return (DATA[form].type||"노말").split(" · ")[0]; }
@@ -2021,7 +2166,7 @@ function enterGym(key){
 /* 한 턴 — 내가 치고, 살아 있으면 상대가 친다 */
 function useMove(i){
   if(!fight) return;
-  const m=pets[fight.mine], my=moveset(m.form)[i], foe=fight.team[fight.idx];
+  const m=pets[fight.mine], my=moveset(m.form,m)[i], foe=fight.team[fight.idx];
   if(!my||!foe) return;
   fight.turn++;
   stat.mv[my.t]=(stat.mv[my.t]||0)+1;   // 어떤 타입을 몇 번 썼는가
@@ -2035,7 +2180,7 @@ function useMove(i){
     const times=my.e==="again"?2:1;
     let total=0,eff=1,miss=false;
     for(let t=0;t<times;t++){
-      const r=hitFor(my,m.lv,mainType(foe.form),foe.guard,gradeOf(m).pow);
+      const r=hitFor(my,m.lv,mainType(foe.form),foe.guard,gradeOf(m).pow*atkBuff(my.t));
       if(r.miss){ miss=true; break; }
       total+=Math.round(r.d*(fight.mineWeak?0.8:1)); eff=r.eff;
     }
@@ -2063,7 +2208,7 @@ function useMove(i){
     const times=fm.e==="again"?2:1;
     let total=0,eff=1,miss=false;
     for(let t=0;t<times;t++){
-      const r=hitFor(fm,foe.lv,mainType(m.form),fight.mineGuard,gradeOf(foe).pow);
+      const r=hitFor(fm,foe.lv,mainType(m.form),fight.mineGuard,gradeOf(foe).pow*defBuff());
       if(r.miss){ miss=true; break; }
       total+=Math.round(r.d*(fight.foeWeak?0.8:1)); eff=r.eff;
     }
@@ -2084,7 +2229,7 @@ function useMove(i){
 function foeDown(){
   const foe=fight.team[fight.idx], m=pets[fight.mine];
   say("<b>"+DATA[foe.form].name+"</b>가 주저앉았다.","catch");
-  const gain=Math.round(16+foe.lv*2.6);
+  const gain=Math.round((16+foe.lv*2.6)*(wornEff().fightExp||1));
   gainExp(fight.mine,gain,"전투");
   m.bond=clamp(m.bond+2,0,TUNE.bondMax);
   m.acts++;
@@ -2119,6 +2264,13 @@ function winFight(){
 
 function mineDown(){
   const m=pets[fight.mine];
+  /* 문턱을 아는 자 — 전투마다 한 번은 다시 일어선다 */
+  if(boon("revive")&&!fight.rose){
+    fight.rose=true;
+    m.hp=Math.round(m.hpCap/2); m.low=true;
+    say("◆ 쓰러지려던 몸이 절반쯤 되살아났다. <b>"+sp(fight.mine).name+"</b>가 다시 섰다.","hid","한 번뿐");
+    renderFight(); renderCards(); save(); return;
+  }
   m.hp=1; m.low=true;
   say("<b>"+sp(fight.mine).name+"</b>가 더 못 버티고 주저앉았다.","brk");
   const able=ready();
@@ -2166,7 +2318,7 @@ function renderFight(){
   const m=pets[fight.mine], md=sp(fight.mine);
   const left=fight.team.length-fight.idx-1;
   const bar=(v,max,c)=>`<div class="track"><div class="fill" style="width:${clamp(v/max*100,0,100)}%;background:${c}"></div></div>`;
-  const moves=moveset(m.form).map((x,i)=>{
+  const moves=moveset(m.form,m).map((x,i)=>{
     const e=x.p?effOf(x.t,mainType(foe.form)):1;
     const mark=!x.p?"방어":e>1?"잘 통한다":e<1?"잘 안 통한다":"";
     return `<button class="mv" style="--c:${x.p?"var(--ink)":"var(--dim)"}" onclick="useMove(${i})">
@@ -2234,6 +2386,10 @@ function renderCards(){
       <p class="hint" id="hint-${id}"></p>
       ${m.form==="pika"?'<p class="note"><b>불복종</b> — 아직 지시를 따르지 않는다. 함께한 시간과 넘긴 위기가 쌓여야 비로소 돌아본다.</p>':''}
       ${m.lost?'<p class="note"><b>대가</b> — '+m.lost+'</p>':''}
+      ${(m.extra&&m.extra.length)?'<p class="note"><b>새겨진 기술</b> — '
+        +m.extra.map(k=>OWNMOVE[k][0]+"("+DATA[k].name+")").join(" · ")
+        +(m.fused&&m.fused.length?'<br><b>융합</b> — '+m.fused.join(" · ")+'를 삼켰다':'')
+        +'</p>':''}
     </div>`;
   }).join("");
   bornOrb=null;
@@ -2318,13 +2474,13 @@ function renderSlots(){
       <div class="sname">${d.name}${gradeTag(m)}<em>LV.${m.lv} · 친밀도 ${Math.round(m.bond)} · 함께한 행동 ${m.acts}</em></div>
       ${inParty
         ? `<button class="mini" onclick="toBox('${id}')" ${party.length<=1?"disabled":""}>보관함으로</button>`
-        : `<button class="mini" onclick="toParty('${id}')" ${party.length>=TUNE.partyMax?"disabled":""}>파티로</button>
+        : `<button class="mini" onclick="toParty('${id}')" ${party.length>=partyMax()?"disabled":""}>파티로</button>
            <button class="mini give" onclick="giveAway('${id}')"
              ${(here!=="pallet"||d.legend)?"disabled":""}>표본 +${giveValue(id)}</button>`}
     </div>`;
   };
   el.innerHTML =
-    `<p class="empty2">파티 ${party.length}/${TUNE.partyMax}</p>`
+    `<p class="empty2">파티 ${party.length}/${partyMax()}</p>`
     + party.map(id=>line(id,true)).join("")
     + `<p class="empty2" style="margin-top:8px">보관함 ${box.length}</p>`
     + (box.length? box.map(id=>line(id,false)).join("")
@@ -2343,7 +2499,7 @@ function toBox(id){
   renderAll();
 }
 function toParty(id){
-  if(party.length>=TUNE.partyMax) return;
+  if(party.length>=partyMax()) return;
   box=box.filter(x=>x!==id); party.push(id);
   say(sp(id).name+"를 파티에 넣었다.",null);
   renderAll();
@@ -2359,12 +2515,13 @@ function feed(id){
     say(pick(LINE.denyFeed),"deny"); paint(id); renderSlots(); return;
   }
   stat.feed++;
-  m.hp=clamp(m.hp+TUNE.feed.hp,0,m.hpCap);
+  m.hp=clamp(m.hp+Math.round(TUNE.feed.hp*(wornEff().heal||1)),0,m.hpCap);
   if(m.low && m.hp>=60){ m.low=false; m.crisis=(m.crisis||0)+1;
     say("◆ 쓰러지기 직전까지 갔다가 돌아왔다. 넘긴 위기 "+m.crisis+"회","hid"); }
   m.sat=clamp(m.sat+TUNE.feed.sat,0,TUNE.satMax);
-  m.bond=clamp(m.bond+TUNE.feed.bond,0,TUNE.bondMax);
-  say(fill(pick(LINE.feed),{n:n}),null,"친밀도 +"+TUNE.feed.bond);
+  const bd=TUNE.feed.bond+(wornEff().bond||0);
+  m.bond=clamp(m.bond+bd,0,TUNE.bondMax);
+  say(fill(pick(LINE.feed),{n:n}),null,"친밀도 +"+bd);
   paint(id); renderSlots();
 }
 
@@ -2379,10 +2536,12 @@ function train(id){
   const before={hp:m.hp,bond:m.bond,sat:m.sat};
   m.hp=clamp(m.hp-e.hp,0,m.hpCap);
   if(m.hp<=20) m.low=true;
-  m.sat=clamp(m.sat-e.sat,0,TUNE.satMax);
+  /* 굶기는 자에게는 포만감이 더 이상 대가가 아니다 */
+  if(!boon("starve")) m.sat=clamp(m.sat-e.sat,0,TUNE.satMax);
   m.bond=clamp(m.bond+e.bond,0,TUNE.bondMax);
-  m.exp+=e.exp;
-  say(fill(pick(e.line),{n:n}),null,e.name+" · 경험치 +"+e.exp);
+  const got=Math.round(e.exp*(wornEff().trainExp||1)*(boon("starve")?2:1));
+  m.exp+=got;
+  say(fill(pick(e.line),{n:n}),null,e.name+" · 경험치 +"+got);
 
   m.recent.push(e.id);
   if(m.recent.length>6) m.recent.shift();
@@ -2472,7 +2631,7 @@ function useStone(id,sid){
     return;
   }
 
-  bag[sid]--;
+  if(!boon("stone")) bag[sid]--;
   if(right) say(fill(pick(LINE.evoFail),{n:n,s:st.name}),"deny","확률 "+p+"% 실패");
   else if(mu) say(mu.miss,"trace");
   else say(fill(pick(LINE.evoFail),{n:n,s:st.name}),"deny");
@@ -2482,6 +2641,7 @@ function useStone(id,sid){
 }
 
 function denied(m){
+  if(boon("obey")) return false;
   const p=Math.max(TUNE.deny.min,TUNE.deny.base-m.bond*TUNE.deny.perBond);
   return Math.random()*100<p;
 }
