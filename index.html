@@ -197,6 +197,20 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7.5vw,40px);
   padding:11px 13px;border-left:1px solid var(--line);background:rgba(0,0,0,.16)}
 .stay b{color:var(--ink);font-weight:600}
 
+/* 등급 — 개체의 격 */
+.gr{display:inline-flex;align-items:center;gap:5px;vertical-align:middle;
+  padding:2px 7px 3px;margin-left:7px;border-radius:2px;
+  font-family:var(--mono);font-size:9px;letter-spacing:.12em;
+  color:var(--gc);border:1px solid color-mix(in srgb,var(--gc) 42%,transparent);
+  background:color-mix(in srgb,var(--gc) 11%,transparent)}
+.gr.g3{box-shadow:0 0 14px -4px var(--gc);animation:grpulse 2.4s ease-in-out infinite}
+@keyframes grpulse{0%,100%{box-shadow:0 0 14px -4px var(--gc)}50%{box-shadow:0 0 22px -2px var(--gc)}}
+.card.g2{border-color:color-mix(in srgb,var(--psy) 34%,transparent)}
+.card.g3{border-color:color-mix(in srgb,var(--volt) 42%,transparent);
+  box-shadow:0 0 34px -22px var(--volt)}
+.dcell .gm{position:absolute;top:5px;right:6px;font-family:var(--mono);
+  font-size:8px;letter-spacing:0;color:var(--gc)}
+
 /* 배지 */
 .badges{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
 .badge{display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:2px;
@@ -1212,6 +1226,36 @@ const GYM = {
 const FOENAME = ["짧은바지 아이","벌레잡이 소년","낚시꾼","등산가","캠프 소년",
   "피크닉 소녀","슈퍼너드","길 잃은 여행자","연구소 조수","떠돌이 훈련가"];
 
+/* ═════════════════════════════════════════════
+   등급 — 종이 아니라 개체의 것이다.
+   같은 꼬렛이라도 어떤 몸으로 태어났는가가 다르다.
+   진화해도 등급은 그대로 따라간다.
+   ═════════════════════════════════════════════ */
+const GRADE = [
+  {n:"보통", c:"var(--dim)",   mark:"",      hp:1.00, pow:1.00, cat:0,   give:0,
+   note:"흔한 몸이다. 대신 어디서든 만난다."},
+  {n:"희귀", c:"var(--sky)",   mark:"◈",     hp:1.12, pow:1.08, cat:-6,  give:3,
+   note:"또래보다 한 뼘 크다. 눈에 띄는 만큼 잡기 어렵다."},
+  {n:"에픽", c:"var(--psy)",   mark:"◈◈",    hp:1.28, pow:1.20, cat:-14, give:8,
+   note:"이 종에서 나올 수 있는 몸이 아니다."},
+  {n:"전설", c:"var(--volt)",  mark:"◈◈◈",   hp:1.50, pow:1.35, cat:-24, give:18,
+   note:"어째서 이런 것이 여기 있는지 설명할 수 없다."}
+];
+
+/* 깊은 곳일수록 격이 높은 몸이 나온다 */
+function rollGrade(deep){
+  const b=Math.max(0,deep||0);
+  const r=Math.random()*100;
+  if(r < 0.35 + b*0.06) return 3;
+  if(r < 3.5  + b*0.50) return 2;
+  if(r < 16   + b*1.40) return 1;
+  return 0;
+}
+function deepOf(r){ return Math.max(0,ORDERKEYS().indexOf(r)); }
+function gradeOf(x){ return GRADE[(x&&x.g)||0]; }
+/* 등급이 높은 몸은 더 담을 수 있다 */
+function capOf(g){ return Math.round(TUNE.hpMax*GRADE[g||0].hp); }
+
 let pets={}, party=[], box=[], seq=0;
 let sel=[], bag={}, logNo=0, found=[], bornOrb=null;
 let logs=[], legacyLog="", dexOpen={};
@@ -1276,11 +1320,20 @@ function applySave(s){
   /* 처음 고르는 순간은 이미 끝났다. 여기서 내려두지 않으면
      이어하기 뒤에 잡는 야생이 전부 「최초 파트너」로 기록된다. */
   startPhase=false;
-  /* 레벨 없이 저장된 야생은 지금 지역 기준으로 매긴다 */
+  /* 레벨·등급 없이 저장된 야생은 지금 지역 기준으로 매긴다 */
   if(wild&&!wild.lv) wild.lv=wildLv(wild.form,REGION[here]);
+  if(wild&&wild.g===undefined) wild.g=DATA[wild.form].legend?3:0;
+  if(fight&&fight.team) fight.team.forEach(u=>{
+    if(u.g===undefined) u.g=DATA[u.form].legend?3:0; });
   Object.keys(pets).forEach(id=>{ const m=pets[id];
     if(m.crisis===undefined) m.crisis=0;
     if(m.low===undefined) m.low=false;
+    /* 등급이 없던 시절의 기록은 전부 보통으로 둔다.
+       전설 종만은 제 격을 되찾아 준다. */
+    if(m.g===undefined) m.g=DATA[m.form].legend?3:0;
+    /* 변이로 깎인 몸은 그 대가를 그대로 진다. 그 외에는 제 격만큼 담는다. */
+    m.hpCap = m.lost ? clamp(m.hpCap,30,capOf(m.g)) : capOf(m.g);
+    m.hp = clamp(m.hp,0,m.hpCap);
     if(!m.own) m.own=["bulba","char","squirt","pika"].includes(m.base)?"starter":"wild";
     /* 표본실에서 데려온 아이는 언제나 p1·p2다. 그 뒤 번호인데 최초 파트너로
        적혀 있다면 위 버그로 잘못 남은 기록이니 야생으로 되돌린다. */
@@ -1344,19 +1397,21 @@ function wildLv(f,R){
   return r[0]+Math.floor(Math.random()*(r[1]-r[0]+1));
 }
 
-/* 포획 확률 — 레벨이 높을수록 볼이 잘 듣지 않는다.
-   전설은 원래 확률이 이미 낮으므로 레벨 보정을 받지 않는다. */
+/* 포획 확률 — 레벨이 높고 격이 높을수록 볼이 잘 듣지 않는다.
+   전설 종은 원래 확률이 이미 낮으므로 어떤 보정도 받지 않는다. */
 function catchRate(w){
   const d=DATA[w.form];
-  const hard=d.legend?0:Math.max(0,(w.lv||TUNE.startLv)-TUNE.wildLvFrom)*TUNE.wildLvPer;
-  return clamp(Math.round(d.rate-hard+(w.watched?TUNE.watchBonus:0)),3,95);
+  if(d.legend) return clamp(Math.round(d.rate+(w.watched?TUNE.watchBonus:0)),3,95);
+  const hard=Math.max(0,(w.lv||TUNE.startLv)-TUNE.wildLvFrom)*TUNE.wildLvPer;
+  return clamp(Math.round(d.rate-hard+gradeOf(w).cat+(w.watched?TUNE.watchBonus:0)),3,95);
 }
 
 /* 몬스터 한 마리를 새로 만든다 */
-function newPet(f,lv){
+function newPet(f,lv,g){
   seq++;
   const id="p"+seq;
-  pets[id]={id:id,form:f,base:f,hp:TUNE.hpMax,hpCap:TUNE.hpMax,sat:TUNE.startSat,
+  const gr=DATA[f].legend?3:(g||0);
+  pets[id]={id:id,form:f,base:f,g:gr,hp:capOf(gr),hpCap:capOf(gr),sat:TUNE.startSat,
     exp:0,lv:lv||TUNE.startLv,recent:[],acts:0,crisis:0,low:false,
     own:(startPhase?"starter":"wild"),lost:null,
     bond:startPhase?(f==="pika"?TUNE.startBond.pika:TUNE.startBond.normal):12};
@@ -1413,7 +1468,9 @@ function confirmPick(){
   bag={}; Object.keys(STONE).forEach(s=>bag[s]=TUNE.stoneLife);
   caught=0; evolved=0; seen=[]; opened=["pallet","route1"];
   startPhase=true;
-  sel.forEach(f=>{ party.push(newPet(f)); see(f); });
+  /* 표본실이 골라 내준 것들이다. 보통일 리 없다.
+     금이 간 케이스의 것은 한 격 더 높다. */
+  sel.forEach(f=>{ party.push(newPet(f,TUNE.startLv,f==="pika"?2:1)); see(f); });
   startPhase=false;
 
   logNo=0; logs=[]; legacyLog="";
@@ -1542,7 +1599,7 @@ function deck(R,next){
 function giveValue(id){
   const m=pets[id], d=DATA[m.form], G=TUNE.give;
   const rare=clamp(Math.round(G.rare/Math.max(d.rate||30,6)),0,G.rareCap);
-  return clamp(G.base+rare+Math.floor(m.lv/G.lvPer),2,G.max);
+  return clamp(G.base+rare+Math.floor(m.lv/G.lvPer)+gradeOf(m).give,2,G.max+18);
 }
 
 function giveAway(id){
@@ -1592,12 +1649,16 @@ function search(){
   if(Math.random()<0.25){ say(pick(LINE.nowild),null); return; }
   let t=R.wild.reduce((s,x)=>s+x[1],0), r=Math.random()*t, f=R.wild[0][0];
   for(const x of R.wild){ r-=x[1]; if(r<=0){ f=x[0]; break; } }
-  wild={form:f,watched:false,lv:wildLv(f,R)};
+  const g=DATA[f].legend?3:rollGrade(deepOf(here));
+  wild={form:f,watched:false,lv:wildLv(f,R),g:g};
   see(f);
-  const d=DATA[f];
-  say("풀숲이 흔들렸다. <b>"+d.name+"</b>가 나타났다.",
-    (f==="pika"||d.legend)?"hid":null,"LV."+wild.lv);
+  const d=DATA[f], G=GRADE[g];
+  say("풀숲이 흔들렸다. "+(g?G.mark+" <b>"+G.n+"</b>급 ":"")+"<b>"+d.name+"</b>가 나타났다.",
+    (f==="pika"||d.legend||g>=2)?"hid":null,"LV."+wild.lv+(g?" · "+G.n:""));
+  if(g>=2&&!d.legend) say(G.note,"trace");
   if(d.legend) notify("legend","전설이 나타났다",d.name+" · 도망치기 전에 결정해야 한다",d.c,d.icon);
+  else if(g>=3) notify("legend","전설급이 나타났다",d.name+" · "+G.note,G.c,d.icon);
+  else if(g===2) notify("mut","에픽급이 나타났다",d.name+" · 이 종에서 나올 몸이 아니다",G.c,d.icon);
   else if(RARE.includes(f)) notify("unlock","드문 것이 나타났다",d.name+" · 이 근처에서는 좀처럼 보기 어렵다",d.c,d.icon);
   renderAll();
   /* 눈앞의 것으로 시선을 옮겨준다 */
@@ -1619,6 +1680,7 @@ function renderWild(){
       <div>
         <p class="tag">야생 · LV.${wild.lv} · ${d.type}</p>
         <div class="namebox"><p class="name">${d.name}</p></div>
+        ${gradeTag(wild)}
       </div>
     </div>
     <p class="desc">${d.desc}</p>
@@ -1628,6 +1690,7 @@ function renderWild(){
       <button class="act" onclick="leave()">물러난다</button>
     </div>
     <p class="hint">포획 확률 ${p}%${hard?" · 레벨 "+wild.lv+"이라 손이 덜 간다":""}${
+      (wild.g&&!d.legend)?" · "+gradeOf(wild).n+"급이라 더 버틴다":""}${
       wild.watched?" · 이미 지켜봤다":" · 지켜보면 오르지만 달아날 수 있다"}</p>
     ${balls<=0?'<p class="hint" style="color:var(--fire)">볼이 없다 · 태초마을에서 표본을 넘기면 받을 수 있다</p>':''}
   </div>`;
@@ -1650,13 +1713,18 @@ function throwBall(){
   balls--;
   const p=catchRate(wild);
   if(Math.random()*100<p){
-    const id=newPet(wild.form,wild.lv);
+    const id=newPet(wild.form,wild.lv,wild.g);
+    const G=gradeOf(wild);
     const toBox=party.length>=TUNE.partyMax;
     if(toBox) box.push(id); else party.push(id);
     caught++; see(wild.form);
-    notify(d.legend?"legend":"get",d.legend?"전설을 붙잡았다":"동료가 됐다",
-      d.name+" · 도감 "+seen.length+"종",d.c,d.icon);
-    say(fill(pick(LINE.caught),{n:d.name}),"catch","LV."+wild.lv+" · "+p+"%");
+    notify(d.legend?"legend":(wild.g>=2?"mut":"get"),
+      d.legend?"전설을 붙잡았다":(wild.g?G.n+"급을 붙잡았다":"동료가 됐다"),
+      d.name+" · 도감 "+seen.length+"종",wild.g?G.c:d.c,d.icon);
+    say(fill(pick(LINE.caught),{n:(wild.g?G.mark+" ":"")+d.name}),"catch",
+      "LV."+wild.lv+(wild.g?" · "+G.n:"")+" · "+p+"%");
+    if(wild.g>=2) remember(G.n+"급 "+d.name,
+      "같은 종이라도 개체마다 격이 다르다. "+G.note,wild.g>=3);
     if(toBox) say("파티가 가득 차서 "+d.name+"는 보관함으로 갔다.",null);
     wild=null; renderAll(); return;
   }
@@ -1686,6 +1754,13 @@ function moveset(form){
 }
 function mainType(form){ return (DATA[form].type||"노말").split(" · ")[0]; }
 
+/* 등급 딱지 — 보통은 아무것도 붙이지 않는다 */
+function gradeTag(x){
+  const g=(x&&x.g)||0; if(!g) return "";
+  const G=GRADE[g];
+  return `<span class="gr g${g}" style="--gc:${G.c}">${G.mark} ${G.n}</span>`;
+}
+
 /* 2배 · 0.5배 · 1배 */
 function effOf(atk,def){
   if((STRONG[atk]||[]).includes(def)) return 2;
@@ -1694,19 +1769,21 @@ function effOf(atk,def){
 }
 function foeMax(lv){ return Math.round(55+lv*2.2); }
 
-function hitFor(move,lv,defType,guarded){
+function hitFor(move,lv,defType,guarded,pow){
   if(!move.p) return {d:0,eff:1,miss:false};
   const miss = move.e==="wild" && Math.random()<0.3;
   if(miss) return {d:0,eff:1,miss:true};
   const eff=effOf(move.t,defType);
-  let d=move.p*(0.75+lv*0.035)*eff*(0.85+Math.random()*0.15)*0.34;
+  let d=move.p*(0.75+lv*0.035)*eff*(pow||1)*(0.85+Math.random()*0.15)*0.34;
   if(guarded) d*=0.5;
   return {d:Math.max(1,Math.round(d)),eff:eff,miss:false};
 }
 
-/* 상대 한 마리를 세운다 */
-function foeUnit(form,lv){
-  return {form:form,lv:lv,hp:foeMax(lv),max:foeMax(lv),guard:false,weak:false};
+/* 상대 한 마리를 세운다 — 격이 높으면 더 두껍고 더 세다 */
+function foeUnit(form,lv,g){
+  const gr=DATA[form].legend?3:(g||0);
+  const max=Math.round(foeMax(lv)*GRADE[gr].hp);
+  return {form:form,lv:lv,g:gr,hp:max,max:max,guard:false,weak:false};
 }
 
 /* 지역에서 사람을 하나 만들어낸다 — 그 지역에 사는 것들로 팀을 꾸린다 */
@@ -1716,11 +1793,11 @@ function makeFoe(){
   const pool=R.wild.filter(x=>!DATA[x[0]].legend);
   if(!pool.length) return null;
   const n=1+Math.floor(Math.random()*2);
-  const r=R.lv||[5,7], team=[];
+  const r=R.lv||[5,7], team=[], deep=deepOf(here);
   for(let i=0;i<n;i++){
     const f=pick(pool)[0];
     const lv=clamp(r[0]+Math.floor(Math.random()*(r[1]-r[0]+1))+(i?1:0),2,80);
-    team.push(foeUnit(f,lv));
+    team.push(foeUnit(f,lv,rollGrade(deep)));
   }
   return {who:pick(FOENAME),kind:"trainer",team:team};
 }
@@ -1754,8 +1831,9 @@ function enterGym(key){
   if(fight||wild) return;
   const g=GYM[key];
   if(badges.includes(key)){ say(g.town+" 체육관은 이미 지나왔다.","deny"); return; }
+  /* 관장의 마지막 한 마리는 격이 다르다 */
   startFight({kind:"gym",who:g.name+" · "+g.town,gym:key,
-    team:g.team.map(t=>foeUnit(t[0],t[1]))});
+    team:g.team.map((t,i)=>foeUnit(t[0],t[1],i===g.team.length-1?2:1))});
 }
 
 /* 한 턴 — 내가 치고, 살아 있으면 상대가 친다 */
@@ -1774,7 +1852,7 @@ function useMove(i){
     const times=my.e==="again"?2:1;
     let total=0,eff=1,miss=false;
     for(let t=0;t<times;t++){
-      const r=hitFor(my,m.lv,mainType(foe.form),foe.guard);
+      const r=hitFor(my,m.lv,mainType(foe.form),foe.guard,gradeOf(m).pow);
       if(r.miss){ miss=true; break; }
       total+=Math.round(r.d*(fight.mineWeak?0.8:1)); eff=r.eff;
     }
@@ -1802,7 +1880,7 @@ function useMove(i){
     const times=fm.e==="again"?2:1;
     let total=0,eff=1,miss=false;
     for(let t=0;t<times;t++){
-      const r=hitFor(fm,foe.lv,mainType(m.form),fight.mineGuard);
+      const r=hitFor(fm,foe.lv,mainType(m.form),fight.mineGuard,gradeOf(foe).pow);
       if(r.miss){ miss=true; break; }
       total+=Math.round(r.d*(fight.foeWeak?0.8:1)); eff=r.eff;
     }
@@ -1888,7 +1966,8 @@ function swapTo(id){
   fight.mine=id; fight.mineGuard=false; fight.mineWeak=false;
   say(sp(id).name+"로 바꿔 세웠다. 그 틈에 한 대 맞았다.",null);
   const foe=fight.team[fight.idx], m=pets[id];
-  const r=hitFor(pick(moveset(foe.form).filter(x=>x.p))||mv(HIT.basic),foe.lv,mainType(m.form),false);
+  const r=hitFor(pick(moveset(foe.form).filter(x=>x.p))||mv(HIT.basic),
+    foe.lv,mainType(m.form),false,gradeOf(foe).pow);
   m.hp=clamp(m.hp-Math.round(r.d*0.6),0,m.hpCap);
   if(m.hp<=3){ mineDown(); return; }
   renderFight(); renderCards(); save();
@@ -1916,7 +1995,7 @@ function renderFight(){
       <div class="orb"><svg viewBox="0 0 30 30">${fd.icon}</svg></div>
       <div style="flex:1;min-width:0">
         <p class="tag">상대 · LV.${foe.lv} · ${fd.type}${left?" · 남은 "+left+"마리":" · 마지막"}</p>
-        <div class="namebox"><p class="name">${fd.name}</p></div>
+        <div class="namebox"><p class="name">${fd.name}</p></div>${gradeTag(foe)}
         ${bar(foe.hp,foe.max,fd.c)}
         <p class="hint" style="margin-top:6px">${foe.hp} / ${foe.max}</p>
       </div>
@@ -1925,7 +2004,7 @@ function renderFight(){
     <div class="wildhead" style="--c:${md.c}">
       <div class="orb sm" style="--c:${md.c}"><svg viewBox="0 0 30 30">${md.icon}</svg></div>
       <div style="flex:1;min-width:0">
-        <p class="tag" style="color:${md.c}">${md.name} · LV.${m.lv} · ${md.type}</p>
+        <p class="tag" style="color:${md.c}">${md.name} · LV.${m.lv} · ${md.type}</p>${gradeTag(m)}
         ${bar(m.hp,m.hpCap,md.c)}
         <p class="hint" style="margin-top:6px">${Math.round(m.hp)} / ${m.hpCap}${
           fight.mineGuard?" · 막을 준비":""}${fight.mineWeak?" · 공격이 무뎌졌다":""}</p>
@@ -1945,13 +2024,14 @@ function renderCards(){
     (party.length?`<p class="mine">함께 다니는 것들 · ${party.length}</p>`:"")
     +party.map(id=>{
     const m=pets[id], d=sp(id), born=bornOrb===id, isMut=d.c==="var(--wrong)";
-    return `<div class="card${isMut?" mutant":""}" style="--c:${d.c}">
+    return `<div class="card${isMut?" mutant":""}${m.g?" g"+m.g:""}" style="--c:${d.c}">
       <div class="wm"><svg viewBox="0 0 30 30">${d.icon}</svg></div>
       <div class="chead">
         <div class="orb big${born?" born":""}"><svg viewBox="0 0 30 30">${d.icon}</svg></div>
         <div>
           <p class="tag" id="tag-${id}">LV.${m.lv} · ${d.type}</p>
           <div class="namebox"><p class="name">${d.name}</p></div>
+          ${gradeTag(m)}
         </div>
       </div>
       <p class="desc">${d.desc}</p>
@@ -2049,7 +2129,7 @@ function renderSlots(){
     const m=pets[id], d=sp(id);
     return `<div class="slot" style="--c:${d.c}">
       <div class="orb sm"><svg viewBox="0 0 30 30">${d.icon}</svg></div>
-      <div class="sname">${d.name}<em>LV.${m.lv} · 친밀도 ${Math.round(m.bond)} · 함께한 행동 ${m.acts}</em></div>
+      <div class="sname">${d.name}${gradeTag(m)}<em>LV.${m.lv} · 친밀도 ${Math.round(m.bond)} · 함께한 행동 ${m.acts}</em></div>
       ${inParty
         ? `<button class="mini" onclick="toBox('${id}')" ${party.length<=1?"disabled":""}>보관함으로</button>`
         : `<button class="mini" onclick="toParty('${id}')" ${party.length>=TUNE.partyMax?"disabled":""}>파티로</button>
@@ -2183,7 +2263,7 @@ function useStone(id,sid){
     bag[sid]=0; m.form=to; m.exp=0; bornOrb=id;
     if(!right){
       m.bond=clamp(m.bond+(mu.cost.bond||0),0,TUNE.bondMax);
-      m.hpCap=clamp(m.hpCap+(mu.cost.hpCap||0),30,TUNE.hpMax);
+      m.hpCap=clamp(m.hpCap+(mu.cost.hpCap||0),30,capOf(m.g));
       m.lost=mu.cost.note;
     }
     m.hp=m.hpCap;
@@ -2310,10 +2390,14 @@ function renderDex(){
       +'<div class="dbody" data-open="'+on+'"><div class="dex">';
     g.keys.forEach(k=>{
       const d=DATA[k], has=seen.includes(k), own=ownForms.includes(k);
+      /* 같은 종을 여럿 가졌다면 가장 높은 격을 보여준다 */
+      const best=Object.keys(pets).filter(id=>pets[id].form===k)
+        .reduce((n,id)=>Math.max(n,pets[id].g||0),0);
       html+='<div class="dcell '+(has?(own?"own":""):"unseen")+'" style="--c:'+d.c+'">'
+        +(has&&own&&best?'<span class="gm" style="--gc:'+GRADE[best].c+'">'+GRADE[best].mark+'</span>':'')
         +'<svg viewBox="0 0 30 30">'+d.icon+'</svg>'
         +'<b>'+(has?d.name:"???")+'</b>'
-        +'<u>'+(has?(own?"보유 중":d.type):"미기록")+'</u></div>';
+        +'<u>'+(has?(own?(best?GRADE[best].n+" 보유":"보유 중"):d.type):"미기록")+'</u></div>';
     });
     html+='</div></div>';
   });
