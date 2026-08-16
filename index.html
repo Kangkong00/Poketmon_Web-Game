@@ -211,6 +211,39 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7.5vw,40px);
 .dcell .gm{position:absolute;top:5px;right:6px;font-family:var(--mono);
   font-size:8px;letter-spacing:0;color:var(--gc)}
 
+/* ── 호칭 ── */
+.worn{display:inline-block;vertical-align:middle;margin-left:11px;padding:4px 11px 5px;
+  border-radius:2px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+  color:var(--volt);border:1px solid color-mix(in srgb,var(--volt) 40%,transparent);
+  background:color-mix(in srgb,var(--volt) 9%,transparent);white-space:nowrap}
+.worn.hid{color:var(--wrong);border-color:color-mix(in srgb,var(--wrong) 45%,transparent);
+  background:color-mix(in srgb,var(--wrong) 10%,transparent);
+  box-shadow:0 0 18px -8px var(--wrong)}
+.tis{display:grid;gap:8px;margin-top:12px}
+@media(min-width:560px){.tis{grid-template-columns:1fr 1fr}}
+.ti{position:relative;text-align:left;padding:12px 13px;border-radius:2px;cursor:pointer;
+  background:rgba(0,0,0,.22);border:1px solid var(--line);color:var(--dim);
+  font-family:var(--sans);transition:border-color .2s,transform .1s}
+.ti:active{transform:scale(.985)}
+.ti b{display:block;font-size:13.5px;font-weight:600;color:var(--faint)}
+.ti span{display:block;font-size:11px;line-height:1.55;color:var(--faint);margin-top:5px}
+.ti u{display:block;text-decoration:none;font-family:var(--mono);font-size:9px;
+  letter-spacing:.1em;color:var(--faint);margin-top:7px}
+.ti.on{border-color:color-mix(in srgb,var(--volt) 34%,transparent);
+  background:color-mix(in srgb,var(--volt) 6%,rgba(0,0,0,.22))}
+.ti.on b{color:var(--volt)} .ti.on span{color:var(--dim)} .ti.on u{color:var(--dim)}
+.ti.on.hd{border-color:color-mix(in srgb,var(--wrong) 40%,transparent);
+  background:color-mix(in srgb,var(--wrong) 7%,rgba(0,0,0,.22))}
+.ti.on.hd b{color:var(--wrong)}
+.ti.wear{border-width:1px;box-shadow:0 0 0 1px color-mix(in srgb,var(--volt) 30%,transparent)}
+.ti.wear.hd{box-shadow:0 0 0 1px color-mix(in srgb,var(--wrong) 34%,transparent)}
+.ti:disabled{cursor:default}
+.tbar{height:2px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;margin-top:9px}
+.tbar div{height:100%;background:var(--dim);border-radius:2px;transition:width .35s ease}
+.tlock{margin-top:12px;padding:12px 14px;border-left:2px solid var(--wrong);
+  background:rgba(176,123,216,.06);font-size:11.5px;line-height:1.75;color:var(--dim)}
+.tlock b{color:var(--wrong);font-family:var(--mono);letter-spacing:.14em}
+
 /* 배지 */
 .badges{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
 .badge{display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:2px;
@@ -513,7 +546,7 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7.5vw,40px);
 <section id="status">
   <header>
     <p class="eyebrow" id="where">동행 기록</p>
-    <h1>여행이 시작됐다</h1>
+    <h1>여행이 시작됐다<span id="wearmark"></span></h1>
   </header>
 
   <div class="zones" id="zones"></div>
@@ -527,6 +560,11 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7.5vw,40px);
   <div class="panel">
     <p class="ptitle">파티와 보관함</p>
     <div class="slots" id="slots"></div>
+  </div>
+
+  <div class="panel">
+    <p class="ptitle">호칭</p>
+    <div id="titles"></div>
   </div>
 
   <div class="panel">
@@ -1242,6 +1280,79 @@ const GRADE = [
    note:"어째서 이런 것이 여기 있는지 설명할 수 없다."}
 ];
 
+/* ═════════════════════════════════════════════
+   호칭 — 무엇을 얼마나 했는가가 사람을 부르는 이름이 된다.
+   일반은 조건이 보이고 진행이 쌓이는 것이 보인다.
+   히든은 달성한 순간에야 제 정체를 드러낸다.
+   ═════════════════════════════════════════════ */
+const TITLE = [
+  /* ── 일반 · 조건이 보인다 ── */
+  {id:"first", n:"첫 걸음", d:"야생을 한 마리 잡는다",
+   at:s=>caught, of:1},
+  {id:"keeper", n:"표본 관리자", d:"도감 40종을 채운다",
+   at:s=>seen.length, of:40},
+  {id:"archive", n:"도감의 주인", d:"도감 70종을 채운다",
+   at:s=>seen.length, of:70},
+  {id:"volt", n:"전기 마스터", d:"전기 기술을 1000번 쓴다",
+   at:s=>s.mv["전기"]||0, of:1000},
+  {id:"pyro", n:"불꽃 마스터", d:"불 기술을 1000번 쓴다",
+   at:s=>s.mv["불"]||0, of:1000},
+  {id:"tide", n:"물결 마스터", d:"물 기술을 1000번 쓴다",
+   at:s=>s.mv["물"]||0, of:1000},
+  {id:"bloom", n:"풀잎 마스터", d:"풀 기술을 1000번 쓴다",
+   at:s=>s.mv["풀"]||0, of:1000},
+  {id:"drill", n:"지옥 조교", d:"훈련을 5000번 시킨다",
+   at:s=>s.train, of:5000},
+  {id:"cook", n:"밥 주는 사람", d:"밥을 1000번 준다",
+   at:s=>s.feed, of:1000},
+  {id:"duel", n:"승부사", d:"전투에서 100번 이긴다",
+   at:s=>s.win, of:100},
+  {id:"badge", n:"관장 사냥꾼", d:"배지를 여섯 개 모은다",
+   at:s=>badges.length, of:6},
+  {id:"evo", n:"진화의 증인", d:"진화를 30번 본다",
+   at:s=>evolved, of:30},
+  {id:"throw", n:"볼 낭비꾼", d:"몬스터볼을 500개 던진다",
+   at:s=>s.ball, of:500},
+  {id:"rank", n:"격이 다른", d:"에픽 이상을 다섯 마리 데리고 있다",
+   at:s=>Object.keys(pets).filter(id=>(pets[id].g||0)>=2).length, of:5},
+  {id:"bond", n:"둘도 없는", d:"친밀도를 끝까지 채운다",
+   at:s=>Math.max(0,...Object.keys(pets).map(id=>Math.round(pets[id].bond))), of:TUNE.bondMax},
+
+  /* ── 히든 · 달성하기 전에는 정체가 보이지 않는다 ── */
+  {id:"chosen", n:"선택받은 자", d:"전설을 손에 넣었다", hide:1,
+   at:s=>Object.keys(pets).filter(id=>DATA[pets[id].form].legend).length, of:1},
+  {id:"allleg", n:"완성을 아는 자", d:"전설 넷을 모두 도감에 남겼다", hide:1,
+   at:s=>["zapdos","articuno","moltres","mewtwo"].filter(k=>seen.includes(k)).length, of:4},
+  {id:"nonesuch", n:"세상에 없는 것", d:"상극 변이 열둘을 모두 만들었다", hide:1,
+   at:s=>DEXGROUP[2].keys.filter(k=>seen.includes(k)).length, of:12},
+  {id:"brink", n:"문턱을 아는 자", d:"쓰러지기 직전에서 쉰 번 돌아왔다", hide:1,
+   at:s=>Object.keys(pets).reduce((n,id)=>n+(pets[id].crisis||0),0), of:50},
+  {id:"letgo", n:"놓아준 자", d:"표본을 백 마리 넘겼다", hide:1,
+   at:s=>s.give, of:100},
+  {id:"back", n:"등을 보인 자", d:"백 번 물러났다", hide:1,
+   at:s=>s.flee, of:100},
+  {id:"starve", n:"굶기는 자", d:"주린 몸을 백 번 더 굴렸다", hide:1,
+   at:s=>s.hungry, of:100},
+  {id:"alone", n:"혼자 선 자", d:"한 마리만 데리고 관장을 이겼다", hide:1,
+   at:s=>s.soloGym, of:1},
+  {id:"defy", n:"불복종의 끝", d:"거부하던 것을 끝내 돌려세웠다", hide:1,
+   at:s=>seen.includes("raichu")&&Object.keys(pets).some(id=>pets[id].base==="pika")?1:0, of:1},
+  {id:"ghost", n:"그림자", d:"잡지 않고 서른 종을 만났다", hide:1,
+   at:s=>caught===0?seen.length:0, of:30},
+  {id:"carp", n:"잉어의 왕", d:"가장 하찮은 것에서 가장 사나운 것을 얻었다", hide:1,
+   at:s=>Object.keys(pets).some(id=>pets[id].base==="magikarp"&&pets[id].form==="gyarados")?1:0, of:1},
+  {id:"walk", n:"길을 아는 자", d:"열세 곳을 모두 밟았다", hide:1,
+   at:s=>s.been.length, of:13}
+];
+
+/* 무엇을 얼마나 했는가 */
+function newStat(){
+  return {train:0,feed:0,mv:{},win:0,lose:0,ball:0,give:0,flee:0,
+    hungry:0,soloGym:0,been:["pallet"]};
+}
+function titleAt(t){ return Math.min(t.at(stat),t.of); }
+function titleGot(t){ return titleAt(t)>=t.of; }
+
 /* 깊은 곳일수록 격이 높은 몸이 나온다 */
 function rollGrade(deep){
   const b=Math.max(0,deep||0);
@@ -1261,6 +1372,7 @@ let sel=[], bag={}, logNo=0, found=[], bornOrb=null;
 let logs=[], legacyLog="", dexOpen={};
 const LOGKEEP=300;              // 전체 기록으로 남겨두는 줄 수
 let here="pallet", wild=null, balls=0, fight=null, badges=[];
+let stat=null, titles=[], wearing="";
 let caught=0, evolved=0, seen=[], opened=["pallet","route1"];
 let startPhase=true, hints=[], saveState="unknown";
 const RARE=["pika","clefairy","abra","magneton","ninetales","arcanine","gyarados"];
@@ -1295,6 +1407,7 @@ const STORE={
 function payload(){
   return {v:3,pets:pets,party:party,box:box,seq:seq,bag:bag,here:here,
     balls:balls,wild:wild,fight:fight,badges:badges,found:found,logNo:logNo,
+    stat:stat,titles:titles,wearing:wearing,
     caught:caught,evolved:evolved,seen:seen,opened:opened,hints:hints,
     logs:logs,log:legacyLog,
     rival:document.getElementById("rivalline").innerHTML};
@@ -1314,6 +1427,11 @@ function applySave(s){
   pets=s.pets; party=s.party; box=s.box||[]; seq=s.seq||party.length;
   bag=s.bag; here=s.here||"pallet"; balls=s.balls||0; wild=s.wild||null;
   fight=s.fight||null; badges=s.badges||[];
+  /* 호칭이 없던 시절의 기록은 셈이 0에서 시작한다 */
+  stat=Object.assign(newStat(),s.stat||{});
+  if(!stat.mv) stat.mv={};
+  if(!stat.been||!stat.been.length) stat.been=[s.here||"pallet"];
+  titles=s.titles||[]; wearing=s.wearing||"";
   found=s.found||[]; logNo=s.logNo||0; hints=s.hints||[];
   caught=s.caught||0; evolved=s.evolved||0;
   seen=s.seen||[]; opened=s.opened||["pallet","route1"];
@@ -1464,6 +1582,7 @@ function sync(){
 function confirmPick(){
   const pika=sel.includes("pika");
   pets={}; party=[]; box=[]; seq=0; wild=null; fight=null; badges=[]; here="pallet";
+  stat=newStat(); titles=[]; wearing="";
   balls=TUNE.balls;
   bag={}; Object.keys(STONE).forEach(s=>bag[s]=TUNE.stoneLife);
   caught=0; evolved=0; seen=[]; opened=["pallet","route1"];
@@ -1490,8 +1609,70 @@ function confirmPick(){
 }
 
 /* ═════════ 전체 그리기 ═════════ */
-function renderAll(){ renderZones(); renderWild(); renderFight();
-  renderCards(); renderSlots(); renderDex(); save(); }
+function renderAll(){ checkTitles(); renderZones(); renderWild(); renderFight();
+  renderCards(); renderSlots(); renderDex(); renderTitles(); renderHead(); save(); }
+
+/* ═════════════════════════════════════════════
+   호칭 — 조건을 채운 순간에만 한 번 알린다.
+   히든은 그때까지 이름조차 나오지 않는다.
+   ═════════════════════════════════════════════ */
+function checkTitles(){
+  if(!stat) return;
+  TITLE.forEach(t=>{
+    if(titles.includes(t.id)||!titleGot(t)) return;
+    titles.push(t.id);
+    if(t.hide){
+      say("◆ 이름이 하나 붙었다 — <b>"+t.n+"</b>","mut","숨겨져 있던 것");
+      say(t.d,"trace");
+      notify("mut","히든 호칭",t.n+" · "+t.d,"var(--wrong)",
+        '<path d="M15 3L18 12H27L20 17L23 27L15 21L7 27L10 17L3 12H12Z"/>');
+      remember(t.n,"히든 호칭 · "+t.d,true);
+    }else{
+      say("◆ 호칭을 얻었다 — <b>"+t.n+"</b>","hid",t.d);
+      notify("unlock","호칭을 얻었다",t.n+" · "+t.d,"var(--volt)",
+        '<path d="M6 4h18v22l-9 -6l-9 6Z"/>');
+    }
+    if(!wearing) wearing=t.id;
+  });
+}
+
+function wearTitle(id){
+  wearing = wearing===id ? "" : id;
+  renderTitles(); renderHead(); save();
+}
+function renderHead(){
+  const el=document.getElementById("wearmark");
+  if(!el) return;
+  const t=TITLE.find(x=>x.id===wearing);
+  el.innerHTML = t ? `<span class="worn${t.hide?" hid":""}">${t.n}</span>` : "";
+}
+
+function renderTitles(){
+  const el=document.getElementById("titles");
+  if(!el||!stat) return;
+  const open=TITLE.filter(t=>!t.hide||titles.includes(t.id));
+  const hidLeft=TITLE.filter(t=>t.hide&&!titles.includes(t.id)).length;
+  const got=titles.length;
+
+  const row=t=>{
+    const has=titles.includes(t.id), at=titleAt(t);
+    return `<button class="ti${has?" on":""}${t.hide?" hd":""}${wearing===t.id?" wear":""}"
+      onclick="wearTitle('${t.id}')" ${has?"":"disabled"}>
+      <b>${t.n}</b><span>${t.d}</span>
+      ${has?`<u>${wearing===t.id?"달고 있다 · 눌러서 뗀다":"눌러서 단다"}</u>`
+           :`<div class="tbar"><div style="width:${clamp(at/t.of*100,0,100)}%"></div></div>
+             <u>${at} / ${t.of}</u>`}</button>`;
+  };
+
+  el.innerHTML =
+    `<p class="pnote">얻은 호칭 <b>${got} / ${TITLE.length}</b>
+       · 하나를 골라 이름 옆에 달 수 있다.</p>`
+    + `<div class="tis">${open.map(row).join("")}</div>`
+    + (hidLeft?`<div class="tlock"><b>???</b> ${hidLeft}개가 아직 이름조차 없다.<br>
+        조건은 어디에도 적혀 있지 않다. 하다 보면 열린다.</div>`
+              :`<div class="tlock" style="border-color:var(--volt)">
+        <b>숨겨진 것을 전부 찾아냈다.</b></div>`);
+}
 
 function ORDERKEYS(){ return ["pallet","route1","route22","route2","forest","route3","moon","route4","route24","shore","power","seafoam","mansion"]; }
 
@@ -1610,7 +1791,7 @@ function giveAway(id){
   const n=giveValue(id);
   if(!confirm(d.name+" (LV."+m.lv+")를 연구소에 넘길까?\n몬스터볼 "+n+"개를 받는다.\n한 번 넘기면 되돌릴 수 없다.")) return;
   box=box.filter(x=>x!==id); delete pets[id];
-  balls+=n;
+  balls+=n; stat.give++;
   say("<b>"+d.name+"</b>를 표본으로 넘겼다. 연구소가 몬스터볼을 내줬다.","trace","볼 +"+n);
   notify("get","표본을 넘겼다",d.name+" · 몬스터볼 +"+n,"var(--grass)",d.icon);
   renderAll();
@@ -1634,6 +1815,7 @@ function moveTo(r){
   if(fight){ say("지금은 여기서 물러설 수 없다.","deny"); return; }
   if(wild){ say("자리를 뜨자 "+sp2(wild.form).name+"가 풀숲으로 사라졌다.","deny"); wild=null; }
   here=r;
+  if(!stat.been.includes(r)) stat.been.push(r);
   say("<b>"+REGION[r].name+"</b>에 도착했다. "+REGION[r].note,null);
   renderAll();
 }
@@ -1710,7 +1892,7 @@ function watch(){
 function throwBall(){
   if(!wild||balls<=0) return;
   const d=DATA[wild.form];
-  balls--;
+  balls--; stat.ball++;
   const p=catchRate(wild);
   if(Math.random()*100<p){
     const id=newPet(wild.form,wild.lv,wild.g);
@@ -1842,6 +2024,7 @@ function useMove(i){
   const m=pets[fight.mine], my=moveset(m.form)[i], foe=fight.team[fight.idx];
   if(!my||!foe) return;
   fight.turn++;
+  stat.mv[my.t]=(stat.mv[my.t]||0)+1;   // 어떤 타입을 몇 번 썼는가
   const myName=sp(fight.mine).name, foeName=DATA[foe.form].name;
 
   /* 내 차례 */
@@ -1914,6 +2097,9 @@ function foeDown(){
 
 function winFight(){
   const f=fight;
+  stat.win++;
+  /* 한 마리만 데리고 관장을 이겼는가 */
+  if(f.kind==="gym"&&party.length===1) stat.soloGym++;
   if(f.kind==="gym"){
     const g=GYM[f.gym];
     if(!badges.includes(f.gym)) badges.push(f.gym);
@@ -1946,7 +2132,7 @@ function mineDown(){
 }
 
 function loseFight(){
-  const f=fight; fight=null;
+  const f=fight; fight=null; stat.lose++;
   say(f.kind==="gym"?"체육관을 나왔다. 배지는 없다.":"등을 보이고 물러났다.","deny");
   notify("mut","물러났다","먹이고 다시 오면 된다","var(--wrong)",
     '<path d="M6 6L24 24M24 6L6 24"/>');
@@ -1956,7 +2142,7 @@ function loseFight(){
 function fleeFight(){
   if(!fight) return;
   if(fight.kind==="gym"){ say("체육관에서는 등을 보일 수 없다. 끝을 봐야 한다.","deny"); return; }
-  const f=fight; fight=null;
+  const f=fight; fight=null; stat.flee++;
   say(f.who+"에게서 물러났다.","deny");
   renderAll();
 }
@@ -2172,6 +2358,7 @@ function feed(id){
     m.bond=clamp(m.bond+TUNE.denyFeedBond,0,TUNE.bondMax);
     say(pick(LINE.denyFeed),"deny"); paint(id); renderSlots(); return;
   }
+  stat.feed++;
   m.hp=clamp(m.hp+TUNE.feed.hp,0,m.hpCap);
   if(m.low && m.hp>=60){ m.low=false; m.crisis=(m.crisis||0)+1;
     say("◆ 쓰러지기 직전까지 갔다가 돌아왔다. 넘긴 위기 "+m.crisis+"회","hid"); }
@@ -2187,6 +2374,8 @@ function train(id){
   m.acts++;
   if(m.form==="pika"&&denied(m)){ say(pick(LINE.denyTrain),"deny"); paint(id); renderSlots(); return; }
 
+  stat.train++;
+  if(m.sat<=0) stat.hungry++;          // 주린 채로 굴린 횟수
   const before={hp:m.hp,bond:m.bond,sat:m.sat};
   m.hp=clamp(m.hp-e.hp,0,m.hpCap);
   if(m.hp<=20) m.low=true;
@@ -2471,6 +2660,7 @@ function reset(){
   saveOn=false; STORE.del(); hints=[]; saveState="unknown";
   sel=[]; pets={}; party=[]; box=[]; wild=null; logNo=0; found=[];
   logs=[]; legacyLog=""; dexOpen={}; fight=null; badges=[];
+  stat=newStat(); titles=[]; wearing=""; renderHead();
   caught=0; evolved=0; seen=[]; opened=["pallet","route1"]; here="pallet";
   closeLog(); paintLog(); paintFound();
   document.getElementById("status").style.display="none";
