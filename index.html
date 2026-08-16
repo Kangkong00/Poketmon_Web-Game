@@ -1098,7 +1098,9 @@ const TUNE = {
   feed:{hp:18,sat:30,bond:4},
   deny:{base:55,perBond:0.5,min:10},
   denyFeedBond:1,
-  exp:{base:90,growth:1.42},
+  /* growth는 지수라 뒤로 갈수록 가파르다.
+     처음부터 다시 자라는 몸만은 fast를 타서 끝까지 키울 수 있게 둔다. */
+  exp:{base:90,growth:1.42,fast:1.22},
   evo:{lvPer:9,lvCap:58,lvFrom:4,bondPer:0.5,bondCap:50,min:3,max:95,mutScale:0.55},
   stoneLife:3,
 
@@ -1364,8 +1366,15 @@ const TITLE = [
    e:"돌이 두 번 다시 부서지지 않는다"},
   {id:"walk", n:"길을 아는 자", d:"열세 곳을 모두 밟았다", hide:1, boon:"party",
    at:s=>s.been.length, of:13,
-   e:"파티가 여덟 자리가 된다"}
+   e:"파티가 여덟 자리가 된다"},
+
+  /* 이 게임에서 가장 먼 곳. 도감을 끝까지 채우고 열세 곳을 모두 밟아야 한다. */
+  {id:"origin", n:"끝에서 처음으로", d:"열세 곳을 모두 밟고 도감을 끝까지 채웠다", hide:1, boon:"origin",
+   at:s=>(s.been.length>=13?1:0)+(seen.length>=dexTotal()?1:0), of:2,
+   e:"만들어진 것이 레벨 1로 다시 온다 — 이번에는 손수 키운다"}
 ];
+
+function dexTotal(){ return DEXGROUP.reduce((n,g)=>n+g.keys.length,0); }
 
 /* 달고 있는 호칭의 효과 · 한 번 얻은 히든의 은혜 */
 function wornT(){ return TITLE.find(t=>t.id===wearing); }
@@ -1531,7 +1540,12 @@ function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
 function fill(s,d){ return s.replace("{n}",d.n||"").replace("{lv}",d.lv||"").replace("{s}",d.s||""); }
 function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
 function sp(id){ return DATA[pets[id].form]; }
-function needExp(lv){ return Math.round(TUNE.exp.base*Math.pow(TUNE.exp.growth,lv-TUNE.startLv)); }
+function needExp(lv,fast){
+  const n=Math.round(TUNE.exp.base*Math.pow(TUNE.exp.growth,lv-TUNE.startLv));
+  if(!fast) return n;
+  /* 완만한 쪽을 타되, 어느 구간에서도 손해 보지 않는다 */
+  return Math.min(n,Math.round(TUNE.exp.base*Math.pow(TUNE.exp.fast,lv-TUNE.startLv)));
+}
 
 /* 진화 성공 확률 — 레벨 몫 + 친밀도 몫 */
 function chance(m,isMut){
@@ -1703,6 +1717,27 @@ function claimGift(){
   renderAll();
 }
 
+/* ═════════════════════════════════════════════
+   끝에서 처음으로 — 도감을 끝까지 채운 자에게만.
+   사람의 손으로 만들어진 것이, 이번에는 레벨 1로 온다.
+   ═════════════════════════════════════════════ */
+function claimOrigin(){
+  if(!boon("origin")||stat.origin) return;
+  const f="mewtwo", id=newPet(f,1);
+  pets[id].fast=1;                     // 처음부터 자라는 몸은 더디게 무거워진다
+  if(party.length<partyMax()) party.push(id); else box.push(id);
+  stat.origin=1; see(f);
+  flash(DATA[f]);
+  say("◆ 기록이 끝난 자리에 아무도 두지 않은 것이 놓여 있었다.","mut","LV.1");
+  say("사람의 손으로 만들어진 것이, 이번에는 <b>처음부터</b> 온다. "
+     +"무엇이 될지는 아직 아무도 모른다.","hid");
+  notify("legend","끝에서 처음으로",DATA[f].name+" · LV.1 · 손수 키운다",DATA[f].c,DATA[f].icon);
+  remember("끝에서 처음으로",
+    "열세 곳을 모두 밟고 도감을 끝까지 채운 자에게만 "+DATA[f].name+"가 레벨 1로 온다. "
+   +"완성된 채로 오지 않는다.",true);
+  renderAll();
+}
+
 /* 전수 — 전설의 기술 하나를 내 것에게 새긴다. 한 번뿐 */
 function teachTo(id){
   if(!boon("teach")||stat.taught){ pickFor=""; renderTitles(); return; }
@@ -1789,6 +1824,11 @@ function renderTitles(){
 /* 손으로 써야 하는 은혜 — 전수 · 융합 · 찾아온 전설 */
 function boonBar(){
   let h="";
+  if(boon("origin")&&!stat.origin)
+    h+=`<button class="pick key" style="--c:var(--psy)" onclick="claimOrigin()">
+      <b>놓여 있던 것을 집는다</b><span>기록이 끝난 자리에 아무도 두지 않은 것이 있다.
+      완성된 채로 오지 않는다. 레벨 1이다.</span>
+      <u>한 번뿐이다</u></button>`;
   if(boon("gift")&&!stat.gift)
     h+=`<button class="pick key" style="--c:var(--volt)" onclick="claimGift()">
       <b>부른 적 없는 것을 받는다</b><span>전설 하나가 제 발로 찾아온다. 한 번뿐이다.</span></button>`;
@@ -2386,6 +2426,7 @@ function renderCards(){
       <p class="hint" id="hint-${id}"></p>
       ${m.form==="pika"?'<p class="note"><b>불복종</b> — 아직 지시를 따르지 않는다. 함께한 시간과 넘긴 위기가 쌓여야 비로소 돌아본다.</p>':''}
       ${m.lost?'<p class="note"><b>대가</b> — '+m.lost+'</p>':''}
+      ${m.fast?'<p class="note"><b>처음부터</b> — 완성된 채로 오지 않았다. 남들보다 오래 자란다.</p>':''}
       ${(m.extra&&m.extra.length)?'<p class="note"><b>새겨진 기술</b> — '
         +m.extra.map(k=>OWNMOVE[k][0]+"("+DATA[k].name+")").join(" · ")
         +(m.fused&&m.fused.length?'<br><b>융합</b> — '+m.fused.join(" · ")+'를 삼켰다':'')
@@ -2403,7 +2444,7 @@ function bar(id,key,label){
 }
 
 function paint(id){
-  const m=pets[id], need=needExp(m.lv);
+  const m=pets[id], need=needExp(m.lv,m.fast);
   const set=(key,val,max,txt)=>{
     const el=document.getElementById(key+"-"+id); if(!el) return;
     el.style.width=clamp(val/max*100,0,100)+"%";
@@ -2561,8 +2602,8 @@ function train(id){
 /* 경험치가 찼는지 본다 — 훈련도 전투도 같은 문을 쓴다 */
 function levelUp(id){
   const m=pets[id];
-  while(m.exp>=needExp(m.lv)){
-    m.exp-=needExp(m.lv); m.lv+=1; m.hp=m.hpCap;
+  while(m.exp>=needExp(m.lv,m.fast)){
+    m.exp-=needExp(m.lv,m.fast); m.lv+=1; m.hp=m.hpCap;
     say(fill(pick(LINE.levelup),{n:sp(id).name,lv:m.lv}),"up");
     const le=LVEVO[m.form];
     if(le && m.lv>=le.lv){
