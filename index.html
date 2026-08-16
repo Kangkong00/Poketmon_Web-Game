@@ -123,10 +123,32 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7.5vw,40px);
 .pnote{font-size:12px;line-height:1.7;color:var(--dim);margin:0 0 13px}
 .pnote b{color:var(--ink);font-weight:600}
 
-/* ── 야생 ── */
-.wildcard{border-color:color-mix(in srgb,var(--c) 45%,transparent);
-  background:linear-gradient(160deg,color-mix(in srgb,var(--c) 8%,transparent),transparent 46%),var(--glass)}
-.wildhead{display:flex;gap:15px;align-items:center;margin-bottom:14px}
+/* ── 야생 — 내 몬스터와 절대 헷갈리지 않게 ── */
+.wildcard{border:1px solid color-mix(in srgb,var(--c) 62%,transparent);
+  border-left:4px solid var(--c);border-radius:3px;
+  padding-top:14px;margin-bottom:22px;
+  background:linear-gradient(150deg,color-mix(in srgb,var(--c) 15%,transparent),rgba(6,13,12,.7) 52%);
+  box-shadow:0 0 0 1px rgba(0,0,0,.35),0 16px 44px -22px #000,0 0 42px -22px var(--c);
+  animation:wildin .4s cubic-bezier(.2,.8,.2,1) both}
+@keyframes wildin{from{opacity:0;transform:translateY(-8px) scale(.99)}to{opacity:1;transform:none}}
+/* 네 귀퉁이 — 조준하듯 */
+.wildcard::before,.wildcard::after{content:"";position:absolute;width:13px;height:13px;
+  border:1px solid var(--c);opacity:.55;pointer-events:none}
+.wildcard::before{top:7px;right:7px;border-left:none;border-bottom:none}
+.wildcard::after{bottom:7px;left:7px;border-right:none;border-top:none}
+.wildmark{position:relative;z-index:1;display:flex;align-items:center;gap:8px;margin:0 0 13px;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:var(--c);text-transform:uppercase}
+.blip{width:6px;height:6px;border-radius:50%;background:var(--c);flex:0 0 6px;
+  box-shadow:0 0 10px 1px var(--c);animation:blip 1.5s ease-in-out infinite}
+@keyframes blip{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.78)}}
+.wildhead{display:flex;gap:15px;align-items:center;margin-bottom:14px;position:relative;z-index:1}
+.wildcard .desc,.wildcard .acts,.wildcard .hint{position:relative;z-index:1}
+.wildcard .orb{box-shadow:0 0 30px -8px var(--c)}
+
+/* 내 몬스터 쪽 머리말 */
+.mine{display:flex;align-items:center;gap:11px;margin:0 0 12px;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:var(--faint)}
+.mine::after{content:"";flex:1;height:1px;background:var(--line)}
 
 /* ── 파티 · 보관함 ── */
 .slots{display:grid;gap:8px}
@@ -138,6 +160,9 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7.5vw,40px);
 .mini{font-family:var(--mono);font-size:10px;letter-spacing:.1em;padding:8px 11px;
   border-radius:2px;cursor:pointer;background:none;border:1px solid var(--line);color:var(--dim)}
 .mini:disabled{opacity:.25;cursor:default}
+.mini.give{color:var(--grass);border-color:color-mix(in srgb,var(--grass) 34%,transparent);
+  background:color-mix(in srgb,var(--grass) 7%,transparent)}
+.mini.give:disabled{color:var(--dim);border-color:var(--line);background:none}
 .empty2{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin:0}
 
 .card{position:relative;overflow:hidden;
@@ -695,16 +720,16 @@ const DATA = {
   arcanine:{name:"윈디",type:"불",c:"var(--fire)",tag:"BLAZE",rate:18,
     icon:'<path d="M15 4C15 4 9 11 9 17C9 22 12 26 15 26C18 26 21 22 21 17C21 11 15 4 15 4Z"/><path d="M22 21C26 22 27 26 24 27"/>',
     desc:"하루에 만 킬로를 달린다는 이야기가 전해진다."},
-  zapdos:{name:"썬더",type:"전기",c:"var(--volt)",tag:"LEGEND",rate:8,legend:true,
+  zapdos:{name:"썬더",type:"전기",c:"var(--volt)",tag:"LEGEND",rate:8,legend:true,lv:50,
     icon:'<path d="M17 3L7 17H14L12 27L23 12H16L17 3Z"/><path d="M4 26H26"/><path d="M6 6L10 10"/><path d="M24 6L20 10"/>',
     desc:"내려앉는 것만으로 주변의 전기가 전부 멎는다. 이미 완성된 몸이라 더 변하지 않는다."},
-  articuno:{name:"프리져",type:"얼음",c:"var(--ice)",tag:"LEGEND",rate:7,legend:true,
+  articuno:{name:"프리져",type:"얼음",c:"var(--ice)",tag:"LEGEND",rate:7,legend:true,lv:50,
     icon:'<path d="M15 3V27M5 9L25 21M25 9L5 21"/><path d="M4 26H26"/><path d="M6 6L10 10"/><path d="M24 6L20 10"/>',
     desc:"지나간 자리에 눈이 내린다. 날개를 접는 법이 없다."},
-  moltres:{name:"파이어",type:"불",c:"var(--fire)",tag:"LEGEND",rate:7,legend:true,
+  moltres:{name:"파이어",type:"불",c:"var(--fire)",tag:"LEGEND",rate:7,legend:true,lv:50,
     icon:'<path d="M15 4C15 4 9 11 9 17C9 22 12 26 15 26C18 26 21 22 21 17C21 11 15 4 15 4Z"/><path d="M4 26H26"/><path d="M6 6L10 10"/><path d="M24 6L20 10"/>',
     desc:"상처를 입으면 용암에 몸을 담가 스스로 낫는다."},
-  mewtwo:{name:"뮤츠",type:"에스퍼",c:"var(--psy)",tag:"LEGEND",rate:3,legend:true,
+  mewtwo:{name:"뮤츠",type:"에스퍼",c:"var(--psy)",tag:"LEGEND",rate:3,legend:true,lv:70,
     icon:'<circle cx="15" cy="15" r="9"/><circle cx="15" cy="15" r="3.5"/><path d="M4 26H26"/><path d="M6 6L10 10"/><path d="M24 6L20 10"/>',
     desc:"사람의 손으로 만들어졌다. 그래서 무엇으로도 다시 바뀌지 않는다."},
 
@@ -752,40 +777,40 @@ const REGION = {
   pallet:{name:"태초마을",note:"연구소가 있는 조용한 마을. 야생은 나오지 않는다.",
     quirk:"쉬어 가는 곳 · 볼 보충", wild:[]},
   route1:{name:"1번도로",note:"S자로 굽은 길. 무릎까지 자란 풀이 이어진다.",
-    quirk:"시간대 조건 실험에 좋다",
+    quirk:"시간대 조건 실험에 좋다", lv:[3,5],
     wild:[["pidgey",6],["rattata",6]]},
   route22:{name:"22번도로",note:"상록시티 서쪽 끝. 라이벌과 처음 마주치는 곳이다.",
-    quirk:"상성 실험에 좋다",
+    quirk:"상성 실험에 좋다", lv:[4,6],
     wild:[["rattata",5],["spearow",4],["mankey",3]]},
   route2:{name:"2번도로",note:"상록숲으로 이어지는 짧은 길. 나무 그늘이 길게 눕는다.",
-    quirk:"벌레가 많다",
+    quirk:"벌레가 많다", lv:[5,7],
     wild:[["caterpie",5],["weedle",5],["pidgey",4],["rattata",3]]},
   forest:{name:"상록숲",note:"낮에도 어둡다. 나뭇잎 사이에서 자주 무언가 스친다.",
-    quirk:"방치 조건 실험에 좋다 · 피카츄가 목격되는 유일한 숲",
+    quirk:"방치 조건 실험에 좋다 · 피카츄가 목격되는 유일한 숲", lv:[5,8],
     wild:[["caterpie",6],["metapod",4],["weedle",6],["kakuna",4],["pidgey",3],["pika",1]]},
   route3:{name:"3번도로",note:"회색시티에서 달맞이산으로 오르는 비탈길.",
-    quirk:"바람이 강해 불 실험에 불리하다",
+    quirk:"바람이 강해 불 실험에 불리하다", lv:[8,11],
     wild:[["spearow",6],["jigglypuff",3],["mankey",3],["sandshrew",3],["ekans",2]]},
   moon:{name:"달맞이산",note:"동굴 안은 소리가 길게 남는다. 천장에서 무언가 떨어진다.",
-    quirk:"어둠 · 방치 조건 실험에 좋다",
+    quirk:"어둠 · 방치 조건 실험에 좋다", lv:[9,13],
     wild:[["zubat",7],["geodude",5],["paras",3],["clefairy",1]]},
   route4:{name:"4번도로",note:"동굴을 빠져나오면 마른 흙바닥이 이어진다.",
-    quirk:"땅 조건 실험에 좋다",
+    quirk:"땅 조건 실험에 좋다", lv:[11,15],
     wild:[["rattata",5],["spearow",4],["sandshrew",4],["ekans",3],["meowth",2]]},
   route24:{name:"24번도로 · 황금다리",note:"다리 위로 물바람이 분다. 건너편 풀숲이 짙다.",
-    quirk:"에스퍼가 드물게 목격된다",
+    quirk:"에스퍼가 드물게 목격된다", lv:[12,16],
     wild:[["caterpie",4],["weedle",4],["oddish",4],["bellsprout",4],["pidgey",3],["abra",2]]},
   shore:{name:"잔교",note:"물이 잔잔하다. 발밑에서 계속 물소리가 난다.",
-    quirk:"물의 돌 실험에 좋다",
+    quirk:"물의 돌 실험에 좋다", lv:[14,19],
     wild:[["magikarp",7],["poliwag",4],["goldeen",3]]},
   power:{name:"무인발전소",note:"버려진 건물. 끊긴 전선에서 아직 소리가 난다.",
-    quirk:"전기 조건 실험에 좋다 · 전설이 목격된 곳",
+    quirk:"전기 조건 실험에 좋다 · 전설이 목격된 곳", lv:[20,26],
     wild:[["voltorb",5],["magnemite",5],["magneton",2],["zubat",3],["zapdos",1]]},
   seafoam:{name:"쌍둥이섬",note:"동굴 안이 통째로 얼어 있다. 숨을 쉬면 하얗게 흩어진다.",
-    quirk:"얼음 · 물 조건 실험에 좋다",
+    quirk:"얼음 · 물 조건 실험에 좋다", lv:[24,30],
     wild:[["golbat",4],["magikarp",4],["poliwhirl",3],["seaking",3],["articuno",1]]},
   mansion:{name:"폐허가 된 저택",note:"불에 그을린 방들이 이어진다. 실험 일지가 흩어져 있다.",
-    quirk:"불 조건 실험에 좋다 · 무언가 만들어진 곳",
+    quirk:"불 조건 실험에 좋다 · 무언가 만들어진 곳", lv:[28,36],
     wild:[["vulpix",4],["growlithe",4],["ekans",3],["moltres",1],["mewtwo",0.4]]}
 };
 
@@ -949,10 +974,18 @@ const TUNE = {
   stoneLife:3,
 
   partyMax:6,
-  balls:20,          // 몬스터볼
+  balls:20,          // 처음 받는 몬스터볼
   watchBonus:14,     // 지켜보면 포획 확률이 오른다
   watchFlee:22,      // 대신 달아날 수 있다
-  failFlee:26        // 실패해도 달아날 수 있다
+  failFlee:26,       // 실패해도 달아날 수 있다
+
+  /* 야생도 레벨을 가진다. 높을수록 볼이 잘 듣지 않는다. */
+  wildLvFrom:5,      // 이 레벨까지는 보정 없음
+  wildLvPer:1.3,     // 한 레벨 오를 때마다 깎이는 포획 확률
+
+  /* 연구소는 표본을 받고 볼을 내준다. */
+  give:{base:2, rare:70, rareCap:9, lvPer:6, max:14},
+  aid:5              // 넘길 표본도 볼도 없을 때만 주는 최소한
 };
 
 const EX = [
@@ -1063,6 +1096,8 @@ function applySave(s){
   /* 처음 고르는 순간은 이미 끝났다. 여기서 내려두지 않으면
      이어하기 뒤에 잡는 야생이 전부 「최초 파트너」로 기록된다. */
   startPhase=false;
+  /* 레벨 없이 저장된 야생은 지금 지역 기준으로 매긴다 */
+  if(wild&&!wild.lv) wild.lv=wildLv(wild.form,REGION[here]);
   Object.keys(pets).forEach(id=>{ const m=pets[id];
     if(m.crisis===undefined) m.crisis=0;
     if(m.low===undefined) m.low=false;
@@ -1121,12 +1156,28 @@ function rollEx(hp){
   return able[able.length-1];
 }
 
+/* 야생이 몇 레벨로 나오는가 — 전설은 지역과 무관하게 고정이다 */
+function wildLv(f,R){
+  const d=DATA[f];
+  if(d.lv) return d.lv;
+  const r=R.lv||[TUNE.startLv,TUNE.startLv];
+  return r[0]+Math.floor(Math.random()*(r[1]-r[0]+1));
+}
+
+/* 포획 확률 — 레벨이 높을수록 볼이 잘 듣지 않는다.
+   전설은 원래 확률이 이미 낮으므로 레벨 보정을 받지 않는다. */
+function catchRate(w){
+  const d=DATA[w.form];
+  const hard=d.legend?0:Math.max(0,(w.lv||TUNE.startLv)-TUNE.wildLvFrom)*TUNE.wildLvPer;
+  return clamp(Math.round(d.rate-hard+(w.watched?TUNE.watchBonus:0)),3,95);
+}
+
 /* 몬스터 한 마리를 새로 만든다 */
-function newPet(f){
+function newPet(f,lv){
   seq++;
   const id="p"+seq;
   pets[id]={id:id,form:f,base:f,hp:TUNE.hpMax,hpCap:TUNE.hpMax,sat:TUNE.startSat,
-    exp:0,lv:TUNE.startLv,recent:[],acts:0,crisis:0,low:false,
+    exp:0,lv:lv||TUNE.startLv,recent:[],acts:0,crisis:0,low:false,
     own:(startPhase?"starter":"wild"),lost:null,
     bond:startPhase?(f==="pika"?TUNE.startBond.pika:TUNE.startBond.normal):12};
   return id;
@@ -1242,18 +1293,47 @@ function renderZones(){
          ${R.wild.length?"":"disabled"}>풀숲을 살핀다</button>
        ${here==="pallet"
          ? `<button class="act" style="--c:var(--ink)" onclick="refill()"
-              ${balls>3?"disabled":""}>연구소에서 볼을 받는다</button>` : ""}
+              ${(balls>0||box.length)?"disabled":""}>연구소에 손을 벌린다</button>` : ""}
      </div>
      <p class="hint">몬스터볼 ${balls}개 · 파티 ${party.length}/${TUNE.partyMax} · 보관함 ${box.length} · 자동 저장됨</p>
+     ${here==="pallet"&&box.length
+       ? `<p class="hint" style="color:var(--grass)">보관함의 표본 ${box.length}마리를 넘기면 볼로 바꿔준다 · 아래 「파티와 보관함」에서</p>`
+       : ""}
      <p class="hint">만난 종류 ${seen.length}종 · 잡은 야생 ${caught}마리 · 진화 ${evolved}회</p>
      ${next?`<p class="hint" style="color:var(--volt)">다음 길 — ${REGION[next].name} · ${GATE[next].text}</p>`
            :`<p class="hint" style="color:var(--volt)">모든 길이 열렸다</p>`}`;
 }
 
+/* ═════════════════════════════════════════════
+   연구소는 표본을 받고 볼을 내준다.
+   귀한 종일수록, 오래 데리고 다닌 몸일수록 값이 높다.
+   ═════════════════════════════════════════════ */
+function giveValue(id){
+  const m=pets[id], d=DATA[m.form], G=TUNE.give;
+  const rare=clamp(Math.round(G.rare/Math.max(d.rate||30,6)),0,G.rareCap);
+  return clamp(G.base+rare+Math.floor(m.lv/G.lvPer),2,G.max);
+}
+
+function giveAway(id){
+  const m=pets[id]; if(!m||!box.includes(id)) return;
+  const d=DATA[m.form];
+  if(here!=="pallet"){ say("표본은 태초마을 연구소에서만 넘길 수 있다.","deny"); return; }
+  if(d.legend){ say(d.name+"는 넘기지 않는다. 연구소도 받기를 꺼렸다.","deny"); return; }
+  const n=giveValue(id);
+  if(!confirm(d.name+" (LV."+m.lv+")를 연구소에 넘길까?\n몬스터볼 "+n+"개를 받는다.\n한 번 넘기면 되돌릴 수 없다.")) return;
+  box=box.filter(x=>x!==id); delete pets[id];
+  balls+=n;
+  say("<b>"+d.name+"</b>를 표본으로 넘겼다. 연구소가 몬스터볼을 내줬다.","trace","볼 +"+n);
+  notify("get","표본을 넘겼다",d.name+" · 몬스터볼 +"+n,"var(--grass)",d.icon);
+  renderAll();
+}
+
+/* 넘길 표본도 볼도 없을 때만 손을 벌릴 수 있다 */
 function refill(){
-  if(balls>3){ say("아직 볼이 남았다. 다 쓰고 오라고 한다.","deny"); return; }
-  balls=TUNE.balls;
-  say("연구소에서 몬스터볼을 <b>"+TUNE.balls+"개</b> 받았다.",null);
+  if(balls>0){ say("아직 볼이 남았다. 다 쓰고 오라고 한다.","deny"); return; }
+  if(box.length){ say("보관함에 표본이 남아 있다. 그것부터 넘기라고 한다.","deny"); return; }
+  balls=TUNE.aid;
+  say("연구소가 몬스터볼 <b>"+TUNE.aid+"개</b>를 쥐여줬다. 지원이지 보급이 아니다.",null,"볼 +"+TUNE.aid);
   renderAll();
 }
 
@@ -1280,27 +1360,32 @@ function search(){
   if(Math.random()<0.25){ say(pick(LINE.nowild),null); return; }
   let t=R.wild.reduce((s,x)=>s+x[1],0), r=Math.random()*t, f=R.wild[0][0];
   for(const x of R.wild){ r-=x[1]; if(r<=0){ f=x[0]; break; } }
-  wild={form:f,watched:false};
+  wild={form:f,watched:false,lv:wildLv(f,R)};
   see(f);
   const d=DATA[f];
-  say("풀숲이 흔들렸다. <b>"+d.name+"</b>가 나타났다.",(f==="pika"||d.legend)?"hid":null);
+  say("풀숲이 흔들렸다. <b>"+d.name+"</b>가 나타났다.",
+    (f==="pika"||d.legend)?"hid":null,"LV."+wild.lv);
   if(d.legend) notify("legend","전설이 나타났다",d.name+" · 도망치기 전에 결정해야 한다",d.c,d.icon);
   else if(RARE.includes(f)) notify("unlock","드문 것이 나타났다",d.name+" · 이 근처에서는 좀처럼 보기 어렵다",d.c,d.icon);
   renderAll();
+  /* 눈앞의 것으로 시선을 옮겨준다 */
+  const el=document.getElementById("wildwrap");
+  if(el&&el.firstElementChild) el.scrollIntoView({behavior:"smooth",block:"center"});
 }
 
 function renderWild(){
   const w=document.getElementById("wildwrap");
   if(!wild){ w.innerHTML=""; return; }
   const d=DATA[wild.form];
-  const p=clamp(d.rate+(wild.watched?TUNE.watchBonus:0),5,95);
+  const p=catchRate(wild);
+  const hard=d.legend?0:Math.max(0,wild.lv-TUNE.wildLvFrom);
   w.innerHTML=`<div class="panel wildcard" style="--c:${d.c}">
+    <p class="wildmark"><span class="blip"></span>지금 눈앞에 · ${REGION[here].name}</p>
     <div class="wm"><svg viewBox="0 0 30 30">${d.icon}</svg></div>
-    <p class="ptitle">야생 · ${REGION[here].name}</p>
     <div class="wildhead">
       <div class="orb"><svg viewBox="0 0 30 30">${d.icon}</svg></div>
       <div>
-        <p class="tag">${d.tag} · ${d.type}</p>
+        <p class="tag">야생 · LV.${wild.lv} · ${d.type}</p>
         <div class="namebox"><p class="name">${d.name}</p></div>
       </div>
     </div>
@@ -1310,7 +1395,9 @@ function renderWild(){
       <button class="act" onclick="watch()" ${wild.watched?"disabled":""}>지켜본다</button>
       <button class="act" onclick="leave()">물러난다</button>
     </div>
-    <p class="hint">포획 확률 ${p}%${wild.watched?" · 이미 지켜봤다":" · 지켜보면 오르지만 달아날 수 있다"}</p>
+    <p class="hint">포획 확률 ${p}%${hard?" · 레벨 "+wild.lv+"이라 손이 덜 간다":""}${
+      wild.watched?" · 이미 지켜봤다":" · 지켜보면 오르지만 달아날 수 있다"}</p>
+    ${balls<=0?'<p class="hint" style="color:var(--fire)">볼이 없다 · 태초마을에서 표본을 넘기면 받을 수 있다</p>':''}
   </div>`;
 }
 
@@ -1329,15 +1416,15 @@ function throwBall(){
   if(!wild||balls<=0) return;
   const d=DATA[wild.form];
   balls--;
-  const p=clamp(d.rate+(wild.watched?TUNE.watchBonus:0),5,95);
+  const p=catchRate(wild);
   if(Math.random()*100<p){
-    const id=newPet(wild.form);
+    const id=newPet(wild.form,wild.lv);
     const toBox=party.length>=TUNE.partyMax;
     if(toBox) box.push(id); else party.push(id);
     caught++; see(wild.form);
     notify(d.legend?"legend":"get",d.legend?"전설을 붙잡았다":"동료가 됐다",
       d.name+" · 도감 "+seen.length+"종",d.c,d.icon);
-    say(fill(pick(LINE.caught),{n:d.name}),"catch",p+"%");
+    say(fill(pick(LINE.caught),{n:d.name}),"catch","LV."+wild.lv+" · "+p+"%");
     if(toBox) say("파티가 가득 차서 "+d.name+"는 보관함으로 갔다.",null);
     wild=null; renderAll(); return;
   }
@@ -1355,7 +1442,9 @@ function leave(){
 
 /* ═════════ 파티 카드 ═════════ */
 function renderCards(){
-  document.getElementById("cards").innerHTML=party.map(id=>{
+  document.getElementById("cards").innerHTML=
+    (party.length?`<p class="mine">함께 다니는 것들 · ${party.length}</p>`:"")
+    +party.map(id=>{
     const m=pets[id], d=sp(id), born=bornOrb===id, isMut=d.c==="var(--wrong)";
     return `<div class="card${isMut?" mutant":""}" style="--c:${d.c}">
       <div class="wm"><svg viewBox="0 0 30 30">${d.icon}</svg></div>
@@ -1464,7 +1553,9 @@ function renderSlots(){
       <div class="sname">${d.name}<em>LV.${m.lv} · 친밀도 ${Math.round(m.bond)} · 함께한 행동 ${m.acts}</em></div>
       ${inParty
         ? `<button class="mini" onclick="toBox('${id}')" ${party.length<=1?"disabled":""}>보관함으로</button>`
-        : `<button class="mini" onclick="toParty('${id}')" ${party.length>=TUNE.partyMax?"disabled":""}>파티로</button>`}
+        : `<button class="mini" onclick="toParty('${id}')" ${party.length>=TUNE.partyMax?"disabled":""}>파티로</button>
+           <button class="mini give" onclick="giveAway('${id}')"
+             ${(here!=="pallet"||d.legend)?"disabled":""}>표본 +${giveValue(id)}</button>`}
     </div>`;
   };
   el.innerHTML =
@@ -1472,7 +1563,13 @@ function renderSlots(){
     + party.map(id=>line(id,true)).join("")
     + `<p class="empty2" style="margin-top:8px">보관함 ${box.length}</p>`
     + (box.length? box.map(id=>line(id,false)).join("")
-                 : `<p class="empty2" style="color:var(--faint)">아직 비어 있다.</p>`);
+                 : `<p class="empty2" style="color:var(--faint)">아직 비어 있다.</p>`)
+    + (box.length
+        ? `<p class="empty2" style="color:${here==="pallet"?"var(--grass)":"var(--faint)"}">${
+            here==="pallet"
+              ? "표본을 넘기면 그만큼 몬스터볼로 돌아온다. 되돌릴 수는 없다."
+              : "표본은 태초마을 연구소에서만 넘길 수 있다."}</p>`
+        : "");
 }
 function toBox(id){
   if(party.length<=1) return;
