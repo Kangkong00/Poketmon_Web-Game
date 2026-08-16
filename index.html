@@ -18,7 +18,10 @@
   --mono:ui-monospace,"SF Mono",Menlo,monospace;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+/* 두 번 톡톡 쳐도 확대되지 않는다. 손가락 두 개로 벌리는 것은 그대로 둔다. */
+html{touch-action:manipulation}
 html,body{margin:0;padding:0}
+button,.zone,.act,.mini,.mv,.stone,.case,.dtoggle,.dockbtn{touch-action:manipulation}
 body{
   background:radial-gradient(120% 70% at 50% -10%,#16302B 0%,transparent 60%),var(--deep);
   color:var(--ink);font-family:var(--sans);min-height:100vh;
@@ -168,6 +171,31 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7.5vw,40px);
 .mv span{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.09em;
   color:var(--dim);margin-top:5px;font-weight:400}
 .fightcard .acts{border-top:none;padding-top:0;margin-top:10px}
+
+/* ── 무엇을 할 것인가 ── */
+.deck{display:grid;gap:9px;margin:15px 0 14px}
+@media(min-width:560px){.deck{grid-template-columns:1fr 1fr}}
+.pick{position:relative;overflow:hidden;text-align:left;cursor:pointer;
+  padding:14px 15px;border-radius:3px;
+  background:linear-gradient(150deg,color-mix(in srgb,var(--c) 10%,transparent),rgba(0,0,0,.22) 60%);
+  border:1px solid color-mix(in srgb,var(--c) 34%,transparent);
+  color:var(--ink);font-family:var(--sans);
+  transition:border-color .2s,transform .1s,opacity .2s}
+.pick:active{transform:scale(.985)}
+.pick:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.pick b{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:600;letter-spacing:.01em}
+.pick b::before{content:"";width:7px;height:7px;border-radius:50%;flex:0 0 7px;
+  background:var(--c);box-shadow:0 0 9px -1px var(--c)}
+.pick span{display:block;font-size:11.5px;line-height:1.6;color:var(--dim);margin-top:7px}
+.pick u{display:block;text-decoration:none;font-family:var(--mono);font-size:9px;
+  letter-spacing:.11em;color:var(--c);margin-top:7px}
+.pick:disabled{cursor:default;opacity:.34;border-color:var(--line);background:rgba(0,0,0,.2)}
+.pick:disabled b::before{background:var(--faint);box-shadow:none}
+.pick.key{border-color:color-mix(in srgb,var(--volt) 52%,transparent);
+  box-shadow:0 0 26px -18px var(--volt)}
+.stay{margin:0 0 2px;font-size:11.5px;line-height:1.7;color:var(--dim);
+  padding:11px 13px;border-left:1px solid var(--line);background:rgba(0,0,0,.16)}
+.stay b{color:var(--ink);font-weight:600}
 
 /* 배지 */
 .badges{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
@@ -1440,25 +1468,71 @@ function renderZones(){
   document.getElementById("zonepanel").innerHTML=
     `<p class="ptitle">지금 있는 곳</p>
      <p class="pnote">${R.note}<br><b>${R.quirk}</b></p>
-     <div class="acts" style="margin:0;padding:0;border:none">
-       <button class="act" style="--c:var(--ink)" onclick="search()"
-         ${(R.wild.length&&!wild&&!fight)?"":"disabled"}>풀숲을 살핀다</button>
-       <button class="act" style="--c:var(--ink)" onclick="meetFoe()"
-         ${(R.wild.length&&!wild&&!fight)?"":"disabled"}>누군가와 마주친다</button>
-       ${here==="pallet"
-         ? `<button class="act" style="--c:var(--ink)" onclick="refill()"
-              ${(balls>0||box.length)?"disabled":""}>연구소에 손을 벌린다</button>` : ""}
-     </div>
+     ${deck(R,next)}
      <p class="hint">몬스터볼 ${balls}개 · 파티 ${party.length}/${TUNE.partyMax} · 보관함 ${box.length} · 자동 저장됨</p>
-     ${here==="pallet"&&box.length
-       ? `<p class="hint" style="color:var(--grass)">보관함의 표본 ${box.length}마리를 넘기면 볼로 바꿔준다 · 아래 「파티와 보관함」에서</p>`
-       : ""}
-     <p class="hint">만난 종류 ${seen.length}종 · 잡은 야생 ${caught}마리 · 진화 ${evolved}회</p>
-     ${next?`<p class="hint" style="color:var(--volt)">다음 길 — ${REGION[next].name} · ${gateText(next)}</p>`
-           :`<p class="hint" style="color:var(--volt)">모든 길이 열렸다</p>`}
-     ${nextGym(next)}
+     <p class="hint">만난 종류 ${seen.length}종 · 잡은 야생 ${caught}마리 · 진화 ${evolved}회${
+        badges.length?" · 배지 "+badges.length:""}</p>
      ${badges.length?`<div class="badges">${badges.map(k=>
         `<span class="badge"><i></i>${GYM[k].badge}</span>`).join("")}</div>`:""}`;
+}
+
+/* ═════════════════════════════════════════════
+   무엇을 할 것인가 — 길을 넘기는 것은 여러 선택지 중 하나일 뿐이다.
+   여기 머물러 계속 모으기만 해도 된다.
+   ═════════════════════════════════════════════ */
+function pickCard(o){
+  return `<button class="pick${o.key?" key":""}" style="--c:${o.c}"
+    onclick="${o.go}" ${o.off?"disabled":""}>
+    <b>${o.t}</b><span>${o.off?o.why:o.s}</span>${o.tail?`<u>${o.tail}</u>`:""}</button>`;
+}
+
+function deck(R,next){
+  const busy = wild?"눈앞의 것을 먼저 정해야 한다" : fight?"싸움이 끝나야 움직일 수 있다" : "";
+  const noWild = !R.wild.length;
+  const cards=[];
+
+  cards.push(pickCard({t:"탐험",c:"var(--grass)",go:"search()",
+    s:"풀숲을 살펴 야생을 찾는다. 만나기만 해도 도감에 남는다.",
+    tail:noWild?"":"레벨 "+(R.lv?R.lv[0]+"~"+R.lv[1]:"—")+" · 볼 "+balls+"개",
+    off:noWild||busy, why:noWild?"여기에는 야생이 살지 않는다":busy}));
+
+  cards.push(pickCard({t:"전투",c:"var(--fire)",go:"meetFoe()",
+    s:"지나가는 사람과 겨룬다. 이기면 볼을 나눠 받고 경험이 쌓인다.",
+    tail:noWild?"":"이 근처 사람들 · 1~2마리",
+    off:noWild||busy||!ready().length,
+    why:noWild?"여기에는 마주칠 사람이 없다":busy||"나설 수 있는 아이가 없다 · 먼저 먹여야 한다"}));
+
+  if(next && GATE[next] && GATE[next].gym && !badges.includes(GATE[next].gym)){
+    const G=GYM[GATE[next].gym], ready0=gateNum(next);
+    cards.push(pickCard({t:"도전",c:"var(--volt)",key:ready0&&!busy,
+      go:`enterGym('${GATE[next].gym}')`,
+      s:`${G.town} 체육관 · 관장 ${G.name}(${G.type}) ${G.team.length}마리. 이겨야 ${REGION[next].name}으로 가는 길이 열린다.`,
+      tail:"최고 LV."+Math.max.apply(null,G.team.map(t=>t[1]))+" · 물러설 수 없다",
+      off:!ready0||busy||!ready().length,
+      why:!ready0?`${G.town} 체육관은 아직 문을 열지 않는다 — ${GATE[next].text}`
+                 :busy||"나설 수 있는 아이가 없다 · 먼저 먹여야 한다"}));
+  }
+
+  if(here==="pallet"){
+    const canAid=!(balls>0||box.length);
+    cards.push(pickCard({t:"연구소",c:"var(--water)",go:"refill()",
+      s:box.length?`보관함의 표본 ${box.length}마리를 넘기면 볼로 돌아온다. 아래 「파티와 보관함」에서 고른다.`
+                  :"볼도 표본도 없을 때만 손을 벌릴 수 있다.",
+      tail:box.length?"표본 "+box.length+"마리 대기":canAid?"지원 "+TUNE.aid+"개":"",
+      off:!canAid,
+      why:box.length?`표본 ${box.length}마리가 남아 있다 — 아래 「파티와 보관함」에서 넘긴다`
+                    :"아직 볼이 남아 있다"}));
+  }
+
+  /* 길은 조건이 차면 저절로 열린다. 넘어갈지 말지는 별개다. */
+  const road = !next ? `<p class="stay">모든 길이 열렸다. 이제는 <b>어디서 무엇을 할지</b>만 남았다.</p>`
+    : GATE[next]&&GATE[next].gym&&!badges.includes(GATE[next].gym)
+      ? `<p class="stay">다음 길 — <b>${REGION[next].name}</b> · ${gateText(next)}<br>
+          넘어가지 않아도 된다. 여기 남아 계속 모으고 키워도 아무도 재촉하지 않는다.</p>`
+      : `<p class="stay">다음 길 — <b>${REGION[next].name}</b> · ${gateText(next)}<br>
+          조건을 채우면 저절로 열린다. 서두를 이유는 없다.</p>`;
+
+  return `<div class="deck">${cards.join("")}</div>${road}`;
 }
 
 /* ═════════════════════════════════════════════
@@ -1486,22 +1560,6 @@ function giveAway(id){
 }
 
 /* 넘길 표본도 볼도 없을 때만 손을 벌릴 수 있다 */
-/* 수치를 다 채웠는데 배지가 없다면, 남은 것은 체육관뿐이다 */
-function nextGym(next){
-  if(!next) return "";
-  const g=GATE[next];
-  if(!g||!g.gym||badges.includes(g.gym)) return "";
-  const G=GYM[g.gym];
-  if(!gateNum(next))
-    return `<p class="hint">${G.town} 체육관 · 관장 ${G.name}(${G.type}) — 위 조건을 먼저 채워야 문을 연다</p>`;
-  return `<div class="acts" style="margin:12px 0 0;padding:0;border:none">
-      <button class="act" style="--c:var(--volt)" onclick="enterGym('${g.gym}')"
-        ${(wild||fight)?"disabled":""}>${G.town} 체육관에 들어선다 · 관장 ${G.name}</button>
-    </div>
-    <p class="hint" style="color:var(--volt)">${G.type} 타입 ${G.team.length}마리 · 최고 LV.${
-      Math.max.apply(null,G.team.map(t=>t[1]))} · 이겨야 길이 열린다</p>`;
-}
-
 function refill(){
   if(balls>0){ say("아직 볼이 남았다. 다 쓰고 오라고 한다.","deny"); return; }
   if(box.length){ say("보관함에 표본이 남아 있다. 그것부터 넘기라고 한다.","deny"); return; }
