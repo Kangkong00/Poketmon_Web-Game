@@ -275,7 +275,12 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7.5vw,40px);
 .admnote{font-family:var(--mono);font-size:9px;letter-spacing:.06em;color:var(--faint);
   margin:10px 0 0;line-height:1.8}
 
+.mv{position:relative}
 .mv.pickme{border-color:color-mix(in srgb,var(--volt) 50%,transparent)}
+.mv.poor{opacity:.32;cursor:default}
+.mv em{position:absolute;top:11px;right:12px;font-style:normal;
+  font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--volt)}
+.mv.poor em{color:var(--fire)}
 .autoline{position:relative;z-index:1;display:flex;align-items:center;gap:9px;
   margin:15px 0 0;padding-top:14px;border-top:1px solid var(--line);
   font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--dim)}
@@ -330,6 +335,7 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7.5vw,40px);
 .track{height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
 .fill{height:100%;background:var(--c);border-radius:2px;transition:width .35s ease}
 .fill.sat{background:color-mix(in srgb,var(--c) 45%,var(--dim))}
+.fill.st{background:var(--volt);opacity:.75}
 .v{font-family:var(--mono);font-size:10.5px;color:var(--ink);text-align:right}
 .note{margin:16px 0 0;padding-top:14px;border-top:1px solid var(--line);
   font-size:12px;line-height:1.7;color:var(--dim);position:relative;z-index:1}
@@ -1198,7 +1204,10 @@ const TUNE = {
   autoDelay:420,     // 자동 전투에서 한 턴 사이의 뜸
   gymExp:2.5,        // 관장을 넘기면 경험치가 크게 들어온다
   findBall:[15,1,3], // 탐험 중 볼을 줍는다 — 확률 % · 최소 · 최대
-  findStone:6        // 탐험 중 부서진 돌 하나가 되살아난다 — 확률 %
+  findStone:6,       // 탐험 중 부서진 돌 하나가 되살아난다 — 확률 %
+  /* 기력 — 기술을 쓰면 닳는다. 강한 기술일수록 많이 닳는다.
+     마을에서 쉬면 가득 차고, 밥을 주면 얼마쯤 돌아온다. */
+  st:{base:30, perLv:0.35, cost:[1,2,4,5], feed:0.25, breath:6, win:0.35}
 };
 
 const EX = [
@@ -1535,7 +1544,10 @@ function capOf(g,lv,pen){
   return Math.max(30,Math.round(base*GRADE[g||0].hp)+(pen||0));
 }
 function petCap(m){ return capOf(m.g,m.lv,m.hpPen); }
-function refitCap(m){ m.hpCap=petCap(m); m.hp=clamp(m.hp,0,m.hpCap); }
+/* 기력 상한 — 레벨을 따라 조금씩 는다 */
+function stCap(m){ return Math.round(TUNE.st.base+m.lv*TUNE.st.perLv); }
+function refitSt(m,full){ const c=stCap(m); m.st=full?c:clamp(m.st===undefined?c:m.st,0,c); }
+function refitCap(m){ m.hpCap=petCap(m); m.hp=clamp(m.hp,0,m.hpCap); refitSt(m); }
 
 let pets={}, party=[], box=[], seq=0;
 let sel=[], bag={}, logNo=0, found=[], bornOrb=null;
@@ -1727,7 +1739,8 @@ function newPet(f,lv,g){
   const id="p"+seq;
   const gr=DATA[f].legend?3:(g||0);
   const cap=capOf(gr,lv||TUNE.startLv,0);
-  pets[id]={id:id,form:f,base:f,g:gr,hpPen:0,hp:cap,hpCap:cap,sat:TUNE.startSat,
+  const sc=Math.round(TUNE.st.base+(lv||TUNE.startLv)*TUNE.st.perLv);
+  pets[id]={id:id,form:f,base:f,g:gr,hpPen:0,hp:cap,hpCap:cap,st:sc,sat:TUNE.startSat,
     exp:0,lv:lv||TUNE.startLv,recent:[],acts:0,crisis:0,low:false,
     own:(startPhase?"starter":"wild"),lost:null,
     bond:startPhase?(f==="pika"?TUNE.startBond.pika:TUNE.startBond.normal):12};
@@ -2077,9 +2090,9 @@ function deck(R,next){
 
   /* 마을에서는 쉰다 */
   if(isTown()){
-    const hurt=party.filter(id=>pets[id].hp<pets[id].hpCap).length;
+    const hurt=party.filter(id=>pets[id].hp<pets[id].hpCap||(pets[id].st||0)<stCap(pets[id])).length;
     cards.push(pickCard({t:"쉰다",c:"var(--ice)",go:"rest()",
-      s:"몸을 되돌린다. 배가 부르지는 않는다.",
+      s:"체력과 기력을 되돌린다. 배가 부르지는 않는다.",
       tail:hurt?hurt+"마리가 지쳐 있다":"",
       off:!hurt||busy, why:busy||"모두 멀쩡하다"}));
   }
@@ -2150,10 +2163,11 @@ function isTown(r){ return !!REGION[r||here].town; }
 function rest(){
   if(!isTown()){ say("여기서는 쉴 곳이 없다.","deny"); return; }
   if(fight){ say("지금은 쉴 수 없다.","deny"); return; }
-  const hurt=party.filter(id=>pets[id].hp<pets[id].hpCap);
+  const hurt=party.filter(id=>pets[id].hp<pets[id].hpCap||(pets[id].st||0)<stCap(pets[id]));
   if(!hurt.length){ say("모두 멀쩡하다. 쉴 것도 없다.","deny"); return; }
-  hurt.forEach(id=>{ const m=pets[id]; m.hp=m.hpCap; m.low=false; });
-  say("<b>"+REGION[here].name+"</b>에서 쉬었다. "+hurt.length+"마리가 몸을 되찾았다.",null,"체력 회복");
+  party.forEach(id=>{ const m=pets[id]; m.hp=m.hpCap; m.low=false; refitSt(m,true); });
+  say("<b>"+REGION[here].name+"</b>에서 쉬었다. "+hurt.length+"마리가 몸을 되찾았다.",
+    null,"체력 · 기력 회복");
   renderAll();
 }
 
@@ -2298,15 +2312,26 @@ function leave(){
    전투 — 훈련이 몸을 만든다면, 전투는 몸을 쓴다.
    쓰는 것은 같은 체력이다. 지면 쓰러지기 직전까지 간다.
    ═════════════════════════════════════════════ */
-function mv(a){ return a?{n:a[0],p:a[1],t:a[2],e:a[3]||""}:null; }
+function mv(a,c){ return a?{n:a[0],p:a[1],t:a[2],e:a[3]||"",c:c||1}:null; }
+/* 기본기는 싸고 고유기는 비싸다. 그래서 강한 것을 아끼게 된다. */
 function moveset(form,m){
-  const d=DATA[form], out=[mv(HIT.basic)];
+  const C=TUNE.st.cost, d=DATA[form], out=[mv(HIT.basic,C[0])];
   const base=(d.type||"").split(" · ")[0];
-  if(HIT[base]) out.push(mv(HIT[base]));
-  if(OWNMOVE[form]) out.push(mv(OWNMOVE[form]));
+  if(HIT[base]) out.push(mv(HIT[base],C[1]));
+  if(OWNMOVE[form]) out.push(mv(OWNMOVE[form],C[2]));
   /* 전수받았거나 융합으로 얻은 기술은 그 몸에 영원히 남는다 */
-  if(m&&m.extra) m.extra.forEach(k=>{ if(OWNMOVE[k]) out.push(mv(OWNMOVE[k])); });
+  if(m&&m.extra) m.extra.forEach(k=>{ if(OWNMOVE[k]) out.push(mv(OWNMOVE[k],C[3])); });
   return out;
+}
+/* 이 기술이 이번 턴에 낼 만한 평균 피해 */
+function expectDmg(x,m,foe){
+  if(!x.p) return 0;
+  let d=x.p*(0.75+m.lv*0.035)*effOf(x.t,mainType(foe.form))*gradeOf(m).pow*atkBuff(x.t)*0.925*0.34;
+  if(foe.guard) d*=0.5;
+  if(fight&&fight.mineWeak) d*=0.8;
+  if(x.e==="again") d*=2;
+  if(x.e==="wild") d*=0.7;
+  return d;
 }
 function mainType(form){ return (DATA[form].type||"노말").split(" · ")[0]; }
 
@@ -2424,15 +2449,27 @@ function enterPlateau(){
    ═════════════════════════════════════════════ */
 let autoFight=true, autoT=null;
 
+/* 기력을 읽고 고른다.
+   눕힐 수 있으면 가장 싼 것으로 끝내고,
+   기력이 넉넉하면 센 것을, 쪼들리면 값싼 것을 고른다.
+   아무것도 못 쓰면 -1 — 숨을 고른다. */
 function bestMove(m,foe){
   const set=moveset(m.form,m);
-  let best=0,bv=-1;
-  set.forEach((x,i)=>{
-    let v=(x.p||0)*effOf(x.t,mainType(foe.form))*atkBuff(x.t);
-    if(x.e==="again") v*=1.8;
-    if(x.e==="drain") v*=1.2;
-    if(!x.p) v=m.hp<m.hpCap*0.25?12:0;   // 몰릴 때만 방어를 고른다
-    if(v>bv){ bv=v; best=i; }
+  const able=set.map((x,i)=>({x,i})).filter(o=>o.x.c<=(m.st||0));
+  if(!able.length) return -1;
+
+  const kill=able.filter(o=>o.x.p&&expectDmg(o.x,m,foe)>=foe.hp)
+                 .sort((a,b)=>a.x.c-b.x.c)[0];
+  if(kill) return kill.i;
+
+  const rich=(m.st||0)/stCap(m);
+  let best=able[0].i, bv=-1;
+  able.forEach(({x,i})=>{
+    let v=x.p?expectDmg(x,m,foe):(m.hp<m.hpCap*0.25?14:0);
+    if(x.e==="drain") v*=1.25;
+    /* 기력이 넉넉하면 센 것을, 쪼들리면 값싼 것을 */
+    const score=v/Math.pow(x.c, rich>0.55?0.2:1.1);
+    if(score>bv){ bv=score; best=i; }
   });
   return best;
 }
@@ -2457,11 +2494,22 @@ function toggleAuto(){
 /* 한 턴 — 내가 치고, 살아 있으면 상대가 친다 */
 function useMove(i){
   if(!fight) return;
-  const m=pets[fight.mine], my=moveset(m.form,m)[i], foe=fight.team[fight.idx];
-  if(!my||!foe) return;
-  fight.turn++;
-  stat.mv[my.t]=(stat.mv[my.t]||0)+1;   // 어떤 타입을 몇 번 썼는가
+  const m=pets[fight.mine], foe=fight.team[fight.idx];
+  if(!foe) return;
+  const my=i<0?null:moveset(m.form,m)[i];
   const myName=sp(fight.mine).name, foeName=DATA[foe.form].name;
+  fight.turn++;
+
+  /* 기력이 모자라면 이번 턴은 숨만 고른다 */
+  if(!my||my.c>(m.st||0)){
+    m.st=clamp((m.st||0)+TUNE.st.breath,0,stCap(m));
+    fight.mineGuard=false;
+    say(myName+"가 숨을 골랐다. 기력이 조금 돌아왔다.","deny","기력 +"+TUNE.st.breath);
+    foeTurn(m,foe,foeName,myName);
+    return;
+  }
+  m.st-=my.c;
+  stat.mv[my.t]=(stat.mv[my.t]||0)+1;   // 어떤 타입을 몇 번 썼는가
 
   /* 내 차례 */
   if(!my.p){
@@ -2491,8 +2539,11 @@ function useMove(i){
   }
 
   if(foe.hp<=0){ foeDown(); return; }
+  foeTurn(m,foe,foeName,myName);
+}
 
-  /* 상대 차례 */
+/* 상대 차례 — 상대는 기력을 쓰지 않는다 */
+function foeTurn(m,foe,foeName,myName){
   const fm=pick(moveset(foe.form).filter(x=>x.p||Math.random()<.3))||mv(HIT.basic);
   if(!fm.p){ foe.guard=true; say(foeName+"가 몸을 웅크렸다.",null,"방어"); }
   else{
@@ -2527,6 +2578,8 @@ function foeDown(){
   gainExp(fight.mine,gain,"전투");
   m.bond=clamp(m.bond+2,0,TUNE.bondMax);
   m.acts++;
+  /* 한 마리를 눕히면 숨을 돌린다. 그래야 연달아 싸울 수 있다. */
+  m.st=clamp((m.st||0)+Math.round(stCap(m)*TUNE.st.win),0,stCap(m));
   fight.idx++;
   if(fight.idx>=fight.team.length){
     if(fight.queue&&fight.queue.length){
@@ -2537,7 +2590,8 @@ function foeDown(){
       let woke=0;
       party.forEach(x=>{ const m=pets[x];
         if(m.hp<=3) woke++;
-        m.hp=clamp(m.hp+Math.round(m.hpCap*TUNE.gateBreath),0,m.hpCap); });
+        m.hp=clamp(m.hp+Math.round(m.hpCap*TUNE.gateBreath),0,m.hpCap);
+        m.st=clamp((m.st||0)+Math.round(stCap(m)*TUNE.gateBreath),0,stCap(m)); });
       say("문과 문 사이에서 짧게 숨을 골랐다."+(woke?" 쓰러졌던 "+woke+"마리가 다시 일어섰다.":""),
         null,"체력 +"+Math.round(TUNE.gateBreath*100)+"%");
       if(fight.mine&&pets[fight.mine].hp<=3){ const a=ready(); if(a.length) fight.mine=a[0]; }
@@ -2644,13 +2698,17 @@ function renderFight(){
   const m=pets[fight.mine], md=sp(fight.mine);
   const left=fight.team.length-fight.idx-1;
   const bar=(v,max,c)=>`<div class="track"><div class="fill" style="width:${clamp(v/max*100,0,100)}%;background:${c}"></div></div>`;
+  const bar2=(v,max,c)=>`<div class="track" style="height:3px;margin-top:7px"><div class="fill" style="width:${clamp(v/max*100,0,100)}%;background:${c};opacity:.8"></div></div>`;
   const pickIdx=bestMove(m,foe);
   const moves=autoFight?"":moveset(m.form,m).map((x,i)=>{
     const e=x.p?effOf(x.t,mainType(foe.form)):1;
     const mark=!x.p?"방어":e>1?"잘 통한다":e<1?"잘 안 통한다":"";
-    return `<button class="mv${i===pickIdx?" pickme":""}" style="--c:${x.p?"var(--ink)":"var(--dim)"}"
-      onclick="useMove(${i})">
-      ${x.n}<span>${x.t} · ${x.p?"위력 "+x.p:"공격 없음"}${mark?" · "+mark:""}</span></button>`;
+    const poor=x.c>(m.st||0);
+    return `<button class="mv${i===pickIdx?" pickme":""}${poor?" poor":""}"
+      style="--c:${x.p?"var(--ink)":"var(--dim)"}" onclick="useMove(${i})" ${poor?"disabled":""}>
+      ${x.n}<em>기력 ${x.c}</em>
+      <span>${x.t} · ${x.p?"위력 "+x.p:"공격 없음"}${mark?" · "+mark:""}${
+        poor?" · 기력이 모자란다":""}</span></button>`;
   }).join("");
   /* 쓰러뜨리면 얼마가 들어오는지 미리 보인다 */
   const bonus=fight.kind==="trainer"?1:TUNE.gymExp;
@@ -2678,15 +2736,18 @@ function renderFight(){
       <div style="flex:1;min-width:0">
         <p class="tag" style="color:${md.c}">${md.name} · LV.${m.lv} · ${md.type}</p>${gradeTag(m)}
         ${bar(m.hp,m.hpCap,md.c)}
+        ${bar2(m.st||0,stCap(m),"var(--volt)")}
         <p class="hint" style="margin-top:6px">${Math.round(m.hp)} / ${m.hpCap}
+          · <b style="color:var(--volt)">기력 ${m.st||0}/${stCap(m)}</b>
           · 경험치 ${m.exp}/${needExp(m.lv,m.fast)}${
           fight.mineGuard?" · 막을 준비":""}${fight.mineWeak?" · 공격이 무뎌졌다":""}</p>
       </div>
     </div>
     ${fight.got?`<p class="gained">이 싸움에서 얻은 경험치 <b>+${fight.got}</b></p>`:""}
     ${autoFight
-      ? `<p class="autoline"><span class="blip"></span>맡겨두고 있다 —
-           다음 수는 <b>${moveset(m.form,m)[pickIdx].n}</b></p>`
+      ? `<p class="autoline"><span class="blip"></span>맡겨두고 있다 — 다음 수는
+           <b>${pickIdx<0?"숨 고르기":moveset(m.form,m)[pickIdx].n
+             +" (기력 "+moveset(m.form,m)[pickIdx].c+")"}</b></p>`
       : `<div class="mvs">${moves}</div>`}
     <div class="acts" style="margin-top:12px">
       <button class="mini${autoFight?" on":""}" onclick="toggleAuto()">${
@@ -2715,7 +2776,7 @@ function renderCards(){
       </div>
       <p class="desc">${d.desc}</p>
       <div class="stats" style="margin-top:16px">
-        ${bar(id,"hp","체력")}${bar(id,"sat","포만감")}
+        ${bar(id,"hp","체력")}${bar(id,"st","기력")}${bar(id,"sat","포만감")}
         ${bar(id,"bond","친밀도")}${bar(id,"exp","경험치")}
       </div>
       <div class="acts">
@@ -2740,7 +2801,7 @@ function renderCards(){
 
 function bar(id,key,label){
   return `<div class="row"><span class="k">${label}</span>
-    <div class="track"><div class="fill${key==="sat"?" sat":""}" id="${key}-${id}" style="width:0%"></div></div>
+    <div class="track"><div class="fill${key==="sat"?" sat":key==="st"?" st":""}" id="${key}-${id}" style="width:0%"></div></div>
     <span class="v" id="${key}v-${id}">0</span></div>`;
 }
 
@@ -2752,6 +2813,7 @@ function paint(id){
     document.getElementById(key+"v-"+id).textContent=txt||Math.round(val);
   };
   set("hp",m.hp,m.hpCap,Math.round(m.hp)+"/"+m.hpCap);
+  set("st",m.st||0,stCap(m),(m.st||0)+"/"+stCap(m));
   set("sat",m.sat,TUNE.satMax);
   set("bond",m.bond,TUNE.bondMax);
   set("exp",m.exp,need,m.exp+"/"+need);
@@ -2861,9 +2923,10 @@ function feed(id){
   if(m.low && m.hp>=m.hpCap*0.6){ m.low=false; m.crisis=(m.crisis||0)+1;
     say("◆ 쓰러지기 직전까지 갔다가 돌아왔다. 넘긴 위기 "+m.crisis+"회","hid"); }
   m.sat=clamp(m.sat+TUNE.feed.sat,0,TUNE.satMax);
+  m.st=clamp((m.st||0)+Math.round(stCap(m)*TUNE.st.feed),0,stCap(m));
   const bd=TUNE.feed.bond+(wornEff().bond||0);
   m.bond=clamp(m.bond+bd,0,TUNE.bondMax);
-  say(fill(pick(LINE.feed),{n:n}),null,"친밀도 +"+bd);
+  say(fill(pick(LINE.feed),{n:n}),null,"친밀도 +"+bd+" · 기력 회복");
   paint(id); renderSlots();
 }
 
@@ -2906,7 +2969,7 @@ function levelUp(id){
   const m=pets[id];
   while(m.lv<TUNE.lvMax && m.exp>=needExp(m.lv,m.fast)){
     m.exp-=needExp(m.lv,m.fast); m.lv+=1;
-    m.hpCap=petCap(m); m.hp=m.hpCap;
+    m.hpCap=petCap(m); m.hp=m.hpCap; refitSt(m,true);
     say(fill(pick(LINE.levelup),{n:sp(id).name,lv:m.lv}),"up");
     const le=LVEVO[m.form];
     if(le && m.lv>=le.lv){
@@ -3150,8 +3213,8 @@ function admMark(){ if(stat) stat.dev=1; }
 function admLv(n){
   admMark();
   party.concat(box).forEach(id=>{ const m=pets[id];
-    m.lv=clamp(n,1,TUNE.lvMax); m.exp=0; refitCap(m); m.hp=m.hpCap; m.sat=TUNE.satMax;
-    m.low=false; });
+    m.lv=clamp(n,1,TUNE.lvMax); m.exp=0; refitCap(m); refitSt(m,true);
+    m.hp=m.hpCap; m.sat=TUNE.satMax; m.low=false; });
   say("파티와 보관함을 <b>LV."+n+"</b>로 맞췄다.",null,"dev");
   renderAll();
 }
@@ -3172,7 +3235,7 @@ function admBalls(){ admMark(); balls=999; say("몬스터볼 999개.",null,"dev"
 function admHeal(){
   admMark();
   party.concat(box).forEach(id=>{ const m=pets[id];
-    m.hp=m.hpCap; m.sat=TUNE.satMax; m.low=false; });
+    m.hp=m.hpCap; m.sat=TUNE.satMax; m.low=false; refitSt(m,true); });
   say("전부 회복했다.",null,"dev"); renderAll();
 }
 function admTitles(){
@@ -3255,7 +3318,8 @@ function admStage(i){
   caught=Math.max(caught,st.dex); evolved=Math.max(evolved,Math.floor(i*1.5));
   balls=Math.max(balls,40);
   party.concat(box).forEach(id=>{ const m=pets[id];
-    m.lv=st.lv; m.exp=0; refitCap(m); m.hp=m.hpCap; m.sat=TUNE.satMax; m.low=false; });
+    m.lv=st.lv; m.exp=0; refitCap(m); refitSt(m,true);
+    m.hp=m.hpCap; m.sat=TUNE.satMax; m.low=false; });
   say("◆ <b>"+st.n+"</b>까지 건너뛰었다.","hid","dev · LV."+st.lv+" · 배지 "+st.badge);
   renderAll(); scrollTo(0,0);
 }
