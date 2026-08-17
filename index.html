@@ -11,7 +11,7 @@
   --line:rgba(160,205,195,.16);--ink:#DDEAE4;--dim:#7C9690;--faint:#4E645F;
   --grass:#7FBF6A;--fire:#E8613C;--water:#4FA3D1;--volt:#E8C547;
   --wrong:#B07BD8;--norm:#BCB093;--bug:#A9C05C;
-  --rock:#A8977A;--fairy:#E4A8C6;--sky:#93B7D6;
+  --rock:#A8977A;--fairy:#E4A8C6;--sky:#93B7D6;--ground:#C98F4E;--mind:#9C86E8;
   --psn:#A57FB8;--psy:#E58FA6;--ice:#8FD3DE;--fight:#C96A4E;--ghost:#7C6FA8;
   --serif:"AppleMyungjo","Nanum Myeongjo","Songti SC",serif;
   --sans:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
@@ -932,6 +932,79 @@ const DATA = {
   pika_fire:{name:"피카염",type:"전기 · 화",c:"var(--wrong)",tag:"SCORCH",
     icon:I.pika+'<path d="M8 22C8 25 10 27 12 27"/>',
     desc:"볼이 그을렸다. 전기가 나올 때마다 열이 먼저 새어 나온다."},
+  bulba_moon:{name:"이상해달",type:"풀 · 월",c:"var(--wrong)",tag:"LUNAR",
+    icon:I.bulba+'<path d="M22 4a4.6 4.6 0 1 0 5.4 5.4A5.6 5.6 0 0 1 22 4Z"/>',
+    desc:"달빛을 삼킨 씨앗이 밤에만 벌어진다. 낮에는 아무 일도 없었다는 얼굴이다."},
+  bulba_rock:{name:"이상해암",type:"풀 · 암",c:"var(--wrong)",tag:"FOSSIL",
+    icon:I.bulba+'<path d="M20 3l6 3l-2 6l-6-2Z"/>',
+    desc:"씨앗이 굳어 돌이 됐다. 두드리면 속이 빈 소리가 난다."},
+  bulba_earth:{name:"이상해토",type:"풀 · 토",c:"var(--wrong)",tag:"ROOTED",
+    icon:I.bulba+'<path d="M4 28h22"/><path d="M8 25h15"/>',
+    desc:"뿌리가 땅으로 내려갔다. 부르면 오지만 오래 걸린다."},
+  bulba_toxic:{name:"이상해독",type:"풀 · 독",c:"var(--wrong)",tag:"BLIGHT",
+    icon:I.bulba+'<path d="M15 4c2 3 4 4 4 7"/><circle cx="19" cy="12" r="1.7"/>',
+    desc:"씨앗이 상했다. 등에서 나는 냄새를 스스로는 못 맡는다."},
+  bulba_mind:{name:"이상해심",type:"풀 · 심",c:"var(--wrong)",tag:"AWARE",
+    icon:I.bulba+'<circle cx="15" cy="7" r="3.6"/><circle cx="15" cy="7" r="1.3"/>',
+    desc:"씨앗이 생각을 시작했다. 무엇을 생각하는지는 알 수 없다."},
+  bulba_ice:{name:"이상해빙",type:"풀 · 빙",c:"var(--wrong)",tag:"FROST",
+    icon:I.bulba+'<path d="M23 3v9M19 5.5l8 4M27 5.5l-8 4"/>',
+    desc:"씨앗에 서리가 앉았다. 녹지 않고 그대로 있다."},
+  char_moon:{name:"파이월",type:"불 · 월",c:"var(--wrong)",tag:"MOONFIRE",
+    icon:I.char+'<path d="M22 4a4.6 4.6 0 1 0 5.4 5.4A5.6 5.6 0 0 1 22 4Z"/>',
+    desc:"꼬리 불이 은빛이 됐다. 뜨겁지 않은데 무언가는 탄다."},
+  char_rock:{name:"파이암",type:"불 · 암",c:"var(--wrong)",tag:"MAGMA",
+    icon:I.char+'<path d="M20 3l6 3l-2 6l-6-2Z"/>',
+    desc:"꼬리 불이 굳어 돌이 됐다. 안쪽은 아직 붉다."},
+  char_earth:{name:"파이토",type:"불 · 토",c:"var(--wrong)",tag:"EMBERASH",
+    icon:I.char+'<path d="M4 28h22"/><path d="M8 25h15"/>',
+    desc:"불이 흙에 묻혔다. 밟으면 아래에서 아직 따뜻하다."},
+  char_toxic:{name:"파이독",type:"불 · 독",c:"var(--wrong)",tag:"FUME",
+    icon:I.char+'<path d="M15 4c2 3 4 4 4 7"/><circle cx="19" cy="12" r="1.7"/>',
+    desc:"불꽃에서 연기가 난다. 그 연기를 오래 맡으면 안 된다."},
+  char_mind:{name:"파이심",type:"불 · 심",c:"var(--wrong)",tag:"WILL",
+    icon:I.char+'<circle cx="15" cy="7" r="3.6"/><circle cx="15" cy="7" r="1.3"/>',
+    desc:"불이 제 뜻으로 붙었다 꺼진다. 손을 쓸 데가 없다."},
+  char_ice:{name:"파이빙",type:"불 · 빙",c:"var(--wrong)",tag:"COLDFIRE",
+    icon:I.char+'<path d="M23 3v9M19 5.5l8 4M27 5.5l-8 4"/>',
+    desc:"불이 차가워졌다. 닿으면 데는 게 아니라 붙는다."},
+  squirt_moon:{name:"꼬부월",type:"물 · 월",c:"var(--wrong)",tag:"TIDAL",
+    icon:I.squirt+'<path d="M22 4a4.6 4.6 0 1 0 5.4 5.4A5.6 5.6 0 0 1 22 4Z"/>',
+    desc:"등껍질에 달이 비친다. 밤에 물가로 자꾸 나간다."},
+  squirt_rock:{name:"꼬부암",type:"물 · 암",c:"var(--wrong)",tag:"SHELLSTONE",
+    icon:I.squirt+'<path d="M20 3l6 3l-2 6l-6-2Z"/>',
+    desc:"등껍질이 돌이 됐다. 물을 머금지 못한다."},
+  squirt_earth:{name:"꼬부토",type:"물 · 토",c:"var(--wrong)",tag:"SILT",
+    icon:I.squirt+'<path d="M4 28h22"/><path d="M8 25h15"/>',
+    desc:"등껍질에 진흙이 앉았다. 씻어도 다시 앉는다."},
+  squirt_toxic:{name:"꼬부독",type:"물 · 독",c:"var(--wrong)",tag:"STAGNANT",
+    icon:I.squirt+'<path d="M15 4c2 3 4 4 4 7"/><circle cx="19" cy="12" r="1.7"/>',
+    desc:"등껍질 속 물이 고여 썩었다. 그래도 본인은 개의치 않는다."},
+  squirt_mind:{name:"꼬부심",type:"물 · 심",c:"var(--wrong)",tag:"STILL",
+    icon:I.squirt+'<circle cx="15" cy="7" r="3.6"/><circle cx="15" cy="7" r="1.3"/>',
+    desc:"등껍질 속이 고요하다. 그 고요가 밖으로 새어 나온다."},
+  squirt_ice:{name:"꼬부빙",type:"물 · 빙",c:"var(--wrong)",tag:"GLACIER",
+    icon:I.squirt+'<path d="M23 3v9M19 5.5l8 4M27 5.5l-8 4"/>',
+    desc:"등껍질이 얼었다. 안의 물도 같이 얼어 있다."},
+  pika_moon:{name:"피카월",type:"전기 · 월",c:"var(--wrong)",tag:"MOONSPARK",
+    icon:I.pika+'<path d="M22 4a4.6 4.6 0 1 0 5.4 5.4A5.6 5.6 0 0 1 22 4Z"/>',
+    desc:"볼의 전기가 달빛을 띤다. 밤에만 제대로 터진다."},
+  pika_rock:{name:"피카암",type:"전기 · 암",c:"var(--wrong)",tag:"GROUNDED",
+    icon:I.pika+'<path d="M20 3l6 3l-2 6l-6-2Z"/>',
+    desc:"몸이 무거워졌다. 전기가 땅으로 새어 나간다."},
+  pika_earth:{name:"피카토",type:"전기 · 토",c:"var(--wrong)",tag:"EARTHED",
+    icon:I.pika+'<path d="M4 28h22"/><path d="M8 25h15"/>',
+    desc:"전기가 전부 땅으로 흘러버린다. 대신 발밑이 늘 저릿하다."},
+  pika_toxic:{name:"피카독",type:"전기 · 독",c:"var(--wrong)",tag:"TAINT",
+    icon:I.pika+'<path d="M15 4c2 3 4 4 4 7"/><circle cx="19" cy="12" r="1.7"/>',
+    desc:"전기에 독이 섞였다. 맞으면 저리고 나서 오래 아프다."},
+  pika_mind:{name:"피카심",type:"전기 · 심",c:"var(--wrong)",tag:"THOUGHT",
+    icon:I.pika+'<circle cx="15" cy="7" r="3.6"/><circle cx="15" cy="7" r="1.3"/>',
+    desc:"전기가 생각을 따라 움직인다. 그래서 더 무섭다."},
+  pika_ice:{name:"피카빙",type:"전기 · 빙",c:"var(--wrong)",tag:"STATIC",
+    icon:I.pika+'<path d="M23 3v9M19 5.5l8 4M27 5.5l-8 4"/>',
+    desc:"털이 얼어 곤두섰다. 만지면 저리고 시리다."},
+
   pika_water:{name:"피카담",type:"전기 · 수",c:"var(--wrong)",tag:"DROWNED",
     icon:I.pika+'<path d="M4 22C4 22 8 26 8 28"/><path d="M26 22C26 22 22 26 22 28"/>',
     desc:"전기가 물에 잠겨 몸 밖으로 나오지 못한다. 젖은 털 밑에서 계속 무언가 울린다."}
@@ -1078,7 +1151,8 @@ const DEXGROUP = [
     "magnemite","magneton","voltorb","electrode","vulpix","ninetales","growlithe","arcanine"]},
   {t:"상극 변이 · 세상에 없는 것", keys:["bulba_fire","bulba_water","bulba_thunder",
     "char_leaf","char_water","char_thunder","squirt_leaf","squirt_fire","squirt_thunder",
-    "pika_leaf","pika_fire","pika_water"]},
+    "pika_leaf","pika_fire","pika_water",
+    "bulba_moon","bulba_rock","bulba_earth","bulba_toxic","bulba_mind","bulba_ice","char_moon","char_rock","char_earth","char_toxic","char_mind","char_ice","squirt_moon","squirt_rock","squirt_earth","squirt_toxic","squirt_mind","squirt_ice","pika_moon","pika_rock","pika_earth","pika_toxic","pika_mind","pika_ice"]},
   {t:"전설", keys:["zapdos","articuno","moltres","mewtwo"]}
 ];
 const DEXHINT = [
@@ -1090,9 +1164,16 @@ const DEXHINT = [
 ];
 
 const STONE = {
-  leaf:{name:"잎의 돌",c:"var(--grass)"}, fire:{name:"불의 돌",c:"var(--fire)"},
-  water:{name:"물의 돌",c:"var(--water)"}, thunder:{name:"천둥의 돌",c:"var(--volt)"},
-  moon:{name:"달의 돌",c:"var(--fairy)"}
+  leaf   :{name:"잎의 돌",  t:"풀",    c:"var(--grass)"},
+  fire   :{name:"불의 돌",  t:"불",    c:"var(--fire)"},
+  water  :{name:"물의 돌",  t:"물",    c:"var(--water)"},
+  thunder:{name:"천둥의 돌",t:"전기",  c:"var(--volt)"},
+  moon   :{name:"달의 돌",  t:"요정",  c:"var(--fairy)"},
+  rock   :{name:"바위의 돌",t:"바위",  c:"var(--rock)"},
+  earth  :{name:"땅의 돌",  t:"땅",    c:"var(--ground)"},
+  toxic  :{name:"독의 돌",  t:"독",    c:"var(--psn)"},
+  mind   :{name:"마음의 돌",t:"에스퍼",c:"var(--mind)"},
+  ice    :{name:"얼음의 돌",t:"얼음",  c:"var(--ice)"}
 };
 const CRACK = {3:"온전하다",2:"금이 하나 갔다",1:"금이 둘 · 다음이 마지막"};
 
@@ -1107,7 +1188,13 @@ const EVO = {
   vulpix    :{stone:"fire",to:"ninetales",log:"꼬리가 하나씩 갈라지더니 아홉이 되었다."},
   growlithe :{stone:"fire",to:"arcanine",log:"등의 털이 불길처럼 일어서며 몸이 커졌다."},
   clefairy  :{stone:"moon",to:"clefable",log:"달빛을 삼킨 듯 몸이 한 번 부풀었다가 가라앉았다."},
-  jigglypuff:{stone:"moon",to:"wigglytuff",log:"숨을 크게 들이켠 채 그대로 커져버렸다."}
+  jigglypuff:{stone:"moon",to:"wigglytuff",log:"숨을 크게 들이켠 채 그대로 커져버렸다."},
+  /* 새로 들어온 돌들도 제 길이 있다. 얼음의 돌만은 없다 —
+     이 세상에 얼음으로 자라는 몸이 없어서, 어긋나게 하는 데만 쓰인다. */
+  geodude   :{stone:"rock",to:"graveler",log:"몸의 결이 굵어지며 팔이 하나씩 더 돋았다."},
+  sandshrew :{stone:"earth",to:"sandslash",log:"등의 가시가 한 번에 솟아 굳었다."},
+  ekans     :{stone:"toxic",to:"arbok",log:"배의 무늬가 얼굴처럼 또렷해졌다."},
+  abra      :{stone:"mind",to:"kadabra",log:"자던 것이 눈을 떴다. 주변의 시계가 어긋났다."}
 };
 
 /* ═════════════════════════════════════════════
@@ -1163,6 +1250,78 @@ const MUT = {
   "pika|fire":{to:"pika_fire",log:"볼의 전기가 열을 먼저 뿜으며 털 끝을 그을렸다.",
     cost:{bond:-20,hpCap:-15,note:"제 몸도 함께 탄다"},
     miss:"불의 돌에 볼이 닿자 탁 소리가 났다. 그을음이 조금 묻었다."},
+  "bulba|moon":{to:"bulba_moon",log:"씨앗이 달을 향해 벌어졌다. 그날 밤 내내 닫히지 않았다.",
+    cost:{bond:-15,hpCap:-10,note:"낮에는 힘을 쓰지 못한다"},
+    miss:"달의 돌이 씨앗 위를 스쳤다. 잠깐 은빛이 돌다 말았다."},
+  "bulba|rock":{to:"bulba_rock",log:"씨앗이 자라기를 그만두고 그대로 굳었다. 소리가 달라졌다.",
+    cost:{bond:-10,hpCap:-5,note:"두 번 다시 싹트지 않는다"},
+    miss:"바위의 돌이 씨앗에 부딪혀 흠집만 남겼다."},
+  "bulba|earth":{to:"bulba_earth",log:"뿌리가 발밑을 뚫고 내려갔다. 뽑는 데 한나절이 걸렸다.",
+    cost:{bond:-10,hpCap:-15,note:"걸음이 느려졌다"},
+    miss:"땅의 돌을 딛자 뿌리가 잠깐 뻗다가 도로 말렸다."},
+  "bulba|toxic":{to:"bulba_toxic",log:"씨앗이 안에서부터 상하기 시작했다. 냄새가 먼저 알렸다.",
+    cost:{bond:-25,hpCap:-5,note:"곁에 오래 두기 어렵다"},
+    miss:"독의 돌 자국이 씨앗에 검게 번졌다가 옅어졌다."},
+  "bulba|mind":{to:"bulba_mind",log:"씨앗이 한 번 크게 떨렸다. 그 뒤로 부르지 않아도 돌아본다.",
+    cost:{bond:-5,hpCap:-20,note:"제 판단으로 움직인다"},
+    miss:"마음의 돌 앞에서 씨앗이 잠깐 기울었다. 그뿐이었다."},
+  "bulba|ice":{to:"bulba_ice",log:"씨앗이 얼었다. 깨지지는 않았지만 다시 녹지도 않는다.",
+    cost:{bond:-15,hpCap:-15,note:"따뜻한 곳에서 힘을 잃는다"},
+    miss:"얼음의 돌이 씨앗에 닿아 하얗게 김을 냈다."},
+  "char|moon":{to:"char_moon",log:"꼬리 불이 붉은 것을 잃고 은빛으로 바뀌었다. 온도가 사라졌다.",
+    cost:{bond:-15,hpCap:-10,note:"불꽃이 아무것도 데우지 못한다"},
+    miss:"달의 돌 앞에서 꼬리 불이 잠깐 하얗게 흔들렸다."},
+  "char|rock":{to:"char_rock",log:"꼬리 끝의 불이 흐르다 멈춰 그대로 굳었다. 무거워졌다.",
+    cost:{bond:-10,hpCap:-10,note:"꼬리가 무거워 자주 끈다"},
+    miss:"바위의 돌이 꼬리에 닿자 겉만 잠깐 굳었다."},
+  "char|earth":{to:"char_earth",log:"꼬리 불이 흙을 뒤집어썼다. 꺼지지도 타오르지도 않는다.",
+    cost:{bond:-10,hpCap:-15,note:"불꽃이 밖으로 나오지 못한다"},
+    miss:"땅의 돌이 꼬리에 흙을 묻혔다. 툭툭 털어냈다."},
+  "char|toxic":{to:"char_toxic",log:"꼬리 불이 색을 잃고 연기만 짙어졌다. 냄새가 지독하다.",
+    cost:{bond:-25,hpCap:-5,note:"제 연기에 스스로도 상한다"},
+    miss:"독의 돌 근처에서 꼬리 연기가 잠깐 누레졌다."},
+  "char|mind":{to:"char_mind",log:"꼬리 불이 명령 없이 커졌다 작아졌다. 이제 이쪽을 보지 않는다.",
+    cost:{bond:-20,hpCap:-10,note:"지시보다 제 뜻이 앞선다"},
+    miss:"마음의 돌 앞에서 불꽃이 한 번 크게 일었다가 잦아들었다."},
+  "char|ice":{to:"char_ice",log:"꼬리 불이 파랗게 식었다. 그런데도 꺼지지 않았다.",
+    cost:{bond:-15,hpCap:-15,note:"제 몸이 늘 시리다"},
+    miss:"얼음의 돌이 꼬리에 닿아 치익 소리를 내고 사라졌다."},
+  "squirt|moon":{to:"squirt_moon",log:"등껍질 무늬가 달을 따라 돌기 시작했다. 밤마다 자리를 비운다.",
+    cost:{bond:-15,hpCap:-5,note:"밤이면 곁에 없다"},
+    miss:"달의 돌 아래에서 등껍질이 은빛으로 한 번 돌았다."},
+  "squirt|rock":{to:"squirt_rock",log:"등껍질이 바위로 바뀌었다. 단단해진 만큼 물이 빠졌다.",
+    cost:{bond:-10,hpCap:-10,note:"물을 담아두지 못한다"},
+    miss:"바위의 돌이 등껍질을 긁고 지나갔다."},
+  "squirt|earth":{to:"squirt_earth",log:"등껍질이 진흙을 뒤집어썼다. 벗겨내면 아래도 이미 흙빛이다.",
+    cost:{bond:-10,hpCap:-15,note:"물이 늘 탁하다"},
+    miss:"땅의 돌이 등껍질에 흙 자국을 남겼다."},
+  "squirt|toxic":{to:"squirt_toxic",log:"등껍질 안의 물이 돌기를 그만뒀다. 냄새가 새어 나온다.",
+    cost:{bond:-25,hpCap:-5,note:"내뿜는 물이 상해 있다"},
+    miss:"독의 돌이 등껍질 물에 번졌다가 가라앉았다."},
+  "squirt|mind":{to:"squirt_mind",log:"등껍질 안의 물이 완전히 멎었다. 근처에 있으면 말수가 준다.",
+    cost:{bond:-5,hpCap:-20,note:"움직임이 굼떠졌다"},
+    miss:"마음의 돌 곁에서 등껍질 물이 잠깐 잔잔해졌다."},
+  "squirt|ice":{to:"squirt_ice",log:"등껍질이 통째로 얼어붙었다. 두드리면 맑은 소리가 난다.",
+    cost:{bond:-15,hpCap:-10,note:"더운 곳에서 버티지 못한다"},
+    miss:"얼음의 돌이 등껍질에 서리만 남기고 떨어졌다."},
+  "pika|moon":{to:"pika_moon",log:"볼의 전기가 은빛으로 바뀌었다. 낮에는 거의 나오지 않는다.",
+    cost:{bond:-15,hpCap:-10,note:"낮에는 힘을 쓰지 못한다"},
+    miss:"달의 돌 아래에서 볼이 은빛으로 한 번 번쩍였다."},
+  "pika|rock":{to:"pika_rock",log:"털 밑에 돌비늘이 앉았다. 단단해진 만큼 전기가 빠진다.",
+    cost:{bond:-10,hpCap:-15,note:"전기가 자꾸 새어 나간다"},
+    miss:"바위의 돌이 털에 걸렸다가 떨어졌다."},
+  "pika|earth":{to:"pika_earth",log:"발이 땅에 붙었다. 전기가 몸을 지나 그대로 흙으로 간다.",
+    cost:{bond:-10,hpCap:-20,note:"전기를 제 몸에 두지 못한다"},
+    miss:"땅의 돌을 밟자 발끝이 잠깐 저릿했다."},
+  "pika|toxic":{to:"pika_toxic",log:"볼의 전기가 누렇게 흐려졌다. 스치기만 해도 오래 남는다.",
+    cost:{bond:-25,hpCap:-5,note:"제 몸도 함께 저려온다"},
+    miss:"독의 돌 곁에서 볼이 누렇게 번졌다가 돌아왔다."},
+  "pika|mind":{to:"pika_mind",log:"볼의 전기가 몸이 아니라 머리를 따라 움직이기 시작했다.",
+    cost:{bond:-20,hpCap:-10,note:"제 뜻으로만 터뜨린다"},
+    miss:"마음의 돌 앞에서 볼이 저 혼자 한 번 튀었다."},
+  "pika|ice":{to:"pika_ice",log:"털이 통째로 얼어 곤두섰다. 전기가 그 사이에 갇혔다.",
+    cost:{bond:-15,hpCap:-15,note:"몸이 굳어 잘 움직이지 못한다"},
+    miss:"얼음의 돌이 털 끝에 서리만 남겼다."},
   "pika|water":{to:"pika_water",
     log:"전기가 물에 잠겼다. 몸 밖으로 한 줄기도 나오지 못한 채, 안에서 계속 울린다.",
     cost:{bond:-30,hpCap:-10,note:"전기를 밖으로 낼 수 없다"},
@@ -1324,7 +1483,31 @@ const OWNMOVE = {
   squirt_thunder:["전하방출",62,"전기"],
   pika_leaf:["싹의전류",56,"풀","drain"],
   pika_fire:["그을린볼",68,"불","back"],
-  pika_water:["잠긴울림",60,"물","guard"]
+  pika_water:["잠긴울림",60,"물","guard"],
+  bulba_moon:["달무리씨앗",58,"요정","drain"],
+  bulba_rock:["굳은씨앗",64,"바위"],
+  bulba_earth:["뿌리내리기",56,"땅","guard"],
+  bulba_toxic:["썩은꽃가루",60,"독","drop"],
+  bulba_mind:["씨앗의생각",62,"에스퍼"],
+  bulba_ice:["서리씨앗",60,"얼음","drop"],
+  char_moon:["은빛꼬리",60,"요정"],
+  char_rock:["굳은불꽃",66,"바위"],
+  char_earth:["묻힌불씨",58,"땅","guard"],
+  char_toxic:["독한연기",62,"독","drop"],
+  char_mind:["뜻대로타오름",64,"에스퍼"],
+  char_ice:["차가운불꽃",66,"얼음"],
+  squirt_moon:["밀물끌기",58,"요정","drain"],
+  squirt_rock:["돌등껍질",68,"바위","guard"],
+  squirt_earth:["진흙쏘기",56,"땅","drop"],
+  squirt_toxic:["고인물뿜기",62,"독","drop"],
+  squirt_mind:["고요퍼뜨리기",60,"에스퍼","guard"],
+  squirt_ice:["얼음등딱지",66,"얼음"],
+  pika_moon:["달빛스파크",60,"요정"],
+  pika_rock:["돌비늘",64,"바위","guard"],
+  pika_earth:["땅울림",58,"땅"],
+  pika_toxic:["저린독",62,"독","drop"],
+  pika_mind:["생각의방전",66,"에스퍼"],
+  pika_ice:["언정전기",64,"얼음","drop"]
 };
 
 /* 상성 — 이 타입은 이 타입들에게 강하다.
@@ -1451,8 +1634,8 @@ const TITLE = [
   {id:"allleg", n:"완성을 아는 자", d:"전설 넷을 모두 도감에 남겼다", hide:1, boon:"gift",
    at:s=>["zapdos","articuno","moltres","mewtwo"].filter(k=>seen.includes(k)).length, of:4,
    e:"전설 하나가 제 발로 찾아온다"},
-  {id:"nonesuch", n:"세상에 없는 것", d:"상극 변이 열둘을 모두 만들었다", hide:1, boon:"fuse",
-   at:s=>DEXGROUP[2].keys.filter(k=>seen.includes(k)).length, of:12,
+  {id:"nonesuch", n:"세상에 없는 것", d:"상극 변이 서른여섯을 모두 만들었다", hide:1, boon:"fuse",
+   at:s=>DEXGROUP[2].keys.filter(k=>seen.includes(k)).length, of:36,
    e:"융합 — 둘을 하나로 합친다"},
   {id:"brink", n:"문턱을 아는 자", d:"쓰러지기 직전에서 쉰 번 돌아왔다", hide:1, boon:"revive",
    at:s=>Object.keys(pets).reduce((n,id)=>n+(pets[id].crisis||0),0), of:50,
@@ -1607,7 +1790,10 @@ function save(){
 
 function applySave(s){
   pets=s.pets; party=s.party; box=s.box||[]; seq=s.seq||party.length;
-  bag=s.bag; here=s.here||"pallet"; balls=s.balls||0; wild=s.wild||null;
+  bag=s.bag||{};
+  /* 나중에 늘어난 돌은 예전 가방에 없다. 없으면 온전한 채로 채워 넣는다. */
+  Object.keys(STONE).forEach(k=>{ if(typeof bag[k]!=="number") bag[k]=TUNE.stoneLife; });
+  here=s.here||"pallet"; balls=s.balls||0; wild=s.wild||null;
   fight=s.fight||null; badges=s.badges||[];
   /* 호칭이 없던 시절의 기록은 셈이 0에서 시작한다 */
   stat=Object.assign(newStat(),s.stat||{});
