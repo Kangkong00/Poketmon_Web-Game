@@ -275,6 +275,18 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7.5vw,40px);
 .admnote{font-family:var(--mono);font-size:9px;letter-spacing:.06em;color:var(--faint);
   margin:10px 0 0;line-height:1.8}
 
+.mv.pickme{border-color:color-mix(in srgb,var(--volt) 50%,transparent)}
+.autoline{position:relative;z-index:1;display:flex;align-items:center;gap:9px;
+  margin:15px 0 0;padding-top:14px;border-top:1px solid var(--line);
+  font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--dim)}
+.autoline b{color:var(--ink);font-weight:400}
+.gained{position:relative;z-index:1;margin:13px 0 0;padding:9px 12px;border-radius:2px;
+  border-left:2px solid var(--volt);background:rgba(232,197,71,.07);
+  font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--dim)}
+.gained b{color:var(--volt);font-size:12px}
+.mini.on{color:var(--volt);border-color:color-mix(in srgb,var(--volt) 38%,transparent);
+  background:color-mix(in srgb,var(--volt) 8%,transparent)}
+
 /* 배지 */
 .badges{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
 .badge{display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:2px;
@@ -926,62 +938,62 @@ const REGION = {
     quirk:"연구소 · 표본실 · 쉬어 간다", wild:[]},
   route1:{name:"1번도로",note:"S자로 굽은 길. 무릎까지 자란 풀이 이어진다.",
     quirk:"시간대 조건 실험에 좋다", lv:[3,6],
-    wild:[["pidgey",6],["rattata",6]]},
+    wild:[["pidgey",6],["rattata",6],["caterpie",3],["weedle",3],["spearow",2],["oddish",1],["bellsprout",1]]},
   viridian:{name:"상록시티",town:1,note:"큰길이 넓다. 체육관은 오래 닫혀 있고, 아무도 관장을 본 적이 없다.",
     quirk:"쉬어 간다 · 닫힌 체육관", wild:[]},
   route22:{name:"22번도로",note:"상록시티 서쪽 끝. 라이벌과 처음 마주치는 곳이다.",
     quirk:"상성 실험에 좋다", lv:[5,9],
-    wild:[["rattata",5],["spearow",4],["mankey",3]]},
+    wild:[["rattata",5],["spearow",4],["mankey",3],["ekans",2],["sandshrew",2],["meowth",2],["jigglypuff",1]]},
   route2:{name:"2번도로",note:"상록숲으로 이어지는 짧은 길. 나무 그늘이 길게 눕는다.",
     quirk:"벌레가 많다", lv:[8,12],
-    wild:[["caterpie",5],["weedle",5],["pidgey",4],["rattata",3]]},
+    wild:[["caterpie",5],["weedle",5],["pidgey",4],["rattata",3],["metapod",2],["kakuna",2],["oddish",2],["bellsprout",2]]},
   forest:{name:"상록숲",note:"낮에도 어둡다. 나뭇잎 사이에서 자주 무언가 스친다.",
     quirk:"방치 조건 실험에 좋다 · 피카츄가 목격되는 유일한 숲", lv:[11,16],
-    wild:[["caterpie",6],["metapod",4],["weedle",6],["kakuna",4],["pidgey",3],["pika",1]]},
+    wild:[["caterpie",6],["metapod",4],["weedle",6],["kakuna",4],["pidgey",3],["oddish",2],["paras",2],["pika",1]]},
   pewter:{name:"회색시티",town:1,note:"돌로 지은 집들이 낮게 앉아 있다. 박물관에 오래된 뼈가 있다.",
     quirk:"쉬어 간다 · 체육관", wild:[]},
   route3:{name:"3번도로",note:"회색시티에서 달맞이산으로 오르는 비탈길.",
     quirk:"바람이 강해 불 실험에 불리하다", lv:[15,21],
-    wild:[["spearow",6],["jigglypuff",3],["mankey",3],["sandshrew",3],["ekans",2]]},
+    wild:[["spearow",6],["rattata",3],["jigglypuff",3],["mankey",3],["sandshrew",3],["ekans",2],["meowth",2],["pidgeotto",2]]},
   moon:{name:"달맞이산",note:"동굴 안은 소리가 길게 남는다. 천장에서 무언가 떨어진다.",
     quirk:"어둠 · 방치 조건 실험에 좋다", lv:[20,27],
-    wild:[["zubat",7],["geodude",5],["paras",3],["clefairy",1]]},
+    wild:[["zubat",7],["geodude",5],["paras",3],["sandshrew",3],["golbat",2],["graveler",1],["magnemite",1],["clefairy",1]]},
   route4:{name:"4번도로",note:"동굴을 빠져나오면 마른 흙바닥이 이어진다.",
     quirk:"땅 조건 실험에 좋다", lv:[25,31],
-    wild:[["rattata",5],["spearow",4],["sandshrew",4],["ekans",3],["meowth",2]]},
+    wild:[["rattata",5],["spearow",4],["sandshrew",4],["ekans",3],["raticate",3],["meowth",2],["mankey",2],["fearow",2]]},
   cerulean:{name:"블루시티",town:1,note:"물빛이 도는 도시. 어디에 서 있어도 물소리가 들린다.",
     quirk:"쉬어 간다 · 체육관", wild:[]},
   route24:{name:"24번도로 · 황금다리",note:"다리 위로 물바람이 분다. 건너편 풀숲이 짙다.",
     quirk:"에스퍼가 드물게 목격된다", lv:[30,37],
-    wild:[["caterpie",4],["weedle",4],["oddish",4],["bellsprout",4],["pidgey",3],["abra",2]]},
+    wild:[["oddish",4],["bellsprout",4],["caterpie",3],["weedle",3],["pidgey",3],["gloom",2],["weepinbell",2],["butterfree",2],["beedrill",2],["abra",2]]},
   vermilion:{name:"갈색시티",town:1,note:"항구에 큰 배가 묶여 있다. 부두에서 쇠 냄새가 난다.",
     quirk:"쉬어 간다 · 체육관", wild:[]},
   shore:{name:"잔교",note:"물이 잔잔하다. 발밑에서 계속 물소리가 난다.",
     quirk:"물의 돌 실험에 좋다", lv:[36,43],
-    wild:[["magikarp",7],["poliwag",4],["goldeen",3],["seaking",2]]},
+    wild:[["magikarp",7],["poliwag",4],["goldeen",3],["poliwhirl",2],["seaking",2],["gyarados",1]]},
   celadon:{name:"무지개시티",town:1,note:"가장 큰 도시. 백화점 뒤편으로 이상하게 조용한 건물이 하나 있다.",
     quirk:"쉬어 간다 · 체육관", wild:[]},
   rocket:{name:"로켓단 아지트",note:"지하로 내려간다. 바닥의 타일이 방향을 속인다.",
     quirk:"독 · 어둠 조건 실험에 좋다", lv:[42,49],
-    wild:[["meowth",6],["ekans",5],["zubat",5],["arbok",3],["golbat",3],["magnemite",2],["persian",1]]},
+    wild:[["meowth",6],["ekans",5],["zubat",5],["arbok",3],["golbat",3],["raticate",3],["magnemite",2],["persian",2],["magneton",1],["primeape",1]]},
   saffron:{name:"연분홍시티",town:1,note:"두 회사가 마주 본다. 이 도시에서는 시계가 자주 어긋난다.",
     quirk:"쉬어 간다 · 체육관", wild:[]},
   fuchsia:{name:"노랑시티",town:1,note:"사파리로 가는 문이 있다. 담장 너머에서 낯선 울음이 들린다.",
     quirk:"쉬어 간다 · 체육관", wild:[]},
   power:{name:"무인발전소",note:"버려진 건물. 끊긴 전선에서 아직 소리가 난다.",
     quirk:"전기 조건 실험에 좋다 · 전설이 목격된 곳", lv:[50,58],
-    wild:[["voltorb",5],["magnemite",5],["magneton",2],["zubat",3],["electrode",2],["zapdos",1]]},
+    wild:[["voltorb",5],["magnemite",5],["zubat",3],["electrode",2],["magneton",2],["golbat",2],["raichu",1],["zapdos",1]]},
   seafoam:{name:"쌍둥이섬",note:"동굴 안이 통째로 얼어 있다. 숨을 쉬면 하얗게 흩어진다.",
     quirk:"얼음 · 물 조건 실험에 좋다", lv:[56,64],
-    wild:[["golbat",4],["magikarp",4],["poliwhirl",3],["seaking",3],["articuno",1]]},
+    wild:[["golbat",4],["magikarp",4],["poliwhirl",3],["seaking",3],["goldeen",2],["gyarados",1],["articuno",1]]},
   cinnabar:{name:"홍련마을",town:1,note:"섬 하나가 통째로 뜨겁다. 재가 바람에 실려 다닌다.",
     quirk:"쉬어 간다 · 체육관", wild:[]},
   mansion:{name:"폐허가 된 저택",note:"불에 그을린 방들이 이어진다. 실험 일지가 흩어져 있다.",
     quirk:"불 조건 실험에 좋다 · 무언가 만들어진 곳", lv:[62,70],
-    wild:[["vulpix",4],["growlithe",4],["ekans",3],["ninetales",2],["arcanine",2],["moltres",1],["mewtwo",0.4]]},
+    wild:[["vulpix",4],["growlithe",4],["ekans",3],["ninetales",2],["arcanine",2],["arbok",2],["golbat",2],["moltres",1],["mewtwo",0.4]]},
   victory:{name:"승리의 길",note:"바위를 밀지 않으면 지나갈 수 없다. 여기까지 온 사람만 남는다.",
     quirk:"마지막 길 · 강한 것들만 있다", lv:[70,80],
-    wild:[["graveler",6],["golem",3],["primeape",4],["golbat",4],["sandslash",3],["magneton",2],["arbok",2]]},
+    wild:[["graveler",6],["golbat",4],["primeape",4],["sandslash",3],["golem",3],["arbok",2],["persian",2],["raticate",2],["magneton",2],["gyarados",1],["alakazam",1]]},
   plateau:{name:"석영고원",town:1,note:"문이 다섯이다. 하나를 열면 뒤로 물러설 수 없다.",
     quirk:"사천왕과 챔피언 · 쉬는 곳은 없다", wild:[]}
 };
@@ -1182,7 +1194,11 @@ const TUNE = {
   /* 연구소는 표본을 받고 볼을 내준다. */
   give:{base:2, rare:70, rareCap:9, lvPer:6, max:14},
   aid:5,             // 넘길 표본도 볼도 없을 때만 주는 최소한
-  gateBreath:0.4     // 석영고원, 문과 문 사이에 돌아오는 몫
+  gateBreath:0.4,    // 석영고원, 문과 문 사이에 돌아오는 몫
+  autoDelay:420,     // 자동 전투에서 한 턴 사이의 뜸
+  gymExp:2.5,        // 관장을 넘기면 경험치가 크게 들어온다
+  findBall:[15,1,3], // 탐험 중 볼을 줍는다 — 확률 % · 최소 · 최대
+  findStone:6        // 탐험 중 부서진 돌 하나가 되살아난다 — 확률 %
 };
 
 const EX = [
@@ -1561,7 +1577,7 @@ const STORE={
 function payload(){
   return {v:3,pets:pets,party:party,box:box,seq:seq,bag:bag,here:here,
     balls:balls,wild:wild,fight:fight,badges:badges,found:found,logNo:logNo,
-    stat:stat,titles:titles,wearing:wearing,
+    stat:stat,titles:titles,wearing:wearing,auto:autoFight,
     caught:caught,evolved:evolved,seen:seen,opened:opened,hints:hints,
     logs:logs,log:legacyLog,
     rival:document.getElementById("rivalline").innerHTML};
@@ -1586,6 +1602,7 @@ function applySave(s){
   if(!stat.mv) stat.mv={};
   if(!stat.been||!stat.been.length) stat.been=[s.here||"pallet"];
   titles=s.titles||[]; wearing=s.wearing||"";
+  autoFight=s.auto!==undefined?s.auto:true;
   found=s.found||[]; logNo=s.logNo||0; hints=s.hints||[];
   caught=s.caught||0; evolved=s.evolved||0;
   seen=s.seen||[]; opened=s.opened||["pallet","route1"];
@@ -2023,10 +2040,11 @@ function renderZones(){
    무엇을 할 것인가 — 길을 넘기는 것은 여러 선택지 중 하나일 뿐이다.
    여기 머물러 계속 모으기만 해도 된다.
    ═════════════════════════════════════════════ */
+/* 할 수 있는 것만 내놓는다. 못 하는 것은 아예 자리를 차지하지 않는다. */
 function pickCard(o){
-  return `<button class="pick${o.key?" key":""}" style="--c:${o.c}"
-    onclick="${o.go}" ${o.off?"disabled":""}>
-    <b>${o.t}</b><span>${o.off?o.why:o.s}</span>${o.tail?`<u>${o.tail}</u>`:""}</button>`;
+  if(o.off) return "";
+  return `<button class="pick${o.key?" key":""}" style="--c:${o.c}" onclick="${o.go}">
+    <b>${o.t}</b><span>${o.s}</span>${o.tail?`<u>${o.tail}</u>`:""}</button>`;
 }
 
 function deck(R,next){
@@ -2089,11 +2107,15 @@ function deck(R,next){
   const road = !next ? `<p class="stay">모든 길이 열렸다. 이제는 <b>어디서 무엇을 할지</b>만 남았다.</p>`
     : GATE[next]&&GATE[next].gym&&!badges.includes(GATE[next].gym)
       ? `<p class="stay">다음 길 — <b>${REGION[next].name}</b> · ${gateText(next)}<br>
-          넘어가지 않아도 된다. 여기 남아 계속 모으고 키워도 아무도 재촉하지 않는다.</p>`
+          ${gateNum(next)?`조건은 찼다. <b>${GYM[GATE[next].gym].town}</b>의 체육관으로 가면 된다.`
+                         :"넘어가지 않아도 된다. 여기 남아 계속 모으고 키워도 아무도 재촉하지 않는다."}</p>`
       : `<p class="stay">다음 길 — <b>${REGION[next].name}</b> · ${gateText(next)}<br>
           조건을 채우면 저절로 열린다. 서두를 이유는 없다.</p>`;
 
-  return `<div class="deck">${cards.join("")}</div>${road}`;
+  const has=cards.filter(Boolean);
+  const none=has.length?"":`<p class="stay">${
+    busy?busy:"여기서는 지금 할 수 있는 일이 없다. 다른 곳으로 옮기자."}</p>`;
+  return `<div class="deck">${has.join("")}</div>${none}${road}`;
 }
 
 /* ═════════════════════════════════════════════
@@ -2165,7 +2187,18 @@ function see(f){ if(!seen.includes(f)) seen.push(f); }
 function search(){
   const R=REGION[here];
   if(!R.wild.length||wild||fight) return;
-  if(Math.random()<0.25){ say(pick(LINE.nowild),null); return; }
+  /* 풀숲은 경험치를 주지 않는다. 대신 물건이 떨어져 있다. */
+  const F=TUNE.findBall;
+  if(Math.random()*100<F[0]){
+    const n=F[1]+Math.floor(Math.random()*(F[2]-F[1]+1));
+    balls+=n; say("풀숲에서 몬스터볼 <b>"+n+"개</b>를 주웠다.",null,"볼 +"+n);
+  }
+  if(Math.random()*100<TUNE.findStone){
+    const broke=Object.keys(STONE).filter(k=>bag[k]<TUNE.stoneLife);
+    if(broke.length){ const k=pick(broke); bag[k]=Math.min(TUNE.stoneLife,bag[k]+1);
+      say("<b>"+STONE[k].name+"</b> 조각을 찾아 이어 붙였다.","hid",CRACK[bag[k]]||"온전하다"); }
+  }
+  if(Math.random()<0.25){ say(pick(LINE.nowild),null); renderAll(); return; }
   let t=R.wild.reduce((s,x)=>s+x[1],0), r=Math.random()*t, f=R.wild[0][0];
   for(const x of R.wild){ r-=x[1]; if(r<=0){ f=x[0]; break; } }
   /* 그림자의 눈에는 격이 한 단계 높은 것만 걸린다 */
@@ -2341,6 +2374,7 @@ function startFight(setup){
   renderAll();
   const el=document.getElementById("fightwrap");
   if(el&&el.firstElementChild) el.scrollIntoView({behavior:"smooth",block:"center"});
+  autoStep();
 }
 
 function meetFoe(){
@@ -2382,6 +2416,42 @@ function enterPlateau(){
   startFight({kind:"elite",who:first.who,
     team:first.team.map(t=>foeUnit(t[0],t[1],1)),queue:q});
   say(first.line,"trace");
+}
+
+/* ═════════════════════════════════════════════
+   자동 전투 — 맡겨두면 상성이 가장 잘 통하는 기술을 고른다.
+   한 턴씩 뜸을 들여서 무슨 일이 일어나는지 보이게 한다.
+   ═════════════════════════════════════════════ */
+let autoFight=true, autoT=null;
+
+function bestMove(m,foe){
+  const set=moveset(m.form,m);
+  let best=0,bv=-1;
+  set.forEach((x,i)=>{
+    let v=(x.p||0)*effOf(x.t,mainType(foe.form))*atkBuff(x.t);
+    if(x.e==="again") v*=1.8;
+    if(x.e==="drain") v*=1.2;
+    if(!x.p) v=m.hp<m.hpCap*0.25?12:0;   // 몰릴 때만 방어를 고른다
+    if(v>bv){ bv=v; best=i; }
+  });
+  return best;
+}
+function autoStep(){
+  clearTimeout(autoT);
+  if(!fight||!autoFight) return;
+  autoT=setTimeout(()=>{
+    if(!fight||!autoFight) return;
+    const m=pets[fight.mine], foe=fight.team[fight.idx];
+    if(!m||!foe) return;
+    useMove(bestMove(m,foe));
+  },TUNE.autoDelay);
+}
+function toggleAuto(){
+  autoFight=!autoFight;
+  say(autoFight?"전투를 맡겼다. 알아서 싸운다.":"직접 고르기로 했다.",null,
+    autoFight?"자동":"수동");
+  if(autoFight) autoStep(); else clearTimeout(autoT);
+  renderFight(); save();
 }
 
 /* 한 턴 — 내가 치고, 살아 있으면 상대가 친다 */
@@ -2444,13 +2514,16 @@ function useMove(i){
     }
   }
   if(m.hp<=3){ mineDown(); return; }
-  renderFight(); paint(fight.mine); save();
+  renderFight(); paint(fight.mine); save(); autoStep();
 }
 
 function foeDown(){
   const foe=fight.team[fight.idx], m=pets[fight.mine];
   say("<b>"+DATA[foe.form].name+"</b>가 주저앉았다.","catch");
-  const gain=Math.round(fightExp(foe.lv)*(wornEff().fightExp||1));
+  const bonus=fight.kind==="gym"?TUNE.gymExp:fight.kind==="elite"?TUNE.gymExp:1;
+  const gain=Math.round(fightExp(foe.lv)*(wornEff().fightExp||1)*bonus);
+  fight.got=(fight.got||0)+gain;
+  fight.pop=gain;                       // 카드에 잠깐 뜨는 몫
   gainExp(fight.mine,gain,"전투");
   m.bond=clamp(m.bond+2,0,TUNE.bondMax);
   m.acts++;
@@ -2470,13 +2543,13 @@ function foeDown(){
       if(fight.mine&&pets[fight.mine].hp<=3){ const a=ready(); if(a.length) fight.mine=a[0]; }
       say("문이 하나 더 열렸다. <b>"+nx.who+"</b>가 서 있다.","hid",nx.team.length+"마리");
       if(nx.line) say(nx.line,"trace");
-      renderFight(); paint(fight.mine); save(); return;
+      renderFight(); paint(fight.mine); save(); autoStep(); return;
     }
     winFight(); return;
   }
   const nx=fight.team[fight.idx];
-  say((fight.kind==="gym"?fight.who:fight.who)+"가 다음을 내보냈다 — <b>"+DATA[nx.form].name+"</b>",null,"LV."+nx.lv);
-  renderFight(); paint(fight.mine); save();
+  say(fight.who+"가 다음을 내보냈다 — <b>"+DATA[nx.form].name+"</b>",null,"LV."+nx.lv);
+  renderFight(); paint(fight.mine); save(); autoStep();
 }
 
 function winFight(){
@@ -2486,7 +2559,9 @@ function winFight(){
   if(f.kind==="gym"&&party.length===1) stat.soloGym++;
   if(f.kind==="elite"){
     stat.champ=1;
-    say("◆ 마지막 문이 닫혔다. <b>명예의 전당</b>에 이름이 올랐다.","mut","석영고원 제패");
+    Object.keys(STONE).forEach(k=>{ bag[k]=TUNE.stoneLife; });
+    say("◆ 마지막 문이 닫혔다. <b>명예의 전당</b>에 이름이 올랐다.","mut",
+      "경험치 +"+(f.got||0));
     notify("legend","챔피언","사천왕 넷과 챔피언을 모두 넘었다","var(--volt)",
       '<path d="M15 3L18 12H27L20 17L23 27L15 21L7 27L10 17L3 12H12Z"/>');
     remember("명예의 전당","사천왕 넷과 챔피언을 쉬지 않고 넘었다. 라이벌이 가져간 케이스도 거기 있었다.",true);
@@ -2495,15 +2570,18 @@ function winFight(){
   if(f.kind==="gym"){
     const g=GYM[f.gym];
     if(!badges.includes(f.gym)) badges.push(f.gym);
-    say("◆ <b>"+g.name+"</b>를 이겼다. "+g.badge+"를 받았다.","hid");
+    Object.keys(STONE).forEach(k=>{ bag[k]=TUNE.stoneLife; });
+    say("◆ <b>"+g.name+"</b>를 이겼다. "+g.badge+"를 받았다.","hid",
+      "경험치 +"+(f.got||0)+" · 돌이 모두 온전해졌다");
     notify("legend","배지를 받았다",g.badge+" · "+g.town+" 체육관","var(--volt)",
       '<path d="M15 3L18 12H27L20 17L23 27L15 21L7 27L10 17L3 12H12Z"/>');
     remember(g.badge,g.town+" 체육관 · "+g.name+"("+g.type+")을 이기고 받았다.",false);
   }else{
     const n=2+Math.floor(Math.random()*3);
     balls+=n;
-    say("<b>"+f.who+"</b>를 이겼다. 쓰던 볼을 몇 개 나눠 받았다.",null,"볼 +"+n);
-    notify("get","이겼다",f.who+" · 몬스터볼 +"+n,"var(--grass)",
+    say("<b>"+f.who+"</b>를 이겼다. 쓰던 볼을 몇 개 나눠 받았다.",null,
+      "경험치 +"+(f.got||0)+" · 볼 +"+n);
+    notify("get","이겼다",f.who+" · 경험치 +"+(f.got||0)+" · 볼 +"+n,"var(--grass)",
       '<circle cx="15" cy="15" r="10"/><path d="M4 15H26"/>');
   }
   fight=null; renderAll();
@@ -2524,7 +2602,7 @@ function mineDown(){
   if(able.length){
     fight.mine=able[0]; fight.mineGuard=false; fight.mineWeak=false;
     say(sp(fight.mine).name+"를 대신 내보냈다.",null);
-    renderFight(); renderCards(); save(); return;
+    renderFight(); renderCards(); save(); autoStep(); return;
   }
   say("더 내보낼 아이가 없다. 물러났다.","deny");
   loseFight();
@@ -2566,12 +2644,17 @@ function renderFight(){
   const m=pets[fight.mine], md=sp(fight.mine);
   const left=fight.team.length-fight.idx-1;
   const bar=(v,max,c)=>`<div class="track"><div class="fill" style="width:${clamp(v/max*100,0,100)}%;background:${c}"></div></div>`;
-  const moves=moveset(m.form,m).map((x,i)=>{
+  const pickIdx=bestMove(m,foe);
+  const moves=autoFight?"":moveset(m.form,m).map((x,i)=>{
     const e=x.p?effOf(x.t,mainType(foe.form)):1;
     const mark=!x.p?"방어":e>1?"잘 통한다":e<1?"잘 안 통한다":"";
-    return `<button class="mv" style="--c:${x.p?"var(--ink)":"var(--dim)"}" onclick="useMove(${i})">
+    return `<button class="mv${i===pickIdx?" pickme":""}" style="--c:${x.p?"var(--ink)":"var(--dim)"}"
+      onclick="useMove(${i})">
       ${x.n}<span>${x.t} · ${x.p?"위력 "+x.p:"공격 없음"}${mark?" · "+mark:""}</span></button>`;
   }).join("");
+  /* 쓰러뜨리면 얼마가 들어오는지 미리 보인다 */
+  const bonus=fight.kind==="trainer"?1:TUNE.gymExp;
+  const worth=Math.round(fightExp(foe.lv)*(wornEff().fightExp||1)*bonus);
   const bench=ready().filter(id=>id!==fight.mine).map(id=>
     `<button class="mini" onclick="swapTo('${id}')">${sp(id).name} 교체</button>`).join("");
 
@@ -2585,7 +2668,8 @@ function renderFight(){
         <p class="tag">상대 · LV.${foe.lv} · ${fd.type}${left?" · 남은 "+left+"마리":" · 마지막"}</p>
         <div class="namebox"><p class="name">${fd.name}</p></div>${gradeTag(foe)}
         ${bar(foe.hp,foe.max,fd.c)}
-        <p class="hint" style="margin-top:6px">${foe.hp} / ${foe.max}</p>
+        <p class="hint" style="margin-top:6px">${foe.hp} / ${foe.max}
+          · <b style="color:var(--volt)">쓰러뜨리면 경험치 +${worth}</b></p>
       </div>
     </div>
     <div class="vs">맞서는 쪽</div>
@@ -2594,12 +2678,19 @@ function renderFight(){
       <div style="flex:1;min-width:0">
         <p class="tag" style="color:${md.c}">${md.name} · LV.${m.lv} · ${md.type}</p>${gradeTag(m)}
         ${bar(m.hp,m.hpCap,md.c)}
-        <p class="hint" style="margin-top:6px">${Math.round(m.hp)} / ${m.hpCap}${
+        <p class="hint" style="margin-top:6px">${Math.round(m.hp)} / ${m.hpCap}
+          · 경험치 ${m.exp}/${needExp(m.lv,m.fast)}${
           fight.mineGuard?" · 막을 준비":""}${fight.mineWeak?" · 공격이 무뎌졌다":""}</p>
       </div>
     </div>
-    <div class="mvs">${moves}</div>
+    ${fight.got?`<p class="gained">이 싸움에서 얻은 경험치 <b>+${fight.got}</b></p>`:""}
+    ${autoFight
+      ? `<p class="autoline"><span class="blip"></span>맡겨두고 있다 —
+           다음 수는 <b>${moveset(m.form,m)[pickIdx].n}</b></p>`
+      : `<div class="mvs">${moves}</div>`}
     <div class="acts" style="margin-top:12px">
+      <button class="mini${autoFight?" on":""}" onclick="toggleAuto()">${
+        autoFight?"직접 고른다":"맡긴다"}</button>
       ${bench}
       <button class="mini" onclick="fleeFight()" ${fight.kind!=="trainer"?"disabled":""}>물러난다</button>
     </div>
@@ -2833,7 +2924,8 @@ function gainExp(id,n,why){
   if(m.lv>=TUNE.lvMax){ m.exp=0;
     say(sp(id).name+"는 더 자랄 수 없다. 여기가 끝이다.",null,"LV."+TUNE.lvMax); return; }
   m.exp+=n;
-  say(sp(id).name+"가 싸운 만큼 얻었다.",null,(why||"")+" · 경험치 +"+n);
+  say("<b>경험치 +"+n+"</b> — "+sp(id).name+"에게 들어갔다.","up",
+    (why||"")+" · "+m.exp+"/"+needExp(m.lv,m.fast));
   levelUp(id);
 }
 
