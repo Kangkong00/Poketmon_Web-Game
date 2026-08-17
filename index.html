@@ -252,6 +252,29 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7.5vw,40px);
 .pickrow .empty2{width:100%;margin:0 0 4px;color:var(--dim)}
 .pickrow .empty2 b{color:var(--wrong)}
 
+/* ── 관리자 모드 — 평소에는 없는 것처럼 ── */
+.adm{display:none;border-color:color-mix(in srgb,var(--wrong) 45%,transparent);
+  background:linear-gradient(160deg,rgba(176,123,216,.07),rgba(0,0,0,.24) 55%)}
+.adm[data-on="1"]{display:block}
+.adm .ptitle{color:var(--wrong)}
+.admrow{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 9px}
+.admrow>*{flex:0 0 auto}
+.admh{font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--faint);
+  margin:14px 0 7px;padding-top:11px;border-top:1px solid var(--line)}
+.admh:first-of-type{border-top:none;padding-top:0;margin-top:4px}
+.admb{font-family:var(--mono);font-size:10px;letter-spacing:.08em;padding:8px 10px;
+  border-radius:2px;cursor:pointer;color:var(--wrong);
+  border:1px solid color-mix(in srgb,var(--wrong) 34%,transparent);
+  background:color-mix(in srgb,var(--wrong) 8%,transparent)}
+.admb:active{transform:scale(.97)}
+.admb.go{color:var(--volt);border-color:color-mix(in srgb,var(--volt) 40%,transparent);
+  background:color-mix(in srgb,var(--volt) 9%,transparent)}
+.adm select,.adm input{font-family:var(--mono);font-size:10.5px;padding:7px 8px;
+  border-radius:2px;background:rgba(0,0,0,.4);color:var(--ink);
+  border:1px solid var(--line);max-width:130px}
+.admnote{font-family:var(--mono);font-size:9px;letter-spacing:.06em;color:var(--faint);
+  margin:10px 0 0;line-height:1.8}
+
 /* 배지 */
 .badges{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
 .badge{display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:2px;
@@ -553,7 +576,7 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7.5vw,40px);
 
 <section id="status">
   <header>
-    <p class="eyebrow" id="where">동행 기록</p>
+    <p class="eyebrow" id="where" onclick="admTouch()">동행 기록</p>
     <h1>여행이 시작됐다<span id="wearmark"></span></h1>
   </header>
 
@@ -569,6 +592,8 @@ h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,7.5vw,40px);
     <p class="ptitle">파티와 보관함</p>
     <div class="slots" id="slots"></div>
   </div>
+
+  <div class="panel adm" id="adm"></div>
 
   <div class="panel">
     <p class="ptitle">호칭</p>
@@ -1767,7 +1792,8 @@ function confirmPick(){
 
 /* ═════════ 전체 그리기 ═════════ */
 function renderAll(){ checkTitles(); renderZones(); renderWild(); renderFight();
-  renderCards(); renderSlots(); renderDex(); renderTitles(); renderHead(); save(); }
+  renderCards(); renderSlots(); renderDex(); renderTitles(); renderHead();
+  admRender(); save(); }
 
 /* ═════════════════════════════════════════════
    호칭 — 조건을 채운 순간에만 한 번 알린다.
@@ -3007,6 +3033,182 @@ function paintFound(){
    기록 — 화면 아래에는 방금 일어난 두 줄만 남는다.
    전체는 「전체 기록」에서 언제든 펼쳐 본다.
    ═════════════════════════════════════════════ */
+/* ═════════════════════════════════════════════
+   관리자 모드 — 처음부터 끝까지 빠르게 훑기 위한 것.
+   주소 끝에 #admin 을 붙이거나 「동행 기록」을 다섯 번 두드리면 열린다.
+   손댄 기록은 dev로 남는다.
+   ═════════════════════════════════════════════ */
+let admOn=false, admTap=0, admTapT=null;
+
+function admToggle(){
+  admOn=!admOn;
+  document.getElementById("adm").dataset.on=admOn?"1":"0";
+  if(admOn){ admRender();
+    say("◆ 관리자 모드를 열었다. 여기서 손댄 것은 기록에 남는다.","mut","dev"); }
+  else say("관리자 모드를 닫았다.",null);
+}
+function admTouch(){
+  clearTimeout(admTapT); admTap++;
+  admTapT=setTimeout(()=>{admTap=0;},1200);
+  if(admTap>=5){ admTap=0; admToggle(); }
+}
+function admMark(){ if(stat) stat.dev=1; }
+
+/* 파티 전체를 이 레벨로 */
+function admLv(n){
+  admMark();
+  party.concat(box).forEach(id=>{ const m=pets[id];
+    m.lv=clamp(n,1,TUNE.lvMax); m.exp=0; refitCap(m); m.hp=m.hpCap; m.sat=TUNE.satMax;
+    m.low=false; });
+  say("파티와 보관함을 <b>LV."+n+"</b>로 맞췄다.",null,"dev");
+  renderAll();
+}
+function admOpenAll(){
+  admMark(); const O=ORDERKEYS();
+  opened=O.slice(); stat.been=O.slice();
+  say("모든 길을 열었다.",null,"dev"); renderAll();
+}
+function admBadges(){
+  admMark(); badges=Object.keys(GYM);
+  say("배지 여덟 개를 채웠다.",null,"dev"); renderAll();
+}
+function admDex(){
+  admMark(); seen=Object.keys(DATA);
+  say("도감을 전부 채웠다 — "+seen.length+"종.",null,"dev"); renderAll();
+}
+function admBalls(){ admMark(); balls=999; say("몬스터볼 999개.",null,"dev"); renderAll(); }
+function admHeal(){
+  admMark();
+  party.concat(box).forEach(id=>{ const m=pets[id];
+    m.hp=m.hpCap; m.sat=TUNE.satMax; m.low=false; });
+  say("전부 회복했다.",null,"dev"); renderAll();
+}
+function admTitles(){
+  admMark(); titles=TITLE.map(t=>t.id);
+  say("호칭과 은혜를 전부 열었다.",null,"dev"); renderAll();
+}
+function admCount(){
+  admMark();
+  caught=200; evolved=60;
+  Object.keys(pets).forEach(id=>{ pets[id].acts=999; pets[id].crisis=99; pets[id].bond=TUNE.bondMax; });
+  stat.train=9999; stat.feed=9999; stat.win=999; stat.ball=999; stat.give=999;
+  stat.flee=999; stat.hungry=999; stat.soloGym=1;
+  Object.keys(HIT).forEach(k=>{ if(HIT[k][2]) stat.mv[HIT[k][2]]=2000; });
+  say("모든 셈을 채웠다.",null,"dev"); renderAll();
+}
+
+/* 원하는 몬스터를 그 자리에 만든다 */
+function admSpawn(){
+  admMark();
+  const f=document.getElementById("admForm").value;
+  const lv=clamp(parseInt(document.getElementById("admLvIn").value)||5,1,TUNE.lvMax);
+  const g=parseInt(document.getElementById("admGrade").value)||0;
+  const id=newPet(f,lv,g);
+  if(party.length<partyMax()) party.push(id); else box.push(id);
+  see(f);
+  say("<b>"+DATA[f].name+"</b> LV."+lv+" "+GRADE[pets[id].g].n+"급을 불러냈다.",null,"dev");
+  renderAll();
+}
+
+/* 지금 전투를 한 번에 끝낸다 */
+function admWin(){
+  if(!fight){ say("지금은 전투 중이 아니다.","deny"); return; }
+  admMark();
+  let n=0;
+  while(fight&&n++<200){
+    fight.team.forEach(u=>{ u.hp=0; });
+    const foe=fight.team[fight.idx];
+    if(foe) foe.hp=0;
+    foeDown();
+  }
+  say("전투를 넘겼다.",null,"dev");
+}
+/* 알아서 싸운다 — 가장 잘 통하는 기술을 고른다 */
+function admAuto(){
+  if(!fight){ say("지금은 전투 중이 아니다.","deny"); return; }
+  admMark();
+  let n=0;
+  while(fight&&n++<800){
+    const m=pets[fight.mine], foe=fight.team[fight.idx];
+    if(!m||!foe) break;
+    const set=moveset(m.form,m);
+    let best=0,bv=-1;
+    set.forEach((x,i)=>{ const v=(x.p||0)*effOf(x.t,mainType(foe.form));
+      if(v>bv){ bv=v; best=i; } });
+    useMove(best);
+  }
+  say("자동 전투를 마쳤다.",null,"dev "+n+"턴");
+  renderAll();
+}
+
+/* 그 지점까지 한 번에 데려다 놓는다 */
+const ADMSTAGE=[
+  {n:"시작 직후",     where:"route1",   lv:6,  open:2,  badge:0, dex:8},
+  {n:"회색시티 앞",   where:"pewter",   lv:17, open:7,  badge:0, dex:16},
+  {n:"블루시티 앞",   where:"cerulean", lv:28, open:11, badge:1, dex:24},
+  {n:"무지개시티",    where:"celadon",  lv:42, open:15, badge:3, dex:36},
+  {n:"노랑시티",      where:"fuchsia",  lv:52, open:18, badge:5, dex:44},
+  {n:"홍련마을",      where:"cinnabar", lv:66, open:21, badge:6, dex:54},
+  {n:"승리의 길",     where:"victory",  lv:76, open:23, badge:8, dex:62},
+  {n:"석영고원 직전", where:"plateau",  lv:88, open:24, badge:8, dex:70}
+];
+function admStage(i){
+  admMark();
+  const st=ADMSTAGE[i], O=ORDERKEYS();
+  opened=O.slice(0,st.open);
+  stat.been=opened.slice();
+  here=opened.includes(st.where)?st.where:opened[opened.length-1];
+  badges=Object.keys(GYM).slice(0,st.badge);
+  seen=Object.keys(DATA).slice(0,st.dex);
+  caught=Math.max(caught,st.dex); evolved=Math.max(evolved,Math.floor(i*1.5));
+  balls=Math.max(balls,40);
+  party.concat(box).forEach(id=>{ const m=pets[id];
+    m.lv=st.lv; m.exp=0; refitCap(m); m.hp=m.hpCap; m.sat=TUNE.satMax; m.low=false; });
+  say("◆ <b>"+st.n+"</b>까지 건너뛰었다.","hid","dev · LV."+st.lv+" · 배지 "+st.badge);
+  renderAll(); scrollTo(0,0);
+}
+
+function admRender(){
+  const el=document.getElementById("adm");
+  if(!el||!admOn) return;
+  const forms=Object.keys(DATA).map(k=>
+    `<option value="${k}">${DATA[k].name}</option>`).join("");
+  el.innerHTML=
+    `<p class="ptitle">관리자 모드${stat&&stat.dev?" · 이 기록은 손댔다":""}</p>
+     <p class="admh">진행 지점으로 건너뛰기</p>
+     <div class="admrow">${ADMSTAGE.map((st,i)=>
+       `<button class="admb go" onclick="admStage(${i})">${st.n}</button>`).join("")}</div>
+     <p class="admh">한 번에 채우기</p>
+     <div class="admrow">
+       <button class="admb" onclick="admOpenAll()">모든 길</button>
+       <button class="admb" onclick="admBadges()">배지 8</button>
+       <button class="admb" onclick="admDex()">도감 전부</button>
+       <button class="admb" onclick="admTitles()">호칭·은혜 전부</button>
+       <button class="admb" onclick="admCount()">모든 셈</button>
+       <button class="admb" onclick="admBalls()">볼 999</button>
+       <button class="admb" onclick="admHeal()">완전 회복</button>
+     </div>
+     <p class="admh">레벨</p>
+     <div class="admrow">${[5,20,40,60,80,100].map(n=>
+       `<button class="admb" onclick="admLv(${n})">LV.${n}</button>`).join("")}</div>
+     <p class="admh">불러내기</p>
+     <div class="admrow">
+       <select id="admForm">${forms}</select>
+       <input id="admLvIn" type="number" min="1" max="100" value="50" style="width:64px">
+       <select id="admGrade">
+         <option value="0">보통</option><option value="1">희귀</option>
+         <option value="2">에픽</option><option value="3" selected>전설</option></select>
+       <button class="admb go" onclick="admSpawn()">불러낸다</button>
+     </div>
+     <p class="admh">전투</p>
+     <div class="admrow">
+       <button class="admb go" onclick="admAuto()">자동으로 싸운다</button>
+       <button class="admb" onclick="admWin()">즉시 이긴다</button>
+     </div>
+     <p class="admnote">주소 끝에 #admin · 「동행 기록」을 다섯 번 두드리면 열고 닫는다.<br>
+       여기서 손댄 기록은 dev로 남는다. 정상 플레이는 새로 시작하면 된다.</p>`;
+}
+
 function say(text,kind,delta){
   logNo++;
   logs.unshift({no:logNo,k:kind||"",t:text,d:delta||""});
@@ -3060,6 +3262,9 @@ function reset(){
   draw(); scrollTo(0,0);
 }
 
+if(location.hash==="#admin"){ admOn=true;
+  document.addEventListener("DOMContentLoaded",()=>{
+    document.getElementById("adm").dataset.on="1"; admRender(); }); }
 boot();
 </script>
 </body>
