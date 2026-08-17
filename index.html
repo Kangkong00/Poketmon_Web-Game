@@ -896,11 +896,14 @@ const DATA = {
 
 /* ═════════ 지역 ═════════ */
 const REGION = {
-  pallet:{name:"태초마을",note:"연구소가 있는 조용한 마을. 야생은 나오지 않는다.",
-    quirk:"쉬어 가는 곳 · 볼 보충", wild:[]},
+  /* ── 마을은 야생이 없다. 쉬고, 체육관에 들어서는 곳이다. ── */
+  pallet:{name:"태초마을",town:1,note:"연구소가 있는 조용한 마을. 여기서 모든 게 시작됐다.",
+    quirk:"연구소 · 표본실 · 쉬어 간다", wild:[]},
   route1:{name:"1번도로",note:"S자로 굽은 길. 무릎까지 자란 풀이 이어진다.",
     quirk:"시간대 조건 실험에 좋다", lv:[3,6],
     wild:[["pidgey",6],["rattata",6]]},
+  viridian:{name:"상록시티",town:1,note:"큰길이 넓다. 체육관은 오래 닫혀 있고, 아무도 관장을 본 적이 없다.",
+    quirk:"쉬어 간다 · 닫힌 체육관", wild:[]},
   route22:{name:"22번도로",note:"상록시티 서쪽 끝. 라이벌과 처음 마주치는 곳이다.",
     quirk:"상성 실험에 좋다", lv:[5,9],
     wild:[["rattata",5],["spearow",4],["mankey",3]]},
@@ -910,6 +913,8 @@ const REGION = {
   forest:{name:"상록숲",note:"낮에도 어둡다. 나뭇잎 사이에서 자주 무언가 스친다.",
     quirk:"방치 조건 실험에 좋다 · 피카츄가 목격되는 유일한 숲", lv:[11,16],
     wild:[["caterpie",6],["metapod",4],["weedle",6],["kakuna",4],["pidgey",3],["pika",1]]},
+  pewter:{name:"회색시티",town:1,note:"돌로 지은 집들이 낮게 앉아 있다. 박물관에 오래된 뼈가 있다.",
+    quirk:"쉬어 간다 · 체육관", wild:[]},
   route3:{name:"3번도로",note:"회색시티에서 달맞이산으로 오르는 비탈길.",
     quirk:"바람이 강해 불 실험에 불리하다", lv:[15,21],
     wild:[["spearow",6],["jigglypuff",3],["mankey",3],["sandshrew",3],["ekans",2]]},
@@ -917,23 +922,43 @@ const REGION = {
     quirk:"어둠 · 방치 조건 실험에 좋다", lv:[20,27],
     wild:[["zubat",7],["geodude",5],["paras",3],["clefairy",1]]},
   route4:{name:"4번도로",note:"동굴을 빠져나오면 마른 흙바닥이 이어진다.",
-    quirk:"땅 조건 실험에 좋다", lv:[25,32],
+    quirk:"땅 조건 실험에 좋다", lv:[25,31],
     wild:[["rattata",5],["spearow",4],["sandshrew",4],["ekans",3],["meowth",2]]},
+  cerulean:{name:"블루시티",town:1,note:"물빛이 도는 도시. 어디에 서 있어도 물소리가 들린다.",
+    quirk:"쉬어 간다 · 체육관", wild:[]},
   route24:{name:"24번도로 · 황금다리",note:"다리 위로 물바람이 분다. 건너편 풀숲이 짙다.",
-    quirk:"에스퍼가 드물게 목격된다", lv:[30,38],
+    quirk:"에스퍼가 드물게 목격된다", lv:[30,37],
     wild:[["caterpie",4],["weedle",4],["oddish",4],["bellsprout",4],["pidgey",3],["abra",2]]},
+  vermilion:{name:"갈색시티",town:1,note:"항구에 큰 배가 묶여 있다. 부두에서 쇠 냄새가 난다.",
+    quirk:"쉬어 간다 · 체육관", wild:[]},
   shore:{name:"잔교",note:"물이 잔잔하다. 발밑에서 계속 물소리가 난다.",
-    quirk:"물의 돌 실험에 좋다", lv:[36,44],
-    wild:[["magikarp",7],["poliwag",4],["goldeen",3]]},
+    quirk:"물의 돌 실험에 좋다", lv:[36,43],
+    wild:[["magikarp",7],["poliwag",4],["goldeen",3],["seaking",2]]},
+  celadon:{name:"무지개시티",town:1,note:"가장 큰 도시. 백화점 뒤편으로 이상하게 조용한 건물이 하나 있다.",
+    quirk:"쉬어 간다 · 체육관", wild:[]},
+  rocket:{name:"로켓단 아지트",note:"지하로 내려간다. 바닥의 타일이 방향을 속인다.",
+    quirk:"독 · 어둠 조건 실험에 좋다", lv:[42,49],
+    wild:[["meowth",6],["ekans",5],["zubat",5],["arbok",3],["golbat",3],["magnemite",2],["persian",1]]},
+  saffron:{name:"연분홍시티",town:1,note:"두 회사가 마주 본다. 이 도시에서는 시계가 자주 어긋난다.",
+    quirk:"쉬어 간다 · 체육관", wild:[]},
+  fuchsia:{name:"노랑시티",town:1,note:"사파리로 가는 문이 있다. 담장 너머에서 낯선 울음이 들린다.",
+    quirk:"쉬어 간다 · 체육관", wild:[]},
   power:{name:"무인발전소",note:"버려진 건물. 끊긴 전선에서 아직 소리가 난다.",
-    quirk:"전기 조건 실험에 좋다 · 전설이 목격된 곳", lv:[42,51],
-    wild:[["voltorb",5],["magnemite",5],["magneton",2],["zubat",3],["zapdos",1]]},
+    quirk:"전기 조건 실험에 좋다 · 전설이 목격된 곳", lv:[50,58],
+    wild:[["voltorb",5],["magnemite",5],["magneton",2],["zubat",3],["electrode",2],["zapdos",1]]},
   seafoam:{name:"쌍둥이섬",note:"동굴 안이 통째로 얼어 있다. 숨을 쉬면 하얗게 흩어진다.",
-    quirk:"얼음 · 물 조건 실험에 좋다", lv:[48,58],
+    quirk:"얼음 · 물 조건 실험에 좋다", lv:[56,64],
     wild:[["golbat",4],["magikarp",4],["poliwhirl",3],["seaking",3],["articuno",1]]},
+  cinnabar:{name:"홍련마을",town:1,note:"섬 하나가 통째로 뜨겁다. 재가 바람에 실려 다닌다.",
+    quirk:"쉬어 간다 · 체육관", wild:[]},
   mansion:{name:"폐허가 된 저택",note:"불에 그을린 방들이 이어진다. 실험 일지가 흩어져 있다.",
-    quirk:"불 조건 실험에 좋다 · 무언가 만들어진 곳", lv:[55,66],
-    wild:[["vulpix",4],["growlithe",4],["ekans",3],["moltres",1],["mewtwo",0.4]]}
+    quirk:"불 조건 실험에 좋다 · 무언가 만들어진 곳", lv:[62,70],
+    wild:[["vulpix",4],["growlithe",4],["ekans",3],["ninetales",2],["arcanine",2],["moltres",1],["mewtwo",0.4]]},
+  victory:{name:"승리의 길",note:"바위를 밀지 않으면 지나갈 수 없다. 여기까지 온 사람만 남는다.",
+    quirk:"마지막 길 · 강한 것들만 있다", lv:[70,80],
+    wild:[["graveler",6],["golem",3],["primeape",4],["golbat",4],["sandslash",3],["magneton",2],["arbok",2]]},
+  plateau:{name:"석영고원",town:1,note:"문이 다섯이다. 하나를 열면 뒤로 물러설 수 없다.",
+    quirk:"사천왕과 챔피언 · 쉬는 곳은 없다", wild:[]}
 };
 
 /* ═════════════════════════════════════════════
@@ -942,17 +967,28 @@ const REGION = {
    ═════════════════════════════════════════════ */
 const GATE = {
   pallet:null, route1:null,
-  route22:{ok:()=>caught>=2,                      text:"야생 2마리 포획"},
-  route2 :{ok:()=>caught>=4&&seen.length>=6,      text:"야생 4마리 포획 · 도감 6종"},
-  forest :{ok:()=>seen.length>=9&&maxLv()>=10,     text:"도감 9종 · 레벨 10 이상 한 마리"},
-  route3 :{ok:()=>caught>=8&&seen.length>=13,     text:"야생 8마리 포획 · 도감 13종"},
-  moon   :{ok:()=>seen.length>=16&&maxLv()>=18,   text:"도감 16종 · 레벨 18 이상", gym:"brock"},
-  route4 :{ok:()=>evolved>=1&&seen.length>=20,    text:"진화 1회 · 도감 20종"},
-  route24:{ok:()=>caught>=15&&maxLv()>=28,        text:"야생 15마리 포획 · 레벨 28 이상", gym:"misty"},
-  shore  :{ok:()=>seen.length>=26&&evolved>=2,    text:"도감 26종 · 진화 2회", gym:"erika"},
-  power  :{ok:()=>seen.length>=32&&maxLv()>=42,   text:"도감 32종 · 레벨 42 이상", gym:"surge"},
-  seafoam:{ok:()=>seen.length>=38&&evolved>=4,    text:"도감 38종 · 진화 4회", gym:"koga"},
-  mansion:{ok:()=>seen.length>=44&&maxLv()>=55,   text:"도감 44종 · 레벨 55 이상", gym:"blaine"}
+  viridian :{ok:()=>caught>=2,                    text:"야생 2마리 포획"},
+  route22  :{ok:()=>caught>=4&&seen.length>=6,    text:"야생 4마리 포획 · 도감 6종"},
+  route2   :{ok:()=>seen.length>=9,               text:"도감 9종"},
+  forest   :{ok:()=>seen.length>=12&&maxLv()>=10, text:"도감 12종 · 레벨 10 이상"},
+  pewter   :{ok:()=>caught>=8&&seen.length>=15,   text:"야생 8마리 포획 · 도감 15종"},
+  route3   :{ok:()=>maxLv()>=16,                  text:"레벨 16 이상", gym:"brock"},
+  moon     :{ok:()=>seen.length>=18&&maxLv()>=20, text:"도감 18종 · 레벨 20 이상"},
+  route4   :{ok:()=>evolved>=1&&seen.length>=22,  text:"진화 1회 · 도감 22종"},
+  cerulean :{ok:()=>caught>=15&&maxLv()>=26,      text:"야생 15마리 포획 · 레벨 26 이상"},
+  route24  :{ok:()=>maxLv()>=30,                  text:"레벨 30 이상", gym:"misty"},
+  vermilion:{ok:()=>seen.length>=28&&evolved>=2,  text:"도감 28종 · 진화 2회"},
+  shore    :{ok:()=>maxLv()>=36,                  text:"레벨 36 이상", gym:"surge"},
+  celadon  :{ok:()=>seen.length>=34&&maxLv()>=40, text:"도감 34종 · 레벨 40 이상"},
+  rocket   :{ok:()=>maxLv()>=43,                  text:"레벨 43 이상", gym:"erika"},
+  saffron  :{ok:()=>seen.length>=40&&evolved>=4,  text:"도감 40종 · 진화 4회"},
+  fuchsia  :{ok:()=>maxLv()>=50,                  text:"레벨 50 이상", gym:"sabrina"},
+  power    :{ok:()=>maxLv()>=54,                  text:"레벨 54 이상", gym:"koga"},
+  seafoam  :{ok:()=>seen.length>=48&&maxLv()>=58, text:"도감 48종 · 레벨 58 이상"},
+  cinnabar :{ok:()=>seen.length>=52&&maxLv()>=62, text:"도감 52종 · 레벨 62 이상"},
+  mansion  :{ok:()=>maxLv()>=64,                  text:"레벨 64 이상", gym:"blaine"},
+  victory  :{ok:()=>seen.length>=58&&maxLv()>=72, text:"도감 58종 · 레벨 72 이상", gym:"giovanni"},
+  plateau  :{ok:()=>badges.length>=8&&maxLv()>=80,text:"배지 여덟 · 레벨 80 이상"}
 };
 
 /* 수치를 채웠는지 · 배지까지 받았는지 — 둘은 다른 문이다 */
@@ -1120,7 +1156,8 @@ const TUNE = {
 
   /* 연구소는 표본을 받고 볼을 내준다. */
   give:{base:2, rare:70, rareCap:9, lvPer:6, max:14},
-  aid:5              // 넘길 표본도 볼도 없을 때만 주는 최소한
+  aid:5,             // 넘길 표본도 볼도 없을 때만 주는 최소한
+  gateBreath:0.4     // 석영고원, 문과 문 사이에 돌아오는 몫
 };
 
 const EX = [
@@ -1254,25 +1291,48 @@ const STRONG = {
    체육관 — 마을 대표. 이겨야 다음 길이 열린다.
    ═════════════════════════════════════════════ */
 const GYM = {
-  brock:{name:"웅",town:"회색시티",type:"바위",badge:"회색 배지",
+  brock:{name:"웅",town:"회색시티",where:"pewter",type:"바위",badge:"회색 배지",
     line:"돌은 버티는 것이다. 버티지 못하면 지나갈 수 없다.",
-    team:[["geodude",20],["sandshrew",22],["graveler",24]]},
-  misty:{name:"이슬",town:"블루시티",type:"물",badge:"파랑 배지",
+    team:[["geodude",18],["sandshrew",20],["graveler",22]]},
+  misty:{name:"이슬",town:"블루시티",where:"cerulean",type:"물",badge:"파랑 배지",
     line:"물은 밀어내지 않는다. 감싸서 가라앉힌다.",
     team:[["poliwag",30],["goldeen",32],["poliwhirl",34]]},
-  erika:{name:"민화",town:"무지개시티",type:"풀",badge:"무지개 배지",
-    line:"자라는 것은 서두르지 않아요. 그래서 이깁니다.",
-    team:[["gloom",36],["weepinbell",38],["vileplume",41]]},
-  surge:{name:"마티스",town:"갈색시티",type:"전기",badge:"주황 배지",
+  surge:{name:"마티스",town:"갈색시티",where:"vermilion",type:"전기",badge:"주황 배지",
     line:"전기는 망설이지 않는다. 한 번에 끝낸다.",
-    team:[["voltorb",43],["magnemite",45],["raichu",48]]},
-  koga:{name:"독수",town:"노랑시티",type:"독",badge:"쪽빛 배지",
+    team:[["voltorb",36],["magnemite",38],["raichu",41]]},
+  erika:{name:"민화",town:"무지개시티",where:"celadon",type:"풀",badge:"무지개 배지",
+    line:"자라는 것은 서두르지 않아요. 그래서 이깁니다.",
+    team:[["gloom",43],["weepinbell",45],["vileplume",48]]},
+  sabrina:{name:"초련",town:"연분홍시티",where:"saffron",type:"에스퍼",badge:"금빛 배지",
+    line:"당신이 무엇을 고를지 나는 이미 봤어요. 그래도 하세요.",
+    team:[["abra",50],["kadabra",52],["alakazam",55]]},
+  koga:{name:"독수",town:"노랑시티",where:"fuchsia",type:"독",badge:"쪽빛 배지",
     line:"독은 소리가 없다. 알았을 땐 이미 늦었지.",
-    team:[["ekans",50],["golbat",52],["arbok",54],["beedrill",56]]},
-  blaine:{name:"강연",town:"홍련마을",type:"불",badge:"주홍 배지",
+    team:[["ekans",54],["golbat",56],["beedrill",58],["arbok",60]]},
+  blaine:{name:"강연",town:"홍련마을",where:"cinnabar",type:"불",badge:"주홍 배지",
     line:"저 저택을 태운 것이 무엇인지, 자네는 알고 왔나.",
-    team:[["growlithe",58],["ninetales",61],["arcanine",64]]}
+    team:[["growlithe",64],["ninetales",66],["arcanine",69]]},
+  giovanni:{name:"사카키",town:"상록시티",where:"viridian",type:"땅",badge:"땅 배지",
+    line:"이 도시의 체육관이 왜 늘 닫혀 있었는지, 이제 알겠나.",
+    team:[["sandslash",72],["persian",74],["arbok",75],["golem",77]]}
 };
+
+/* ═════════════════════════════════════════════
+   석영고원 — 문이 다섯이다. 사이에 쉬는 곳은 없다.
+   챔피언은 그때 남은 케이스를 가져간 자다.
+   ═════════════════════════════════════════════ */
+const ELITE = [
+  {who:"사천왕 로라", line:"차가운 것은 느리지 않아요. 느려 보일 뿐이지.",
+   team:[["seaking",82],["poliwhirl",82],["golbat",83],["blast",85]]},
+  {who:"사천왕 시바", line:"기술은 나중이다. 먼저 버텨라.",
+   team:[["primeape",83],["sandslash",84],["graveler",84],["golem",86]]},
+  {who:"사천왕 아가사", line:"늙은이의 독은 오래 간다. 알고 있었지?",
+   team:[["arbok",84],["beedrill",85],["golbat",85],["vileplume",87]]},
+  {who:"사천왕 목호", line:"하늘까지 올라와서야 아는 것이 있다.",
+   team:[["fearow",86],["pidgeot",87],["gyarados",88],["chariz",90]]}
+];
+const CHAMPTEAM = [["persian",88],["alakazam",90],["magneton",89]];
+const FINAL = {venu:92, chariz:92, blast:92};
 
 /* 오다가다 마주치는 사람들 — 팀은 그 지역에서 만들어진다 */
 const FOENAME = ["짧은바지 아이","벌레잡이 소년","낚시꾼","등산가","캠프 소년",
@@ -1321,8 +1381,8 @@ const TITLE = [
    at:s=>s.feed, of:1000, eff:{heal:1.5,bond:2}, e:"밥 회복량 1.5배 · 친밀도 +2"},
   {id:"duel", n:"승부사", d:"전투에서 100번 이긴다",
    at:s=>s.win, of:100, eff:{fightExp:1.3}, e:"전투 경험치 +30%"},
-  {id:"badge", n:"관장 사냥꾼", d:"배지를 여섯 개 모은다",
-   at:s=>badges.length, of:6, eff:{atkAll:1.15}, e:"모든 공격 +15%"},
+  {id:"badge", n:"관장 사냥꾼", d:"배지를 여덟 개 모두 모은다",
+   at:s=>badges.length, of:8, eff:{atkAll:1.15}, e:"모든 공격 +15%"},
   {id:"evo", n:"진화의 증인", d:"진화를 30번 본다",
    at:s=>evolved, of:30, eff:{evo:12}, e:"진화 성공 확률 +12"},
   {id:"throw", n:"볼 낭비꾼", d:"몬스터볼을 500개 던진다",
@@ -1368,13 +1428,17 @@ const TITLE = [
   {id:"carp", n:"잉어의 왕", d:"가장 하찮은 것에서 가장 사나운 것을 얻었다", hide:1, boon:"stone",
    at:s=>Object.keys(pets).some(id=>pets[id].base==="magikarp"&&pets[id].form==="gyarados")?1:0, of:1,
    e:"돌이 두 번 다시 부서지지 않는다"},
-  {id:"walk", n:"길을 아는 자", d:"열세 곳을 모두 밟았다", hide:1, boon:"party",
-   at:s=>s.been.length, of:13,
+  {id:"walk", n:"길을 아는 자", d:"스물네 곳을 모두 밟았다", hide:1, boon:"party",
+   at:s=>s.been.length, of:24,
    e:"파티가 여덟 자리가 된다"},
 
-  /* 이 게임에서 가장 먼 곳. 도감을 끝까지 채우고 열세 곳을 모두 밟아야 한다. */
-  {id:"origin", n:"끝에서 처음으로", d:"열세 곳을 모두 밟고 도감을 끝까지 채웠다", hide:1, boon:"origin",
-   at:s=>(s.been.length>=13?1:0)+(seen.length>=dexTotal()?1:0), of:2,
+  {id:"champ", n:"명예의 전당", d:"사천왕 넷과 챔피언을 쉬지 않고 넘었다", hide:1, boon:"champ",
+   at:s=>s.champ?1:0, of:1,
+   e:"모든 공격 +20% · 받는 피해 −15% (달지 않아도 남는다)"},
+
+  /* 이 게임에서 가장 먼 곳. 도감을 끝까지 채우고 모든 곳을 밟아야 한다. */
+  {id:"origin", n:"끝에서 처음으로", d:"모든 곳을 밟고 도감을 끝까지 채웠다", hide:1, boon:"origin",
+   at:s=>(s.been.length>=ORDERKEYS().length?1:0)+(seen.length>=dexTotal()?1:0), of:2,
    e:"만들어진 것이 레벨 1로 다시 온다 — 이번에는 손수 키운다"}
 ];
 
@@ -1388,6 +1452,7 @@ function boon(k){ return titles.some(id=>{
 
 function atkBuff(type){
   const e=wornEff(); let x=1;
+  if(boon("champ")) x*=1.2;
   if(e.atkAll) x*=e.atkAll;
   if(e.atk&&e.atk.t===type) x*=e.atk.x;
   if(boon("obey")&&type==="전기") x*=1.5;
@@ -1396,6 +1461,7 @@ function atkBuff(type){
 }
 function defBuff(){
   let x=wornEff().def||1;
+  if(boon("champ")) x*=0.85;
   if(boon("solo")&&party.length===1) x*=0.7;
   return x;
 }
@@ -1501,6 +1567,16 @@ function applySave(s){
   /* 처음 고르는 순간은 이미 끝났다. 여기서 내려두지 않으면
      이어하기 뒤에 잡는 야생이 전부 「최초 파트너」로 기록된다. */
   startPhase=false;
+  /* 지도가 늘어났다. 예전에 열려 있던 곳보다 앞선 곳은 전부 열어준다.
+     안 그러면 사이에 끼어든 새 마을에서 길이 막힌다. */
+  const O=ORDERKEYS();
+  let far=-1;
+  opened.forEach(r=>{ const i=O.indexOf(r); if(i>far) far=i; });
+  for(let i=0;i<=far;i++) if(!opened.includes(O[i])) opened.push(O[i]);
+  if(!O.includes(here)) here="pallet";
+  stat.been=(stat.been||[]).filter(r=>O.includes(r));
+  if(!stat.been.length) stat.been=[here];
+
   /* 레벨·등급 없이 저장된 야생은 지금 지역 기준으로 매긴다 */
   if(wild&&!wild.lv) wild.lv=wildLv(wild.form,REGION[here]);
   if(wild&&wild.g===undefined) wild.g=DATA[wild.form].legend?3:0;
@@ -1675,7 +1751,8 @@ function confirmPick(){
   logNo=0; logs=[]; legacyLog="";
   paintLog(); paintFound();
 
-  const left=["bulba","char","squirt"].filter(k=>!sel.includes(k)).map(k=>DATA[k].name);
+  stat.rival=["bulba","char","squirt"].filter(k=>!sel.includes(k));
+  const left=stat.rival.map(k=>DATA[k].name);
   document.getElementById("rivalline").innerHTML=
     "남은 케이스는 라이벌이 가져갔다<br><b>"+left.join(" · ")+"</b>"+
     (pika?"<br>둘을 내주었다. 다음에 만날 때 그는 강할 것이다.":"");
@@ -1874,7 +1951,9 @@ function boonBar(){
   return h?`<div class="boons">${h}</div>`:"";
 }
 
-function ORDERKEYS(){ return ["pallet","route1","route22","route2","forest","route3","moon","route4","route24","shore","power","seafoam","mansion"]; }
+function ORDERKEYS(){ return ["pallet","route1","viridian","route22","route2","forest",
+  "pewter","route3","moon","route4","cerulean","route24","vermilion","shore","celadon",
+  "rocket","saffron","fuchsia","power","seafoam","cinnabar","mansion","victory","plateau"]; }
 
 /* 조건을 채웠는지 매번 확인한다. 순서대로만 열린다. */
 function checkGates(){
@@ -1941,14 +2020,32 @@ function deck(R,next){
     why:noWild?"여기에는 마주칠 사람이 없다":busy||"나설 수 있는 아이가 없다 · 먼저 먹여야 한다"}));
 
   if(next && GATE[next] && GATE[next].gym && !badges.includes(GATE[next].gym)){
-    const G=GYM[GATE[next].gym], ready0=gateNum(next);
-    cards.push(pickCard({t:"도전",c:"var(--volt)",key:ready0&&!busy,
-      go:`enterGym('${GATE[next].gym}')`,
+    const key=GATE[next].gym, G=GYM[key], ready0=gateNum(next), atTown=here===G.where;
+    cards.push(pickCard({t:"도전",c:"var(--volt)",key:ready0&&atTown&&!busy,
+      go:`enterGym('${key}')`,
       s:`${G.town} 체육관 · 관장 ${G.name}(${G.type}) ${G.team.length}마리. 이겨야 ${REGION[next].name}으로 가는 길이 열린다.`,
       tail:"최고 LV."+Math.max.apply(null,G.team.map(t=>t[1]))+" · 물러설 수 없다",
-      off:!ready0||busy||!ready().length,
+      off:!ready0||!atTown||busy||!ready().length,
       why:!ready0?`${G.town} 체육관은 아직 문을 열지 않는다 — ${GATE[next].text}`
+         :!atTown?`${G.town}까지 가야 한다. 체육관은 거기 있다.`
                  :busy||"나설 수 있는 아이가 없다 · 먼저 먹여야 한다"}));
+  }
+
+  /* 마을에서는 쉰다 */
+  if(isTown()){
+    const hurt=party.filter(id=>pets[id].hp<pets[id].hpCap).length;
+    cards.push(pickCard({t:"쉰다",c:"var(--ice)",go:"rest()",
+      s:"몸을 되돌린다. 배가 부르지는 않는다.",
+      tail:hurt?hurt+"마리가 지쳐 있다":"",
+      off:!hurt||busy, why:busy||"모두 멀쩡하다"}));
+  }
+
+  /* 마지막 문 */
+  if(here==="plateau"&&!stat.champ){
+    cards.push(pickCard({t:"최종전",c:"var(--wrong)",key:!busy,go:"enterPlateau()",
+      s:"사천왕 넷과 챔피언. 다섯 문을 쉬지 않고 지나야 한다. 중간에 몸을 되돌릴 수 없다.",
+      tail:"LV.82~92 · 열아홉 마리 · 물러설 수 없다",
+      off:busy||!ready().length, why:busy||"나설 수 있는 아이가 없다"}));
   }
 
   if(here==="pallet"){
@@ -1999,6 +2096,19 @@ function giveAway(id){
 }
 
 /* 넘길 표본도 볼도 없을 때만 손을 벌릴 수 있다 */
+function isTown(r){ return !!REGION[r||here].town; }
+
+/* 마을에서는 쉰다. 몸만 돌아온다 — 배는 여전히 고프다. */
+function rest(){
+  if(!isTown()){ say("여기서는 쉴 곳이 없다.","deny"); return; }
+  if(fight){ say("지금은 쉴 수 없다.","deny"); return; }
+  const hurt=party.filter(id=>pets[id].hp<pets[id].hpCap);
+  if(!hurt.length){ say("모두 멀쩡하다. 쉴 것도 없다.","deny"); return; }
+  hurt.forEach(id=>{ const m=pets[id]; m.hp=m.hpCap; m.low=false; });
+  say("<b>"+REGION[here].name+"</b>에서 쉬었다. "+hurt.length+"마리가 몸을 되찾았다.",null,"체력 회복");
+  renderAll();
+}
+
 function refill(){
   if(balls>0){ say("아직 볼이 남았다. 다 쓰고 오라고 한다.","deny"); return; }
   if(box.length){ say("보관함에 표본이 남아 있다. 그것부터 넘기라고 한다.","deny"); return; }
@@ -2195,7 +2305,7 @@ function ready(){ return party.filter(id=>pets[id].hp>3); }
 function startFight(setup){
   const able=ready();
   if(!able.length){ say("나설 수 있는 아이가 없다. 먼저 먹여야 한다.","deny"); return; }
-  fight={kind:setup.kind,who:setup.who,gym:setup.gym||null,
+  fight={kind:setup.kind,who:setup.who,gym:setup.gym||null,queue:setup.queue||null,
     team:setup.team,idx:0,mine:able[0],mineGuard:false,foeWeak:false,mineWeak:false,turn:0};
   const f=fight.team[0];
   say(setup.kind==="gym"
@@ -2218,9 +2328,34 @@ function enterGym(key){
   if(fight||wild) return;
   const g=GYM[key];
   if(badges.includes(key)){ say(g.town+" 체육관은 이미 지나왔다.","deny"); return; }
+  if(here!==g.where){ say(g.town+"까지 가야 한다. 체육관은 거기 있다.","deny"); return; }
   /* 관장의 마지막 한 마리는 격이 다르다 */
   startFight({kind:"gym",who:g.name+" · "+g.town,gym:key,
     team:g.team.map((t,i)=>foeUnit(t[0],t[1],i===g.team.length-1?2:1))});
+}
+
+/* ═════════════════════════════════════════════
+   석영고원 — 사천왕 넷과 챔피언. 사이에 회복은 없다.
+   챔피언은 그때 남은 케이스를 가져간 자다.
+   ═════════════════════════════════════════════ */
+function champTeam(){
+  const took=(stat&&stat.rival&&stat.rival.length)?stat.rival:["bulba","char","squirt"];
+  const grown={bulba:"venu",char:"chariz",squirt:"blast"};
+  return CHAMPTEAM.map(t=>foeUnit(t[0],t[1],1))
+    .concat(took.map(k=>foeUnit(grown[k],FINAL[grown[k]],2)));
+}
+function enterPlateau(){
+  if(fight||wild) return;
+  if(here!=="plateau"){ say("석영고원까지 가야 한다.","deny"); return; }
+  if(stat.champ){ say("이미 지나온 문이다. 명예의 전당에 이름이 있다.","deny"); return; }
+  const q=ELITE.slice(1).map(e=>({who:e.who,line:e.line,
+      team:e.team.map(t=>foeUnit(t[0],t[1],1))}));
+  q.push({who:"챔피언",line:"그때 남은 케이스를 내가 가져갔지. 기억하나.",team:champTeam()});
+  const first=ELITE[0];
+  say("◆ 첫 번째 문을 열었다. 뒤로 물러설 수 없다.","hid","다섯 문");
+  startFight({kind:"elite",who:first.who,
+    team:first.team.map(t=>foeUnit(t[0],t[1],1)),queue:q});
+  say(first.line,"trace");
 }
 
 /* 한 턴 — 내가 치고, 살아 있으면 상대가 친다 */
@@ -2294,7 +2429,25 @@ function foeDown(){
   m.bond=clamp(m.bond+2,0,TUNE.bondMax);
   m.acts++;
   fight.idx++;
-  if(fight.idx>=fight.team.length){ winFight(); return; }
+  if(fight.idx>=fight.team.length){
+    if(fight.queue&&fight.queue.length){
+      const nx=fight.queue.shift();
+      fight.who=nx.who; fight.team=nx.team; fight.idx=0;
+      fight.mineGuard=false; fight.mineWeak=false; fight.foeWeak=false; fight.rose=false;
+      /* 쉬는 곳은 없다. 다만 문과 문 사이에 숨 고를 짬은 있다. */
+      let woke=0;
+      party.forEach(x=>{ const m=pets[x];
+        if(m.hp<=3) woke++;
+        m.hp=clamp(m.hp+Math.round(m.hpCap*TUNE.gateBreath),0,m.hpCap); });
+      say("문과 문 사이에서 짧게 숨을 골랐다."+(woke?" 쓰러졌던 "+woke+"마리가 다시 일어섰다.":""),
+        null,"체력 +"+Math.round(TUNE.gateBreath*100)+"%");
+      if(fight.mine&&pets[fight.mine].hp<=3){ const a=ready(); if(a.length) fight.mine=a[0]; }
+      say("문이 하나 더 열렸다. <b>"+nx.who+"</b>가 서 있다.","hid",nx.team.length+"마리");
+      if(nx.line) say(nx.line,"trace");
+      renderFight(); paint(fight.mine); save(); return;
+    }
+    winFight(); return;
+  }
   const nx=fight.team[fight.idx];
   say((fight.kind==="gym"?fight.who:fight.who)+"가 다음을 내보냈다 — <b>"+DATA[nx.form].name+"</b>",null,"LV."+nx.lv);
   renderFight(); paint(fight.mine); save();
@@ -2305,6 +2458,14 @@ function winFight(){
   stat.win++;
   /* 한 마리만 데리고 관장을 이겼는가 */
   if(f.kind==="gym"&&party.length===1) stat.soloGym++;
+  if(f.kind==="elite"){
+    stat.champ=1;
+    say("◆ 마지막 문이 닫혔다. <b>명예의 전당</b>에 이름이 올랐다.","mut","석영고원 제패");
+    notify("legend","챔피언","사천왕 넷과 챔피언을 모두 넘었다","var(--volt)",
+      '<path d="M15 3L18 12H27L20 17L23 27L15 21L7 27L10 17L3 12H12Z"/>');
+    remember("명예의 전당","사천왕 넷과 챔피언을 쉬지 않고 넘었다. 라이벌이 가져간 케이스도 거기 있었다.",true);
+    fight=null; renderAll(); return;
+  }
   if(f.kind==="gym"){
     const g=GYM[f.gym];
     if(!badges.includes(f.gym)) badges.push(f.gym);
@@ -2345,7 +2506,8 @@ function mineDown(){
 
 function loseFight(){
   const f=fight; fight=null; stat.lose++;
-  say(f.kind==="gym"?"체육관을 나왔다. 배지는 없다.":"등을 보이고 물러났다.","deny");
+  say(f.kind==="elite"?"문 앞에서 무너졌다. 처음부터 다시 열어야 한다."
+     :f.kind==="gym"?"체육관을 나왔다. 배지는 없다.":"등을 보이고 물러났다.","deny");
   notify("mut","물러났다","먹이고 다시 오면 된다","var(--wrong)",
     '<path d="M6 6L24 24M24 6L6 24"/>');
   renderAll();
@@ -2353,7 +2515,7 @@ function loseFight(){
 
 function fleeFight(){
   if(!fight) return;
-  if(fight.kind==="gym"){ say("체육관에서는 등을 보일 수 없다. 끝을 봐야 한다.","deny"); return; }
+  if(fight.kind!=="trainer"){ say("여기서는 등을 보일 수 없다. 끝을 봐야 한다.","deny"); return; }
   const f=fight; fight=null; stat.flee++;
   say(f.who+"에게서 물러났다.","deny");
   renderAll();
@@ -2388,7 +2550,9 @@ function renderFight(){
     `<button class="mini" onclick="swapTo('${id}')">${sp(id).name} 교체</button>`).join("");
 
   w.innerHTML=`<div class="panel fightcard" style="--c:${fd.c}">
-    <p class="wildmark"><span class="blip"></span>${fight.kind==="gym"?"체육관 · 관장전":"마주친 사람"} · ${fight.who}</p>
+    <p class="wildmark"><span class="blip"></span>${
+      fight.kind==="elite"?"석영고원 · 물러설 수 없다"
+      :fight.kind==="gym"?"체육관 · 관장전":"마주친 사람"} · ${fight.who}</p>
     <div class="wildhead">
       <div class="orb"><svg viewBox="0 0 30 30">${fd.icon}</svg></div>
       <div style="flex:1;min-width:0">
@@ -2411,7 +2575,7 @@ function renderFight(){
     <div class="mvs">${moves}</div>
     <div class="acts" style="margin-top:12px">
       ${bench}
-      <button class="mini" onclick="fleeFight()" ${fight.kind==="gym"?"disabled":""}>물러난다</button>
+      <button class="mini" onclick="fleeFight()" ${fight.kind!=="trainer"?"disabled":""}>물러난다</button>
     </div>
   </div>`;
 }
