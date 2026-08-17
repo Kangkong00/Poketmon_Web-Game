@@ -842,16 +842,16 @@ const DATA = {
   arcanine:{name:"윈디",type:"불",c:"var(--fire)",tag:"BLAZE",rate:18,
     icon:'<path d="M15 4C15 4 9 11 9 17C9 22 12 26 15 26C18 26 21 22 21 17C21 11 15 4 15 4Z"/><path d="M22 21C26 22 27 26 24 27"/>',
     desc:"하루에 만 킬로를 달린다는 이야기가 전해진다."},
-  zapdos:{name:"썬더",type:"전기",c:"var(--volt)",tag:"LEGEND",rate:8,legend:true,lv:50,
+  zapdos:{name:"썬더",type:"전기",c:"var(--volt)",tag:"LEGEND",rate:8,legend:true,lv:70,
     icon:'<path d="M17 3L7 17H14L12 27L23 12H16L17 3Z"/><path d="M4 26H26"/><path d="M6 6L10 10"/><path d="M24 6L20 10"/>',
     desc:"내려앉는 것만으로 주변의 전기가 전부 멎는다. 이미 완성된 몸이라 더 변하지 않는다."},
-  articuno:{name:"프리져",type:"얼음",c:"var(--ice)",tag:"LEGEND",rate:7,legend:true,lv:50,
+  articuno:{name:"프리져",type:"얼음",c:"var(--ice)",tag:"LEGEND",rate:7,legend:true,lv:70,
     icon:'<path d="M15 3V27M5 9L25 21M25 9L5 21"/><path d="M4 26H26"/><path d="M6 6L10 10"/><path d="M24 6L20 10"/>',
     desc:"지나간 자리에 눈이 내린다. 날개를 접는 법이 없다."},
-  moltres:{name:"파이어",type:"불",c:"var(--fire)",tag:"LEGEND",rate:7,legend:true,lv:50,
+  moltres:{name:"파이어",type:"불",c:"var(--fire)",tag:"LEGEND",rate:7,legend:true,lv:70,
     icon:'<path d="M15 4C15 4 9 11 9 17C9 22 12 26 15 26C18 26 21 22 21 17C21 11 15 4 15 4Z"/><path d="M4 26H26"/><path d="M6 6L10 10"/><path d="M24 6L20 10"/>',
     desc:"상처를 입으면 용암에 몸을 담가 스스로 낫는다."},
-  mewtwo:{name:"뮤츠",type:"에스퍼",c:"var(--psy)",tag:"LEGEND",rate:3,legend:true,lv:70,
+  mewtwo:{name:"뮤츠",type:"에스퍼",c:"var(--psy)",tag:"LEGEND",rate:3,legend:true,lv:85,
     icon:'<circle cx="15" cy="15" r="9"/><circle cx="15" cy="15" r="3.5"/><path d="M4 26H26"/><path d="M6 6L10 10"/><path d="M24 6L20 10"/>',
     desc:"사람의 손으로 만들어졌다. 그래서 무엇으로도 다시 바뀌지 않는다."},
 
@@ -899,40 +899,40 @@ const REGION = {
   pallet:{name:"태초마을",note:"연구소가 있는 조용한 마을. 야생은 나오지 않는다.",
     quirk:"쉬어 가는 곳 · 볼 보충", wild:[]},
   route1:{name:"1번도로",note:"S자로 굽은 길. 무릎까지 자란 풀이 이어진다.",
-    quirk:"시간대 조건 실험에 좋다", lv:[3,5],
+    quirk:"시간대 조건 실험에 좋다", lv:[3,6],
     wild:[["pidgey",6],["rattata",6]]},
   route22:{name:"22번도로",note:"상록시티 서쪽 끝. 라이벌과 처음 마주치는 곳이다.",
-    quirk:"상성 실험에 좋다", lv:[4,6],
+    quirk:"상성 실험에 좋다", lv:[5,9],
     wild:[["rattata",5],["spearow",4],["mankey",3]]},
   route2:{name:"2번도로",note:"상록숲으로 이어지는 짧은 길. 나무 그늘이 길게 눕는다.",
-    quirk:"벌레가 많다", lv:[5,7],
+    quirk:"벌레가 많다", lv:[8,12],
     wild:[["caterpie",5],["weedle",5],["pidgey",4],["rattata",3]]},
   forest:{name:"상록숲",note:"낮에도 어둡다. 나뭇잎 사이에서 자주 무언가 스친다.",
-    quirk:"방치 조건 실험에 좋다 · 피카츄가 목격되는 유일한 숲", lv:[5,8],
+    quirk:"방치 조건 실험에 좋다 · 피카츄가 목격되는 유일한 숲", lv:[11,16],
     wild:[["caterpie",6],["metapod",4],["weedle",6],["kakuna",4],["pidgey",3],["pika",1]]},
   route3:{name:"3번도로",note:"회색시티에서 달맞이산으로 오르는 비탈길.",
-    quirk:"바람이 강해 불 실험에 불리하다", lv:[8,11],
+    quirk:"바람이 강해 불 실험에 불리하다", lv:[15,21],
     wild:[["spearow",6],["jigglypuff",3],["mankey",3],["sandshrew",3],["ekans",2]]},
   moon:{name:"달맞이산",note:"동굴 안은 소리가 길게 남는다. 천장에서 무언가 떨어진다.",
-    quirk:"어둠 · 방치 조건 실험에 좋다", lv:[9,13],
+    quirk:"어둠 · 방치 조건 실험에 좋다", lv:[20,27],
     wild:[["zubat",7],["geodude",5],["paras",3],["clefairy",1]]},
   route4:{name:"4번도로",note:"동굴을 빠져나오면 마른 흙바닥이 이어진다.",
-    quirk:"땅 조건 실험에 좋다", lv:[11,15],
+    quirk:"땅 조건 실험에 좋다", lv:[25,32],
     wild:[["rattata",5],["spearow",4],["sandshrew",4],["ekans",3],["meowth",2]]},
   route24:{name:"24번도로 · 황금다리",note:"다리 위로 물바람이 분다. 건너편 풀숲이 짙다.",
-    quirk:"에스퍼가 드물게 목격된다", lv:[12,16],
+    quirk:"에스퍼가 드물게 목격된다", lv:[30,38],
     wild:[["caterpie",4],["weedle",4],["oddish",4],["bellsprout",4],["pidgey",3],["abra",2]]},
   shore:{name:"잔교",note:"물이 잔잔하다. 발밑에서 계속 물소리가 난다.",
-    quirk:"물의 돌 실험에 좋다", lv:[14,19],
+    quirk:"물의 돌 실험에 좋다", lv:[36,44],
     wild:[["magikarp",7],["poliwag",4],["goldeen",3]]},
   power:{name:"무인발전소",note:"버려진 건물. 끊긴 전선에서 아직 소리가 난다.",
-    quirk:"전기 조건 실험에 좋다 · 전설이 목격된 곳", lv:[20,26],
+    quirk:"전기 조건 실험에 좋다 · 전설이 목격된 곳", lv:[42,51],
     wild:[["voltorb",5],["magnemite",5],["magneton",2],["zubat",3],["zapdos",1]]},
   seafoam:{name:"쌍둥이섬",note:"동굴 안이 통째로 얼어 있다. 숨을 쉬면 하얗게 흩어진다.",
-    quirk:"얼음 · 물 조건 실험에 좋다", lv:[24,30],
+    quirk:"얼음 · 물 조건 실험에 좋다", lv:[48,58],
     wild:[["golbat",4],["magikarp",4],["poliwhirl",3],["seaking",3],["articuno",1]]},
   mansion:{name:"폐허가 된 저택",note:"불에 그을린 방들이 이어진다. 실험 일지가 흩어져 있다.",
-    quirk:"불 조건 실험에 좋다 · 무언가 만들어진 곳", lv:[28,36],
+    quirk:"불 조건 실험에 좋다 · 무언가 만들어진 곳", lv:[55,66],
     wild:[["vulpix",4],["growlithe",4],["ekans",3],["moltres",1],["mewtwo",0.4]]}
 };
 
@@ -944,15 +944,15 @@ const GATE = {
   pallet:null, route1:null,
   route22:{ok:()=>caught>=2,                      text:"야생 2마리 포획"},
   route2 :{ok:()=>caught>=4&&seen.length>=6,      text:"야생 4마리 포획 · 도감 6종"},
-  forest :{ok:()=>seen.length>=9&&maxLv()>=7,     text:"도감 9종 · 레벨 7 이상 한 마리"},
+  forest :{ok:()=>seen.length>=9&&maxLv()>=10,     text:"도감 9종 · 레벨 10 이상 한 마리"},
   route3 :{ok:()=>caught>=8&&seen.length>=13,     text:"야생 8마리 포획 · 도감 13종"},
-  moon   :{ok:()=>seen.length>=16&&maxLv()>=10,   text:"도감 16종 · 레벨 10 이상", gym:"brock"},
+  moon   :{ok:()=>seen.length>=16&&maxLv()>=18,   text:"도감 16종 · 레벨 18 이상", gym:"brock"},
   route4 :{ok:()=>evolved>=1&&seen.length>=20,    text:"진화 1회 · 도감 20종"},
-  route24:{ok:()=>caught>=15&&maxLv()>=13,        text:"야생 15마리 포획 · 레벨 13 이상", gym:"misty"},
+  route24:{ok:()=>caught>=15&&maxLv()>=28,        text:"야생 15마리 포획 · 레벨 28 이상", gym:"misty"},
   shore  :{ok:()=>seen.length>=26&&evolved>=2,    text:"도감 26종 · 진화 2회", gym:"erika"},
-  power  :{ok:()=>seen.length>=32&&maxLv()>=18,   text:"도감 32종 · 레벨 18 이상", gym:"surge"},
+  power  :{ok:()=>seen.length>=32&&maxLv()>=42,   text:"도감 32종 · 레벨 42 이상", gym:"surge"},
   seafoam:{ok:()=>seen.length>=38&&evolved>=4,    text:"도감 38종 · 진화 4회", gym:"koga"},
-  mansion:{ok:()=>seen.length>=44&&maxLv()>=25,   text:"도감 44종 · 레벨 25 이상", gym:"blaine"}
+  mansion:{ok:()=>seen.length>=44&&maxLv()>=55,   text:"도감 44종 · 레벨 55 이상", gym:"blaine"}
 };
 
 /* 수치를 채웠는지 · 배지까지 받았는지 — 둘은 다른 문이다 */
@@ -1093,14 +1093,17 @@ const MUT = {
 /* ═════════ 수치 ═════════ */
 const TUNE = {
   hpMax:100, satMax:100, bondMax:100,
+  hpPerLv:2.2,       // 몸도 레벨을 따라 커진다
+  lvMax:100,         // 여기가 마지노선이다
   startHp:100, startSat:40, startLv:5,
   startBond:{normal:20, pika:5},
   feed:{hp:18,sat:30,bond:4},
   deny:{base:55,perBond:0.5,min:10},
   denyFeedBond:1,
-  /* growth는 지수라 뒤로 갈수록 가파르다.
-     처음부터 다시 자라는 몸만은 fast를 타서 끝까지 키울 수 있게 둔다. */
-  exp:{base:90,growth:1.42,fast:1.22},
+  /* 레벨 100까지 가는 곡선. 지수가 아니라 완만한 이차식이라
+     어느 구간에서나 한 단계가 전투 예닐곱 판이다. 난이도 쉬움. */
+  exp:{flat:70, per:20, sq:0.45, fast:0.7,
+       fightBase:14, fightPer:3.2, fightSq:0.06, trainPer:0.14},
   evo:{lvPer:9,lvCap:58,lvFrom:4,bondPer:0.5,bondCap:50,min:3,max:95,mutScale:0.55},
   stoneLife:3,
 
@@ -1110,9 +1113,10 @@ const TUNE = {
   watchFlee:22,      // 대신 달아날 수 있다
   failFlee:26,       // 실패해도 달아날 수 있다
 
-  /* 야생도 레벨을 가진다. 높을수록 볼이 잘 듣지 않는다. */
+  /* 야생도 레벨을 가진다. 높을수록 볼이 잘 듣지 않는다.
+     레벨 상한이 100이 되면서 보정을 완만하게 폈다. */
   wildLvFrom:5,      // 이 레벨까지는 보정 없음
-  wildLvPer:1.3,     // 한 레벨 오를 때마다 깎이는 포획 확률
+  wildLvPer:0.35,    // 한 레벨 오를 때마다 깎이는 포획 확률
 
   /* 연구소는 표본을 받고 볼을 내준다. */
   give:{base:2, rare:70, rareCap:9, lvPer:6, max:14},
@@ -1252,22 +1256,22 @@ const STRONG = {
 const GYM = {
   brock:{name:"웅",town:"회색시티",type:"바위",badge:"회색 배지",
     line:"돌은 버티는 것이다. 버티지 못하면 지나갈 수 없다.",
-    team:[["geodude",12],["sandshrew",13],["graveler",14]]},
+    team:[["geodude",20],["sandshrew",22],["graveler",24]]},
   misty:{name:"이슬",town:"블루시티",type:"물",badge:"파랑 배지",
     line:"물은 밀어내지 않는다. 감싸서 가라앉힌다.",
-    team:[["poliwag",17],["goldeen",18],["poliwhirl",19]]},
+    team:[["poliwag",30],["goldeen",32],["poliwhirl",34]]},
   erika:{name:"민화",town:"무지개시티",type:"풀",badge:"무지개 배지",
     line:"자라는 것은 서두르지 않아요. 그래서 이깁니다.",
-    team:[["gloom",21],["weepinbell",22],["vileplume",24]]},
+    team:[["gloom",36],["weepinbell",38],["vileplume",41]]},
   surge:{name:"마티스",town:"갈색시티",type:"전기",badge:"주황 배지",
     line:"전기는 망설이지 않는다. 한 번에 끝낸다.",
-    team:[["voltorb",24],["magnemite",25],["raichu",27]]},
+    team:[["voltorb",43],["magnemite",45],["raichu",48]]},
   koga:{name:"독수",town:"노랑시티",type:"독",badge:"쪽빛 배지",
     line:"독은 소리가 없다. 알았을 땐 이미 늦었지.",
-    team:[["ekans",28],["golbat",29],["arbok",31],["beedrill",32]]},
+    team:[["ekans",50],["golbat",52],["arbok",54],["beedrill",56]]},
   blaine:{name:"강연",town:"홍련마을",type:"불",badge:"주홍 배지",
     line:"저 저택을 태운 것이 무엇인지, 자네는 알고 왔나.",
-    team:[["growlithe",33],["ninetales",35],["arcanine",37]]}
+    team:[["growlithe",58],["ninetales",61],["arcanine",64]]}
 };
 
 /* 오다가다 마주치는 사람들 — 팀은 그 지역에서 만들어진다 */
@@ -1417,8 +1421,14 @@ function rollGrade(deep){
 }
 function deepOf(r){ return Math.max(0,ORDERKEYS().indexOf(r)); }
 function gradeOf(x){ return GRADE[(x&&x.g)||0]; }
-/* 등급이 높은 몸은 더 담을 수 있다 */
-function capOf(g){ return Math.round(TUNE.hpMax*GRADE[g||0].hp); }
+/* 담을 수 있는 양 — 등급과 레벨이 함께 정한다.
+   변이로 깎인 몫(pen)은 따로 지고 다니다가 여기서 빠진다. */
+function capOf(g,lv,pen){
+  const base=TUNE.hpMax+(lv||TUNE.startLv)*TUNE.hpPerLv;
+  return Math.max(30,Math.round(base*GRADE[g||0].hp)+(pen||0));
+}
+function petCap(m){ return capOf(m.g,m.lv,m.hpPen); }
+function refitCap(m){ m.hpCap=petCap(m); m.hp=clamp(m.hp,0,m.hpCap); }
 
 let pets={}, party=[], box=[], seq=0;
 let sel=[], bag={}, logNo=0, found=[], bornOrb=null;
@@ -1502,9 +1512,13 @@ function applySave(s){
     /* 등급이 없던 시절의 기록은 전부 보통으로 둔다.
        전설 종만은 제 격을 되찾아 준다. */
     if(m.g===undefined) m.g=DATA[m.form].legend?3:0;
-    /* 변이로 깎인 몸은 그 대가를 그대로 진다. 그 외에는 제 격만큼 담는다. */
-    m.hpCap = m.lost ? clamp(m.hpCap,30,capOf(m.g)) : capOf(m.g);
-    m.hp = clamp(m.hp,0,m.hpCap);
+    /* 예전에는 깎인 값이 hpCap에 직접 박혀 있었다. 그 몫을 hpPen으로 옮긴 뒤
+       레벨을 반영해 몸을 다시 잰다. 변이의 대가는 그대로 남는다. */
+    if(m.hpPen===undefined){
+      const old=Math.round(TUNE.hpMax*GRADE[m.g].hp);
+      m.hpPen = (m.lost && m.hpCap<old) ? m.hpCap-old : 0;
+    }
+    refitCap(m);
     if(!m.own) m.own=["bulba","char","squirt","pika"].includes(m.base)?"starter":"wild";
     /* 표본실에서 데려온 아이는 언제나 p1·p2다. 그 뒤 번호인데 최초 파트너로
        적혀 있다면 위 버그로 잘못 남은 기록이니 야생으로 되돌린다. */
@@ -1541,10 +1555,14 @@ function fill(s,d){ return s.replace("{n}",d.n||"").replace("{lv}",d.lv||"").rep
 function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
 function sp(id){ return DATA[pets[id].form]; }
 function needExp(lv,fast){
-  const n=Math.round(TUNE.exp.base*Math.pow(TUNE.exp.growth,lv-TUNE.startLv));
-  if(!fast) return n;
-  /* 완만한 쪽을 타되, 어느 구간에서도 손해 보지 않는다 */
-  return Math.min(n,Math.round(TUNE.exp.base*Math.pow(TUNE.exp.fast,lv-TUNE.startLv)));
+  const E=TUNE.exp;
+  const n=E.flat+lv*E.per+lv*lv*E.sq;
+  return Math.round(n*(fast?E.fast:1));
+}
+/* 상대를 하나 눕혔을 때 들어오는 몫 — 레벨을 따라 같이 커진다 */
+function fightExp(lv){
+  const E=TUNE.exp;
+  return Math.round(E.fightBase+lv*E.fightPer+lv*lv*E.fightSq);
 }
 
 /* 진화 성공 확률 — 레벨 몫 + 친밀도 몫 */
@@ -1558,8 +1576,9 @@ function chance(m,isMut){
 }
 
 /* 지금 체력으로 할 수 있는 훈련 종목 중 하나 */
-function rollEx(hp){
-  const able=EX.filter(e=>hp>=e.hp);
+function rollEx(hp,cap){
+  const k=(cap||TUNE.hpMax)/TUNE.hpMax;
+  const able=EX.filter(e=>hp>=e.hp*k);
   if(!able.length) return null;
   let t=able.reduce((s,e)=>s+e.w,0), r=Math.random()*t;
   for(const e of able){ r-=e.w; if(r<=0) return e; }
@@ -1589,7 +1608,8 @@ function newPet(f,lv,g){
   seq++;
   const id="p"+seq;
   const gr=DATA[f].legend?3:(g||0);
-  pets[id]={id:id,form:f,base:f,g:gr,hp:capOf(gr),hpCap:capOf(gr),sat:TUNE.startSat,
+  const cap=capOf(gr,lv||TUNE.startLv,0);
+  pets[id]={id:id,form:f,base:f,g:gr,hpPen:0,hp:cap,hpCap:cap,sat:TUNE.startSat,
     exp:0,lv:lv||TUNE.startLv,recent:[],acts:0,crisis:0,low:false,
     own:(startPhase?"starter":"wild"),lost:null,
     bond:startPhase?(f==="pika"?TUNE.startBond.pika:TUNE.startBond.normal):12};
@@ -1724,7 +1744,7 @@ function claimGift(){
 function claimOrigin(){
   if(!boon("origin")||stat.origin) return;
   const f="mewtwo", id=newPet(f,1);
-  pets[id].fast=1;                     // 처음부터 자라는 몸은 더디게 무거워진다
+  pets[id].fast=1; refitCap(pets[id]);                     // 처음부터 자라는 몸은 더디게 무거워진다
   if(party.length<partyMax()) party.push(id); else box.push(id);
   stat.origin=1; see(f);
   flash(DATA[f]);
@@ -1764,7 +1784,7 @@ function fuseWith(id){
   A.extra=(A.extra||[]).concat([B.form]);
   A.g=Math.min(3,Math.max(A.g||0,B.g||0)+1);
   A.lv=Math.max(A.lv,B.lv);
-  A.hpCap=capOf(A.g); A.hp=A.hpCap;
+  refitCap(A); A.hp=A.hpCap;
   A.fused=(A.fused||[]).concat([bn]);
   party=party.filter(x=>x!==id); box=box.filter(x=>x!==id); delete pets[id];
   fuseA="";
@@ -2269,7 +2289,7 @@ function useMove(i){
 function foeDown(){
   const foe=fight.team[fight.idx], m=pets[fight.mine];
   say("<b>"+DATA[foe.form].name+"</b>가 주저앉았다.","catch");
-  const gain=Math.round((16+foe.lv*2.6)*(wornEff().fightExp||1));
+  const gain=Math.round(fightExp(foe.lv)*(wornEff().fightExp||1));
   gainExp(fight.mine,gain,"전투");
   m.bond=clamp(m.bond+2,0,TUNE.bondMax);
   m.acts++;
@@ -2458,7 +2478,7 @@ function paint(id){
   if(!tg) return;
   tg.textContent="LV."+m.lv+" · "+sp(id).type;
 
-  const fullHp=m.hp>=m.hpCap, fullSat=m.sat>=TUNE.satMax, tired=!rollEx(m.hp);
+  const fullHp=m.hp>=m.hpCap, fullSat=m.sat>=TUNE.satMax, tired=!rollEx(m.hp,m.hpCap);
   document.getElementById("fd-"+id).disabled=fullHp||fullSat;
   document.getElementById("tr-"+id).disabled=tired;
   document.getElementById("st-"+id).disabled=Object.keys(STONE).every(s=>bag[s]<=0);
@@ -2556,8 +2576,8 @@ function feed(id){
     say(pick(LINE.denyFeed),"deny"); paint(id); renderSlots(); return;
   }
   stat.feed++;
-  m.hp=clamp(m.hp+Math.round(TUNE.feed.hp*(wornEff().heal||1)),0,m.hpCap);
-  if(m.low && m.hp>=60){ m.low=false; m.crisis=(m.crisis||0)+1;
+  m.hp=clamp(m.hp+Math.round(m.hpCap*TUNE.feed.hp/TUNE.hpMax*(wornEff().heal||1)),0,m.hpCap);
+  if(m.low && m.hp>=m.hpCap*0.6){ m.low=false; m.crisis=(m.crisis||0)+1;
     say("◆ 쓰러지기 직전까지 갔다가 돌아왔다. 넘긴 위기 "+m.crisis+"회","hid"); }
   m.sat=clamp(m.sat+TUNE.feed.sat,0,TUNE.satMax);
   const bd=TUNE.feed.bond+(wornEff().bond||0);
@@ -2567,7 +2587,7 @@ function feed(id){
 }
 
 function train(id){
-  const m=pets[id], n=sp(id).name, e=rollEx(m.hp);
+  const m=pets[id], n=sp(id).name, e=rollEx(m.hp,m.hpCap);
   if(!e) return;
   m.acts++;
   if(m.form==="pika"&&denied(m)){ say(pick(LINE.denyTrain),"deny"); paint(id); renderSlots(); return; }
@@ -2575,12 +2595,13 @@ function train(id){
   stat.train++;
   if(m.sat<=0) stat.hungry++;          // 주린 채로 굴린 횟수
   const before={hp:m.hp,bond:m.bond,sat:m.sat};
-  m.hp=clamp(m.hp-e.hp,0,m.hpCap);
-  if(m.hp<=20) m.low=true;
+  m.hp=clamp(m.hp-Math.round(m.hpCap*e.hp/TUNE.hpMax),0,m.hpCap);
+  if(m.hp<=m.hpCap*0.2) m.low=true;
   /* 굶기는 자에게는 포만감이 더 이상 대가가 아니다 */
   if(!boon("starve")) m.sat=clamp(m.sat-e.sat,0,TUNE.satMax);
   m.bond=clamp(m.bond+e.bond,0,TUNE.bondMax);
-  const got=Math.round(e.exp*(wornEff().trainExp||1)*(boon("starve")?2:1));
+  const got=Math.round(e.exp*(1+m.lv*TUNE.exp.trainPer)
+    *(wornEff().trainExp||1)*(boon("starve")?2:1));
   m.exp+=got;
   say(fill(pick(e.line),{n:n}),null,e.name+" · 경험치 +"+got);
 
@@ -2602,13 +2623,14 @@ function train(id){
 /* 경험치가 찼는지 본다 — 훈련도 전투도 같은 문을 쓴다 */
 function levelUp(id){
   const m=pets[id];
-  while(m.exp>=needExp(m.lv,m.fast)){
-    m.exp-=needExp(m.lv,m.fast); m.lv+=1; m.hp=m.hpCap;
+  while(m.lv<TUNE.lvMax && m.exp>=needExp(m.lv,m.fast)){
+    m.exp-=needExp(m.lv,m.fast); m.lv+=1;
+    m.hpCap=petCap(m); m.hp=m.hpCap;
     say(fill(pick(LINE.levelup),{n:sp(id).name,lv:m.lv}),"up");
     const le=LVEVO[m.form];
     if(le && m.lv>=le.lv){
       const was=sp(id).name;
-      m.form=le.to; m.hp=m.hpCap; bornOrb=id; evolved++; see(le.to);
+      m.form=le.to; refitCap(m); m.hp=m.hpCap; bornOrb=id; evolved++; see(le.to);
       flash(DATA[le.to]);
       say("몸이 안에서부터 밀려 올라왔다. "+was+"가 <b>"+DATA[le.to].name+"</b>가 되었다.","evo","레벨 진화");
       notify("evo","진화했다",was+" → "+DATA[le.to].name,DATA[le.to].c,DATA[le.to].icon);
@@ -2617,7 +2639,10 @@ function levelUp(id){
   }
 }
 function gainExp(id,n,why){
-  pets[id].exp+=n;
+  const m=pets[id];
+  if(m.lv>=TUNE.lvMax){ m.exp=0;
+    say(sp(id).name+"는 더 자랄 수 없다. 여기가 끝이다.",null,"LV."+TUNE.lvMax); return; }
+  m.exp+=n;
   say(sp(id).name+"가 싸운 만큼 얻었다.",null,(why||"")+" · 경험치 +"+n);
   levelUp(id);
 }
@@ -2652,7 +2677,7 @@ function useStone(id,sid){
     bag[sid]=0; m.form=to; m.exp=0; bornOrb=id;
     if(!right){
       m.bond=clamp(m.bond+(mu.cost.bond||0),0,TUNE.bondMax);
-      m.hpCap=clamp(m.hpCap+(mu.cost.hpCap||0),30,capOf(m.g));
+      m.hpPen=(m.hpPen||0)+(mu.cost.hpCap||0); refitCap(m);
       m.lost=mu.cost.note;
     }
     m.hp=m.hpCap;
